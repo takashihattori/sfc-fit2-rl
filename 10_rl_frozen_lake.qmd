@@ -1,0 +1,149 @@
+# 強化学習の例(3)
+
+## 本章のねらい
+強化学習の金字塔であるアルゴリズム**「Q-learning（Q学習）」**を学びます。前章のモンテカルロ法のように「エピソードが終わるまで待つ」必要がなく、1ステップ進むごとにリアルタイムに学習を進める**TD学習（Temporal Difference Learning）**の考え方と、氷の張った湖の上を滑りながらゴールを目指す「Frozen Lake」環境への適用を実装します。
+
+---
+
+## Frozen Lake（凍った湖）環境
+
+$4 \times 4$ のマス目（全16マス）からなる環境です。
+
+```
++---+---+---+---+
+| S | F | F | F |     S: Start (スタート)
++---+---+---+---+     F: Frozen (凍った湖面・安全)
+| F | H | F | H |     H: Hole (氷の穴・落ちると即終了)
++---+---+---+---+     G: Goal (ゴール・フリスビー)
+| F | F | F | H |
++---+---+---+---+
+| H | F | F | G |
++---+---+---+---+
+```
+
+- **状態**: 0 〜 15 のマス番号
+- **行動**: 4方向（0: 左, 1: 下, 2: 右, 3: 上）
+- **報酬**: ゴールに到達すると $+1$、それ以外（穴に落ちる、通常マスを歩く）は $0$。
+- **特徴（滑る床）**: `is_slippery=True`（デフォルト）の場合、氷が滑るため、例えば「右」に行こうとしても 1/3 の確率で「上」や「下」に意図せず滑ってしまいます。確率的な遷移を伴う代表的な環境です。
+
+---
+
+## TD学習（時間的差分学習）とQ-learningの考え方
+
+### モンテカルロ法とTD学習の違い
+- **モンテカルロ法**: ゲームの最後までプレイして勝敗が確定してから過去を振り返って更新する。
+- **TD学習**: 1歩動いた直後の「即時報酬」と「次の状態の推定価値」を利用して、**1ステップごとに即座に更新**する（ブートストラップ方式）。
+
+```
+モンテカルロ法:  (S_t, A_t) ─────────────...─────────────→ 最終結果 G
+                                                           (エピソード完了待ち)
+
+TD学習:         (S_t, A_t) ──→ R_{t+1} + γ * (次状態の価値)
+                               (1歩進んだだけで即時更新！)
+```
+
+### Q-learning の更新式
+Q-learning は、次の状態で取れる**最大の行動価値 $\max_{a'} Q(s', a')$** を使って現在の $Q(s, a)$ を更新します。
+
+$$
+Q(s, a) \leftarrow Q(s, a) + \alpha \Big[ \underbrace{r + \gamma \max_{a'} Q(s', a')}_{\text{TDターゲット（目標値）}} - \underbrace{Q(s, a)}_{\text{現在の推定値}} \Big]
+$$
+
+- $\alpha$（学習率 / Learning Rate）: 推定値をどのくらいの割合で新情報へ書き換えるか（$0 < \alpha \le 1$）
+- $\gamma$（割引率）: 次のステップの価値をどれだけ重視するか（例: $0.95$）
+- **TD誤差（TD Error）**: 括弧の中の差分。予想と実際の乖離を表す。
+
+---
+
+## Q-learning の実装
+
+Frozen Lake（滑る設定をオフ `is_slippery=False` にして最初は決定的な環境で動作を把握します）で Q-learning を実装してみましょう。
+
+```python
+import gymnasium as gym
+import numpy as np
+
+# 環境の作成 (4x4, 滑らない設定)
+env = gym.make("FrozenLake-v1", is_slippery=False)
+
+# Qテーブルの初期化 (16状態 x 4行動)
+state_size = env.observation_space.n
+action_size = env.action_space.n
+Q = np.zeros((state_size, action_size))
+
+# ハイパーパラメータの設定
+alpha = 0.8        # 学習率
+gamma = 0.95       # 割引率
+epsilon = 0.2      # 探索率
+episodes = 2000    # 学習エピソード数
+
+# 学習ループ
+for ep in range(episodes):
+    state, info = env.reset()
+    terminated = False
+    truncated = False
+    
+    while not (terminated or truncated):
+        # epsilon-greedy方策による行動選択
+        if np.random.rand() < epsilon:
+            action = env.action_space.sample()
+        else:
+            action = np.argmax(Q[state, :])
+            
+        # 1ステップ実行
+        next_state, reward, terminated, truncated, info = env.step(action)
+        
+        # Q-learning の更新式
+        best_next_action = np.argmax(Q[next_state, :])
+        td_target = reward + gamma * Q[next_state, best_next_action]
+        td_error = td_target - Q[state, action]
+        Q[state, action] += alpha * td_error
+        
+        state = next_state
+
+print("学習完了！学習されたQテーブル:")
+print(np.round(Q, 2))
+```
+
+---
+
+## 学習済みエージェントのテスト
+
+学習完了後、エージェントが穴（Hole）を避けながら確実にゴール（Goal）へ進むかテストします。
+
+```python
+test_episodes = 10
+success_count = 0
+
+for _ in range(test_episodes):
+    state, info = env.reset()
+    terminated = False
+    truncated = False
+    
+    while not (terminated or truncated):
+        # テスト時は探索なし (完全greedy)
+        action = np.argmax(Q[state, :])
+        state, reward, terminated, truncated, info = env.step(action)
+        
+        if terminated and reward == 1.0:
+            success_count += 1
+
+print(f"成功率: {success_count / test_episodes * 100:.1f}%")
+env.close()
+```
+
+滑らない設定では、わずか数百〜数千エピソードで勝率100%の最短ルートを習得します。
+
+---
+
+## 演習課題
+
+1. 環境を `is_slippery=True`（滑る設定）に変更した場合、同じ学習パラメータのままだと成功率はどう変化しますか？学習エピソード数を増やしたり、割引率 $\gamma$ や学習率 $\alpha$ を調整して実験してみましょう。
+2. Q-learningは「方策オフ型（Off-policy）」アルゴリズムと呼ばれます。なぜ自分の現在の行動方針（$\epsilon$-greedy）とは無関係に $\max_{a'} Q(s', a')$ を使って更新できるのでしょうか？
+
+---
+
+## まとめ
+- **TD学習**は、1歩進むごとに「即時報酬＋次状態の価値」でリアルタイムに学習する。
+- **Q-learning**は、ベルマン最適方程式に基づく代表的な強化学習手法で、表形式（Qテーブル）によって最適行動価値を求める。
+- 穴を避けながらゴールに辿り着く方策を、エージェント自らが試行錯誤から自動発見できる。

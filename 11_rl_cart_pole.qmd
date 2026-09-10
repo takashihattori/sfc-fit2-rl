@@ -1,0 +1,156 @@
+# 強化学習の例(4)
+
+## 本章のねらい
+これまで扱った環境（離散的なマス目や手札）とは異なり、ロボット制御や物理シミュレーションで一般的な**連続値の状態（実数値）**を扱う課題に挑戦します。代表的環境である「**Cart Pole（倒立振子）**」を題材に、連続空間を格子状に区切る**離散化（Discretization / Binning）**の手法と、それによるQ-learningの適用方法を学びます。
+
+---
+
+## Cart Pole（カートポール）課題
+
+左右に動く台車（カート）の上に棒（ポール）がピンで固定されており、倒れないようにバランスを取り続ける問題です。
+
+```
+        |  (ポール)
+        |  θ (角度)
+        |
+    +-------+
+<-- | カート | -->  (左右に力を加える)
+====[o]---[o]====  (レール)
+```
+
+- **状態（4次元の連続実数）**:
+  1. カートの位置 $x$（$-4.8 \sim 4.8$）
+  2. カートの速度 $\dot{x}$（$-\infty \sim \infty$）
+  3. ポールの角度 $\theta$（$-24^\circ \sim 24^\circ$、約 $-0.418 \sim 0.418$ ラジアン）
+  4. ポールの角速度 $\dot{\theta}$（$-\infty \sim \infty$）
+- **行動空間**: 2通り（0: 左へ押す, 1: 右へ押す）
+- **報酬**: ポールが倒れずに1ステップ耐えるごとに $+1$
+- **終了条件**: 角度が $\pm 12^\circ$ を超える、またはカートが画面端（$\pm 2.4$）に到達する。最大ステップ数（通常500）維持できればクリア。
+
+---
+
+## 連続状態と「表形式」の限界
+
+これまでのQ-learningは、状態の数が有限個（例: 16マス、200通り）だったため、配列や辞書による「**Qテーブル**」に値を保存できました。
+
+しかし、カートの位置や角度が $0.01234\dots$ のように連続実数の場合、状態の数は**無限個**存在します。そのままではテーブルの行数が無限大になってしまい、一生同じ状態に出会うことができず学習が進みません。
+
+これを解決する最も基本的な手法が**離散化（ビニング / Binning）**です。
+
+---
+
+## 離散化（Binning）の実装
+
+連続的な数値を、いくつかの「区間（ビン / 箱）」に分類します。例えば、角度を「大左傾き・小左傾き・垂直・小右傾き・大右傾き」の5段階に分けるようなイメージです。
+
+Pythonの `np.digitize()` を使うと、連続値を簡単に区間番号（整数インデックス）に変換できます。
+
+```python
+import numpy as np
+
+# 区間の境界（ビン）を定義する関数
+def create_bins(num_bins=6):
+    # 位置 (-2.4 ~ 2.4)
+    bins_pos = np.linspace(-2.4, 2.4, num_bins - 1)
+    # 速度 (-3.0 ~ 3.0 でクリップ)
+    bins_vel = np.linspace(-3.0, 3.0, num_bins - 1)
+    # 角度 (-0.21 ~ 0.21 ラジアン ≒ ±12度)
+    bins_angle = np.linspace(-0.21, 0.21, num_bins - 1)
+    # 角速度 (-3.0 ~ 3.0 でクリップ)
+    bins_ang_vel = np.linspace(-3.0, 3.0, num_bins - 1)
+    
+    return bins_pos, bins_vel, bins_angle, bins_ang_vel
+
+bins = create_bins(num_bins=6)
+
+def discretize_state(continuous_state, bins):
+    """
+    連続値 [pos, vel, angle, ang_vel] を
+    4つの整数のタプル (0~5, 0~5, 0~5, 0~5) に変換する
+    """
+    discrete_state = []
+    for i in range(4):
+        # np.digitize でどの区間に属するかインデックスを特定
+        d = np.digitize(continuous_state[i], bins[i])
+        discrete_state.append(d)
+    return tuple(discrete_state)
+
+# テスト
+sample_obs = [0.1, -0.5, 0.03, 0.2]
+print("離散化された状態:", discretize_state(sample_obs, bins))
+```
+
+状態の各変数を6分割した場合、全体の離散状態数は $6 \times 6 \times 6 \times 6 = 1,296$ 通りとなり、コンピュータで十分に扱える有限のテーブルサイズに収まります。
+
+---
+
+## 離散化Q-learningでCart Poleを学習する
+
+```python
+import gymnasium as gym
+import numpy as np
+
+env = gym.make("CartPole-v1")
+num_bins = 6
+bins = create_bins(num_bins)
+
+# 6x6x6x6x2 の多次元配列としてQテーブルを用意
+Q = np.zeros((num_bins, num_bins, num_bins, num_bins, env.action_space.n))
+
+alpha = 0.2       # 学習率
+gamma = 0.99      # 割引率
+epsilon = 0.3     # 初期探索率
+episodes = 2000
+
+for ep in range(episodes):
+    obs, info = env.reset()
+    state = discretize_state(obs, bins)
+    total_reward = 0
+    terminated = False
+    truncated = False
+    
+    # 探索率を徐々に減衰させる
+    current_eps = max(0.01, epsilon * (0.999 ** ep))
+    
+    while not (terminated or truncated):
+        if np.random.rand() < current_eps:
+            action = env.action_space.sample()
+        else:
+            action = np.argmax(Q[state])
+            
+        next_obs, reward, terminated, truncated, info = env.step(action)
+        next_state = discretize_state(next_obs, bins)
+        
+        # 失敗時のペナルティ（倒れたら -100 を与えて学習を早める工夫）
+        if terminated:
+            effective_reward = -100.0
+        else:
+            effective_reward = reward
+            
+        # Q値の更新
+        best_next_q = np.max(Q[next_state])
+        td_target = effective_reward + gamma * best_next_q
+        Q[state][action] += alpha * (td_target - Q[state][action])
+        
+        state = next_state
+        total_reward += reward
+
+    if (ep + 1) % 500 == 0:
+        print(f"エピソード {ep+1}: 直近の報酬 = {total_reward}")
+
+env.close()
+```
+
+---
+
+## 演習課題
+
+1. ビンの分割数 `num_bins` を「3」にした場合と「10」にした場合、それぞれどのようなメリットとデメリット（計算量、メモリ、状態表現の細かさ）があるか考えてみましょう。
+2. 状態の変数が10次元、20次元と増えていった場合、この離散化アプローチ（グリッド分割）はどうなるでしょうか？（ヒント: 次元の呪い）
+
+---
+
+## まとめ
+- 現実世界の問題（ロボット制御や自動運転など）は多くが連続状態・連続行動である。
+- **離散化（ビニング）**を行うことで、連続空間のタスクでもこれまでの表形式Q-learningがそのまま適用可能になる。
+- ただし次元が増えるとテーブルが爆発的に巨大化するため、この限界を打破するために次世代の手法（**深層ニューラルネットワークを用いたDQN**など）が誕生した。

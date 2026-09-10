@@ -1,0 +1,153 @@
+# 自作ゲームのAIプレーヤーを育てる
+
+## 本章のねらい
+前章で作成した自作環境 `GridTreasureEnv` に対し、第10章で学んだ **Q-learning** アルゴリズムを適用してAIプレーヤーをゼロから訓練します。試行錯誤を通じてエージェントがトラップ（罠）を華麗に回避し、最短ルートでお宝（ゴール）へ到達する知能を獲得するプロセスを追体験します。
+
+---
+
+## 訓練のセットアップ
+
+エージェントが学習するためのハイパーパラメータと、自作環境を準備します。
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from GridTreasureEnv import GridTreasureEnv # 前章で定義したクラス
+
+# 環境の生成
+env = GridTreasureEnv()
+
+# Qテーブルの初期化 (25状態 x 4行動)
+num_states = env.observation_space.n
+num_actions = env.action_space.n
+Q = np.zeros((num_states, num_actions))
+
+# ハイパーパラメータ
+alpha = 0.1       # 学習率
+gamma = 0.99      # 割引率
+epsilon = 1.0     # 初期探索率 (最初は完全にランダム)
+epsilon_min = 0.05
+epsilon_decay = 0.995 # エピソードごとに少しずつ探索率を下げる
+num_episodes = 1000
+```
+
+---
+
+## 学習ループの実行
+
+エピソードを重ねるごとに、エージェントは獲得した報酬の履歴から各マスの行動価値 $Q(s, a)$ を更新していきます。
+
+```python
+reward_history = []
+step_history = []
+
+for ep in range(num_episodes):
+    state, info = env.reset()
+    total_reward = 0
+    steps = 0
+    terminated = False
+    truncated = False
+    
+    while not (terminated or truncated):
+        # epsilon-greedy方策
+        if np.random.rand() < epsilon:
+            action = env.action_space.sample()
+        else:
+            action = np.argmax(Q[state, :])
+            
+        next_state, reward, terminated, truncated, _ = env.step(action)
+        
+        # Q-learning 更新式
+        best_next_q = np.max(Q[next_state, :])
+        td_target = reward + gamma * best_next_q
+        Q[state, action] += alpha * (td_target - Q[state, action])
+        
+        state = next_state
+        total_reward += reward
+        steps += 1
+        
+    # 探索率の減衰
+    epsilon = max(epsilon_min, epsilon * epsilon_decay)
+    
+    reward_history.append(total_reward)
+    step_history.append(steps)
+    
+    if (ep + 1) % 200 == 0:
+        avg_rew = np.mean(reward_history[-100:])
+        print(f"エピソード {ep+1}/{num_episodes} - 直近100回の平均報酬: {avg_rew:.1f} (epsilon: {epsilon:.3f})")
+
+print("訓練完了！")
+```
+
+---
+
+## 学習曲線の可視化
+
+エージェントが賢くなっていく過程を、グラフを描画して客観的に評価します。
+
+```python
+# 移動平均による報酬の推移グラフ
+window = 50
+moving_avg = np.convolve(reward_history, np.ones(window)/window, mode='valid')
+
+plt.figure(figsize=(10, 4))
+plt.plot(moving_avg, color='blue', label=f"{window}エピソード移動平均")
+plt.axhline(y=92, color='red', linestyle='--', label="理論上の最短クリア報酬 (約92)")
+plt.xlabel("Episodes")
+plt.ylabel("Total Reward")
+plt.title("GridTreasure AI Training Curve")
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+- **初期（1〜200回）**: 罠（$-50$）に引っかかったり、時間切れで報酬がマイナスに落ち込む。
+- **中期（300〜600回）**: 罠の危険性を学習し、お宝に到達する回数が増加。
+- **終期（700回以降）**: 探索率が下がり、常に最短8手（報酬: $100 - 8 = 92$）でお宝に直行する最適方策に収束する。
+
+---
+
+## 育ったAIの実際のプレイを観察する
+
+学習済みQテーブルに基づき、AIに1手ずつ盤面を動かさせてコンソールに描画してみましょう。
+
+```python
+state, info = env.reset()
+print("【スタート】")
+print(env.render())
+
+step_count = 0
+terminated = False
+truncated = False
+
+while not (terminated or truncated):
+    # 探索なしで最善の手（argmax）を選択
+    action = np.argmax(Q[state, :])
+    state, reward, terminated, truncated, _ = env.step(action)
+    step_count += 1
+    
+    action_names = ["上", "右", "下", "左"]
+    print(f"ステップ {step_count}: AIの選択 = 「{action_names[action]}」")
+    print(env.render())
+
+if reward > 0:
+    print(f"見事お宝を獲得しました！ (総手数: {step_count})")
+else:
+    print("ゲームオーバー")
+```
+
+罠 `(1, 1)` や `(2, 3)` の手前でAIが安全な迂回ルート（外周側など）を選択している様子がはっきりと確認できます。
+
+---
+
+## 演習課題
+
+1. 学習率 $\alpha$ を極端に大きく（例: `0.9`）または小さく（例: `0.001`）した場合、学習曲線にどのような悪影響が現れるか実験・考察してみましょう。
+2. もし罠の配置を途中で変更した場合、学習済みのAIはどうなるでしょうか？新しい環境に適応させるには何が必要でしょうか？
+
+---
+
+## まとめ
+- 自作環境であっても、入出力の仕様（状態空間・行動空間）さえ統一されていれば標準的なQ-learningがそのまま通用する。
+- 探索率 $\epsilon$ の減衰（Decay）により、「最初は広く探索し、徐々に賢くなった知識を活用する」学習スケジュールが有効に機能する。
+- 報酬の移動平均グラフを監視することで、学習の進捗と収束状況を定量的に評価できる。

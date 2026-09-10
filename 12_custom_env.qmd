@@ -1,0 +1,197 @@
+# 自作ゲームの作成
+
+## 本章のねらい
+Gymnasium にあらかじめ用意された既存の環境だけでなく、**自分自身のオリジナルゲームやシミュレータを強化学習環境として構築する方法**を学びます。Gymnasiumの基底クラスである `gymnasium.Env` を継承し、必須のメソッド（`reset`、`step`、`render`）と空間定義（`observation_space`、`action_space`）を実装する手順を習得します。
+
+---
+
+## Gymnasium環境の基本アーキテクチャ
+
+オリジナルの強化学習環境を作るには、Pythonのクラスとして `gymnasium.Env` を継承し、以下の主要メンバーを定義します：
+
+```
++-------------------------------------------------------------+
+| class MyCustomEnv(gymnasium.Env):                           |
+|                                                             |
+|   - action_space      : 行動の定義 (Discrete / Box など)     |
+|   - observation_space : 状態の定義 (Discrete / Box など)     |
+|                                                             |
+|   - reset(seed=None)  : ゲーム開始時の状態を初期化して返す   |
+|   - step(action)      : 行動を受け取り、次状態・報酬等を返す |
+|   - render()          : 画面やテキストによる状況の描画       |
++-------------------------------------------------------------+
+```
+
+### 空間の型（Spaces）
+エージェントが「どんな行動を取れるか」「どんな状態が見えるか」を規定します。
+- `spaces.Discrete(n)`: $0$ から $n-1$ までの離散整数値（例: 4方向移動）
+- `spaces.Box(low, high, shape)`: 多次元の連続実数（例: 座標や速度）
+
+---
+
+## 今回作成する自作ゲーム：GridTreasureEnv（宝探しゲーム）
+
+シンプルながら強化学習の要点がすべて詰まった「**5×5の宝探しグリッドゲーム**」を自作してみましょう。
+
+### ルール設計
+- **フィールド**: $5 \times 5$ のマス目（座標 `(0, 0)` から `(4, 4)`）
+- **スタート**: 左上 `(0, 0)`
+- **お宝（Goal）**: 右下 `(4, 4)`（到達で報酬 $+100$、ゲームクリア）
+- **トラップ（罠）**: `(1, 1)`, `(2, 3)`, `(3, 1)`（踏むとペナルティ $-50$、ゲームオーバー）
+- **壁**: グリッドの外には出られない（移動せず元の位置に留まる）
+- **通常移動**: 1歩ごとに $-1$ のステップコスト（最短クリアを促す）
+- **最大ステップ数**: 50ステップで時間切れ打ち切り
+
+```
++---+---+---+---+---+
+| S |   |   |   |   |   S: スタート (0, 0)
++---+---+---+---+---+   T: トラップ (罠)
+|   | T |   |   |   |   G: お宝 (4, 4)
++---+---+---+---+---+
+|   |   |   | T |   |
++---+---+---+---+---+
+|   | T |   |   |   |
++---+---+---+---+---+
+|   |   |   |   | G |
++---+---+---+---+---+
+```
+
+---
+
+## クラスの実装
+
+それでは、Pythonで実際にコードを書いてみましょう。
+
+```python
+import gymnasium as gym
+from gymnasium import spaces
+import numpy as np
+
+class GridTreasureEnv(gym.Env):
+    metadata = {"render_modes": ["ansi"]}
+
+    def __init__(self, render_mode="ansi"):
+        super().__init__()
+        self.grid_size = 5
+        self.render_mode = render_mode
+
+        # 行動空間: 0:上, 1:右, 2:下, 3:左
+        self.action_space = spaces.Discrete(4)
+
+        # 状態空間: 5x5 = 25通りの離散整数値 (y * 5 + x)
+        self.observation_space = spaces.Discrete(self.grid_size * self.grid_size)
+
+        # ゲーム要素の配置
+        self.start_pos = (0, 0)
+        self.goal_pos = (4, 4)
+        self.traps = [(1, 1), (2, 3), (3, 1)]
+
+        self.agent_pos = None
+        self.current_step = 0
+        self.max_steps = 50
+
+    def _get_obs(self):
+        # (y, x) を 0~24 の単一整数に変換して返す
+        y, x = self.agent_pos
+        return y * self.grid_size + x
+
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
+        self.agent_pos = self.start_pos
+        self.current_step = 0
+        
+        observation = self._get_obs()
+        info = {}
+        return observation, info
+
+    def step(self, action):
+        self.current_step += 1
+        y, x = self.agent_pos
+
+        # 行動に応じた移動
+        if action == 0:   # 上
+            y = max(0, y - 1)
+        elif action == 1: # 右
+            x = min(self.grid_size - 1, x + 1)
+        elif action == 2: # 下
+            y = min(self.grid_size - 1, y + 1)
+        elif action == 3: # 左
+            x = max(0, x - 1)
+
+        self.agent_pos = (y, x)
+        obs = self._get_obs()
+
+        # 報酬と終了判定のロジック
+        reward = -1.0  # 基本移動コスト
+        terminated = False
+        truncated = False
+
+        if self.agent_pos == self.goal_pos:
+            reward = 100.0
+            terminated = True
+        elif self.agent_pos in self.traps:
+            reward = -50.0
+            terminated = True
+        elif self.current_step >= self.max_steps:
+            truncated = True
+
+        return obs, reward, terminated, truncated, {}
+
+    def render(self):
+        if self.render_mode != "ansi":
+            return
+        
+        output = "\n"
+        for r in range(self.grid_size):
+            row_str = ""
+            for c in range(self.grid_size):
+                pos = (r, c)
+                if pos == self.agent_pos:
+                    row_str += " A "
+                elif pos == self.goal_pos:
+                    row_str += " G "
+                elif pos in self.traps:
+                    row_str += " X "
+                else:
+                    row_str += " . "
+            output += row_str + "\n"
+        return output
+```
+
+---
+
+## 自作環境の動作確認
+
+作成した自作環境をインスタンス化し、ランダムに行動させて描画（render）を確認してみましょう。
+
+```python
+env = GridTreasureEnv(render_mode="ansi")
+obs, info = env.reset()
+print("=== 初期盤面 ===")
+print(env.render())
+
+for step in range(5):
+    action = env.action_space.sample()
+    obs, reward, terminated, truncated, _ = env.step(action)
+    print(f"--- ステップ {step+1}: 行動={action}, 報酬={reward} ---")
+    print(env.render())
+    if terminated or truncated:
+        print("終了！")
+        break
+```
+
+これで、Gymnasiumの公式環境と**全く同じインターフェース**を持つ独自のカスタム強化学習環境が完成しました。
+
+---
+
+## 演習課題
+
+1. 上記の `GridTreasureEnv` に、「拾うと報酬 $+10$ がもらえるコイン」をマス `(2, 2)` に1枚追加するには、クラス定義をどのように修正すればよいでしょうか？
+2. ステップ移動コスト `-1.0` を `0` にした場合、エージェントの行動傾向にどのような問題が生じる可能性があるか考察してください。
+
+---
+
+## まとめ
+- `gymnasium.Env` を継承することで、世界中のRLアルゴリズムをそのまま自作ゲームに適用できるようになる。
+- 最低限 `observation_space`, `action_space`, `reset()`, `step()`, `render()` の実装が必要。
+- 報酬設計（リワードエンジニアリング）が、エージェントに期待通りの振る舞いをさせる鍵となる。

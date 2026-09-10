@@ -1,0 +1,173 @@
+# 多腕バンディット問題
+
+## 本章のねらい
+強化学習における最も本質的なジレンマである**「探索と活用のトレードオフ（Exploration vs. Exploitation Trade-off）」**を理解します。シンプルな「多腕バンディット問題」を通じて、$\epsilon$-greedy法（イプシロン・グリーディ法）の仕組みを学び、シミュレーションと可視化を通じてアルゴリズムの挙動を検証します。
+
+---
+
+## スロットマシンとジレンマ
+
+カジノに並んだ複数のスロットマシン（腕＝レバー）を思い浮かべてください。各マシンはお金を投入してレバーを引くと、一定の確率でコインを払い出します。しかし、**どのマシンが当たりやすいかは事前には分かりません**。
+
+コインの枚数を最大化するためには、どう行動すべきでしょうか？
+
+```
+  [マシン A]          [マシン B]          [マシン C]
+(当たり確率: 30%)   (当たり確率: 50%)   (当たり確率: 80%)
+     ※ ただし、プレイヤーにはこの真の確率は見えない！
+```
+
+ここで次の2つの欲求が衝突します：
+- **活用（Exploitation）**: 「これまで引いた中で最も当たったマシンを引いて、確実に稼ぎたい」
+- **探索（Exploration）**: 「まだあまり引いていない他のマシンを試せば、もっと当たりやすい最高のマシンが見つかるかもしれない」
+
+過去の経験だけを信じて「活用」ばかりしていると、真の最高マシンを見逃してしまいます。逆に、「探索」ばかりしていると、ハズレ台を何度も引いてコインを無駄にしてしまいます。これが**探索と活用のトレードオフ**です。
+
+---
+
+## 価値の推定（標本平均法）
+
+マシン $a$ を選んだときに得られる報酬の期待値を $Q(a)$ とします。過去にマシン $a$ を $N(a)$ 回選び、合計 $R_{sum}(a)$ の報酬を得たとすると、推定価値 $Q(a)$ は平均値として求められます：
+
+$$
+Q(a) = \frac{R_{sum}(a)}{N(a)}
+$$
+
+新しい報酬 $R$ が得られたとき、インクリメンタル（逐次的）に更新する式は次のようになります：
+
+$$
+Q_{new}(a) = Q_{old}(a) + \frac{1}{N(a)} (R - Q_{old}(a))
+$$
+
+この「（目標値 $-$ 現在の推定値）に係数を掛けて推定値を修正する」という更新式は、強化学習のあらゆるアルゴリズムの基礎になります。
+
+---
+
+## $\epsilon$-greedy法（イプシロン・グリーディ法）
+
+探索と活用をバランスよく両立させる最も基本的かつ強力な方策が **$\epsilon$-greedy法** です。
+
+- 確率 $1 - \epsilon$（例えば 90%）: **活用**（現在最も推定価値 $Q(a)$ が高いマシンを選択）
+- 確率 $\epsilon$（例えば 10%）: **探索**（すべてのマシンの中からランダムに選択）
+
+```
+                     乱数 r = random()
+                         │
+         ┌───────────────┴───────────────┐
+     r >= ε (活用: 1 - ε)             r < ε (探索: ε)
+         │                               │
+現在最も推定値が高いマシンを選ぶ         ランダムにマシンを選ぶ
+```
+
+---
+
+## Pythonによるシミュレーション実装
+
+3台のスロットマシン（当たり確率: 20%, 50%, 80%）を対象に、$\epsilon=0.1$ の $\epsilon$-greedy エージェントをシミュレーションしてみましょう。
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# スロットマシンの環境設定（真の報酬確率）
+TRUE_PROBABILITIES = [0.2, 0.5, 0.8]
+NUM_ARMS = len(TRUE_PROBABILITIES)
+
+class BanditEnv:
+    def __init__(self, probs):
+        self.probs = probs
+        
+    def step(self, action):
+        # 確率に応じて 1 (当たり) または 0 (ハズレ) を返す
+        reward = 1 if np.random.rand() < self.probs[action] else 0
+        return reward
+
+class EpsilonGreedyAgent:
+    def __init__(self, n_arms, epsilon=0.1):
+        self.n_arms = n_arms
+        self.epsilon = epsilon
+        self.q_values = np.zeros(n_arms) # 推定価値
+        self.counts = np.zeros(n_arms)   # 選択回数
+        
+    def select_action(self):
+        # 探索 (確率 epsilon)
+        if np.random.rand() < self.epsilon:
+            return np.random.randint(self.n_arms)
+        # 活用 (確率 1 - epsilon)
+        else:
+            return np.argmax(self.q_values)
+            
+    def update(self, action, reward):
+        self.counts[action] += 1
+        # 逐次更新式
+        self.q_values[action] += (1.0 / self.counts[action]) * (reward - self.q_values[action])
+
+# シミュレーションの実行 (1000ステップ)
+env = BanditEnv(TRUE_PROBABILITIES)
+agent = EpsilonGreedyAgent(NUM_ARMS, epsilon=0.1)
+
+steps = 1000
+reward_history = []
+
+for step in range(steps):
+    action = agent.select_action()
+    reward = env.step(action)
+    agent.update(action, reward)
+    reward_history.append(reward)
+
+# 結果の表示
+print("=== 実験結果 ===")
+for i in range(NUM_ARMS):
+    print(f"マシン {i}: 真の確率 = {TRUE_PROBABILITIES[i]:.2f} | "
+          f"推定価値 = {agent.q_values[i]:.3f} | 試行回数 = {agent.counts[i]:.0f} 回")
+```
+
+---
+
+## 結果の可視化
+
+$\epsilon$ の値によって学習のパフォーマンスがどう変わるか（$\epsilon=0$ 完全活用、$\epsilon=0.1$ バランス型、$\epsilon=0.5$ 探索過剰）をグラフで比較してみましょう。
+
+```python
+# 累積平均報酬のプロット（可視化用コード例）
+def run_experiment(eps, n_steps=1000):
+    env = BanditEnv(TRUE_PROBABILITIES)
+    agent = EpsilonGreedyAgent(NUM_ARMS, epsilon=eps)
+    history = []
+    for _ in range(n_steps):
+        a = agent.select_action()
+        r = env.step(a)
+        agent.update(a, r)
+        history.append(r)
+    return np.cumsum(history) / (np.arange(n_steps) + 1)
+
+plt.figure(figsize=(9, 5))
+for eps in [0.0, 0.1, 0.5]:
+    curve = run_experiment(eps)
+    plt.plot(curve, label=f"epsilon = {eps}")
+
+plt.xlabel("Steps")
+plt.ylabel("Average Reward")
+plt.title("Epsilon-Greedy Performance Comparison")
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+- $\epsilon = 0$（Greedy）: 最初にたまたま当たった台に固執し、真の最高台（80%）を一生試さない「局所解」に陥るリスクがある。
+- $\epsilon = 0.5$: 最高台を見つけるのは早いが、その後も半分はランダムに選び続けるため平均スコアが伸び悩む。
+- $\epsilon = 0.1$: 探索と活用のバランスが良く、長期的に高い平均報酬を維持できる。
+
+---
+
+## 演習課題
+
+1. $\epsilon = 0.01$（探索率1%）にした場合、ステップ数が1000回のときと10000回のときで学習結果はどのように変化すると予想されますか？
+2. ステップが進むにつれて少しずつ $\epsilon$ を小さくしていく手法を「減衰 $\epsilon$-greedy法（Decaying Epsilon-Greedy）」と呼びます。この手法にどのようなメリットがあるか考えてみましょう。
+
+---
+
+## まとめ
+- **探索と活用のトレードオフ**: 強化学習における最大の課題。
+- **$\epsilon$-greedy法**: シンプルながら探索と活用を制御する代表的アプローチ。
+- 推定値の逐次更新式 $Q \leftarrow Q + \alpha (R - Q)$ は、この後のQ-learningや強化学習アルゴリズム全体の原型となる。

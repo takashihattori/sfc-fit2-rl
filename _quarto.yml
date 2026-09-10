@@ -1,0 +1,45 @@
+project:
+  type: book
+  output-dir: _site
+
+lang: ja
+
+book:
+  title: "情報技術科目: 強化学習入門"
+  subtitle: "PythonとGymnasiumで学ぶエージェントの基礎"
+  author: "教材作成チーム"
+  chapters:
+    - index.qmd
+    - part: "第1部：プログラミングとアルゴリズムの基礎"
+      chapters:
+        - 01_program_intro.qmd
+        - 02_python_basics1.qmd
+        - 03_python_basics2.qmd
+        - 04_algorithm.qmd
+    - part: "第2部：機械学習と強化学習の概念"
+      chapters:
+        - 05_machine_learning.qmd
+        - 06_multi_armed_bandit.qmd
+        - 07_reinforcement_learning_basics.qmd
+    - part: "第3部：Gymnasiumによる強化学習の実践"
+      chapters:
+        - 08_rl_cliff_walking.qmd
+        - 09_rl_blackjack.qmd
+        - 10_rl_frozen_lake.qmd
+        - 11_rl_cart_pole.qmd
+    - part: "第4部：自作ゲーム環境の作成と強化学習"
+      chapters:
+        - 12_custom_env.qmd
+        - 13_train_custom_env.qmd
+        - 14_summary.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+    code-tools: true
+    code-line-numbers: true
+    html-math-method: mathjax

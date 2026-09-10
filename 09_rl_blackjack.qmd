@@ -1,0 +1,142 @@
+# 強化学習の例(2)
+
+## 本章のねらい
+トランプゲーム「Blackjack（ブラックジャック）」の環境を通じて、状態だけでなく「その状態でどの行動を取るべきか」を直接評価する**行動価値関数 $Q(s, a)$** を学びます。また、シミュレーションで最後までゲームをプレイして得られた結果から平均値を計算して学ぶ**モンテカルロ法（Monte Carlo Method）**の基本を理解します。
+
+---
+
+## Blackjack（ブラックジャック）のゲーム概要
+
+プレイヤーとディーラーが手札の合計値を競うゲームです。
+
+- **目的**: 手札の合計を「21」を超えない範囲で、できるだけ21に近づける。
+- **カードの数え方**: 2〜10は額面通り、絵札（J, Q, K）は10、エース（A）は1または11（プレイヤーがバストしないように有利に数える＝「Usable Ace」）。
+- **選択肢（行動）**:
+  - `0`: **Stick（スタンド）**：これ以上引かずに手札を確定する。
+  - `1`: **Hit（ヒット）**：もう1枚引く。合計が21を超えると「Bust（バースト）」で即敗北。
+- **勝敗と報酬**:
+  - 勝利: $+1$
+  - 引き分け: $0$
+  - 敗北: $-1$
+
+---
+
+## Gymnasium の Blackjack 環境
+
+Gymnasium では `Blackjack-v1` として提供されています。
+
+```python
+import gymnasium as gym
+
+env = gym.make("Blackjack-v1")
+state, info = env.reset()
+
+print("初期状態:", state)
+# 状態はタプル形式: (プレイヤーの合計手札, ディーラーの表向きカード, 使えるAceがあるか)
+# 例: (14, 10, False)
+```
+
+状態空間 $S$ は、
+1. プレイヤーの現在の点数（通常 12〜21 の10通り、11以下は確実に引くため）
+2. ディーラーの見えているカード（1〜10 の10通り）
+3. 使用可能なAceの有無（True/False の2通り）
+の直積であり、$10 \times 10 \times 2 = 200$ 通り程度の離散状態で表現されます。
+
+---
+
+## なぜ行動価値関数 $Q(s, a)$ が必要なのか？
+
+前章の「状態価値関数 $V(s)$」は、「自分の手札が18である状態が良いか悪いか」を教えてくれます。
+しかし、いざ自分がプレイする時には「**手札18のときに、Hitすべきか？それともStickすべきか？**」という具体的な行動の選択肢ごとの良さを知る必要があります。
+
+これが**行動価値関数 $Q(s, a)$** です：
+- $Q((18, 7, \text{False}), \text{Stick})$: 手札18でStickした場合の期待勝率
+- $Q((18, 7, \text{False}), \text{Hit})$: 手札18でHitした場合の期待勝率
+
+もし $Q(s, \text{Stick}) > Q(s, \text{Hit})$ であれば、迷わず Stick を選べばよいわけです。
+
+---
+
+## モンテカルロ法による価値推定
+
+**モンテカルロ法**とは、「実際にゲームを最後までプレイし、勝ったか負けたか（収益 $G$）を記録して、その平均値を取る」という非常にシンプルかつ強力な学習法です。
+
+### アルゴリズムの流れ
+1. ある方策（例: $\epsilon$-greedy方策）に従って、ゲーム開始から終了までの1エピソードをサンプリングする。
+   - 履歴: $(S_0, A_0, R_1), (S_1, A_1, R_2), \dots, (S_T, A_T, R_{T+1})$
+2. 最終報酬 $G$ を算出する（Blackjackでは割引なし $\gamma=1$ で終端報酬のみ）。
+3. 登場した各ペア $(S_t, A_t)$ に対して、これまでの平均値を更新する：
+   $$ Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \Big( G - Q(S_t, A_t) \Big) $$
+
+```python
+import gymnasium as gym
+import numpy as np
+from collections import defaultdict
+
+env = gym.make("Blackjack-v1")
+
+# Qテーブルを辞書で初期化 (キー: stateタプル, 値: [Q(s,0), Q(s,1)])
+Q = defaultdict(lambda: np.zeros(env.action_space.n))
+counts = defaultdict(lambda: np.zeros(env.action_space.n))
+
+def policy(state, epsilon=0.1):
+    # epsilon-greedy方策
+    if np.random.rand() < epsilon:
+        return env.action_space.sample()
+    return np.argmax(Q[state])
+
+# 10万回のエピソードで学習
+num_episodes = 100000
+
+for ep in range(num_episodes):
+    state, info = env.reset()
+    episode = []
+    
+    # 1エピソードの実行
+    terminated = False
+    while not terminated:
+        action = policy(state)
+        next_state, reward, terminated, truncated, info = env.step(action)
+        episode.append((state, action, reward))
+        state = next_state
+        
+    # モンテカルロ更新（初回訪問または毎回訪問）
+    G = episode[-1][2] # 最終勝敗の報酬 (+1, 0, -1)
+    for s, a, r in episode:
+        counts[s][a] += 1
+        # 平均値の逐次更新
+        Q[s][a] += (1.0 / counts[s][a]) * (G - Q[s][a])
+
+print(f"{num_episodes} エピソードの学習が完了しました！")
+```
+
+---
+
+## 学習結果の確認
+
+手札の合計が 20 のとき、エージェントは何を選択するようになったでしょうか？
+
+```python
+# 例: プレイヤー20, ディーラー10, Aceなし の状態
+sample_state = (20, 10, False)
+print(f"状態 {sample_state} における行動価値:")
+print(f"  Stick (0) の Q値: {Q[sample_state][0]:.3f}")
+print(f"  Hit   (1) の Q値: {Q[sample_state][1]:.3f}")
+print("推奨行動:", "Stick" if np.argmax(Q[sample_state]) == 0 else "Hit")
+```
+
+通常、手札20のときはHitするとほぼ確実にバーストするため、StickのQ値が圧倒的に高くなり、エージェントは自律的に「20なら引かない」という基本戦略を習得します。
+
+---
+
+## 演習課題
+
+1. 手札が 12 のとき、ディーラーの表向きカードが「2」の場合と「6」の場合では、StickとHitのどちらが推奨行動になるでしょうか？学習結果を確認してみましょう。
+2. モンテカルロ法のメリット（直感的、環境の遷移確率が未知でも学習可能）とデメリット（エピソードが最後まで終了しないと学習を開始できない等）について整理してください。
+
+---
+
+## まとめ
+- **行動価値関数 $Q(s, a)$** は、方策を直接導出するために最も実用的な指標。
+- **モンテカルロ法**は、エピソード全体の終了時収益から価値を標本平均するアプローチ。
+- Blackjackのような終端が必ず訪れるゲームにおいて、シンプルな更新式で見事に定石を自律獲得できる。
