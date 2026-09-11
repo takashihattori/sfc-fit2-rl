@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>12&nbsp; 自作ゲームの作成 – 情報基礎２</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./13_train_custom_env.html" rel="next">
+<link href="./11_rl_cart_pole.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./12_custom_env.html">第4部：自作ゲーム環境の作成と強化学習</a></li><li class="breadcrumb-item"><a href="./12_custom_env.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">自作ゲームの作成</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">情報基礎２</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">第1部：プログラミングとアルゴリズムの基礎</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_program_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">プログラムとは</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_python_basics1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">場合分けと繰り返し</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_python_basics2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">データ型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">アルゴリズムの性質</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">第2部：機械学習と強化学習の概念</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_machine_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">機械学習</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_multi_armed_bandit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">多腕バンディット問題</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_reinforcement_learning_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">強化学習の基礎</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">第3部：Gymnasiumによる強化学習の実践</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_rl_cliff_walking.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">強化学習の例(1)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_rl_blackjack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">強化学習の例(2)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10_rl_frozen_lake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">強化学習の例(3)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11_rl_cart_pole.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">強化学習の例(4)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">第4部：自作ゲーム環境の作成と強化学習</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12_custom_env.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">自作ゲームの作成</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13_train_custom_env.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">自作ゲームのAIプレーヤーを育てる</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14_summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">まとめ</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#本章のねらい" id="toc-本章のねらい" class="nav-link active" data-scroll-target="#本章のねらい"><span class="header-section-number">12.1</span> 本章のねらい</a></li>
+  <li><a href="#gymnasium環境の基本アーキテクチャ" id="toc-gymnasium環境の基本アーキテクチャ" class="nav-link" data-scroll-target="#gymnasium環境の基本アーキテクチャ"><span class="header-section-number">12.2</span> Gymnasium環境の基本アーキテクチャ</a>
+  <ul class="collapse">
+  <li><a href="#空間の型spaces" id="toc-空間の型spaces" class="nav-link" data-scroll-target="#空間の型spaces"><span class="header-section-number">12.2.1</span> 空間の型（Spaces）</a></li>
+  </ul></li>
+  <li><a href="#今回作成する自作ゲームgridtreasureenv宝探しゲーム" id="toc-今回作成する自作ゲームgridtreasureenv宝探しゲーム" class="nav-link" data-scroll-target="#今回作成する自作ゲームgridtreasureenv宝探しゲーム"><span class="header-section-number">12.3</span> 今回作成する自作ゲーム：GridTreasureEnv（宝探しゲーム）</a>
+  <ul class="collapse">
+  <li><a href="#ルール設計" id="toc-ルール設計" class="nav-link" data-scroll-target="#ルール設計"><span class="header-section-number">12.3.1</span> ルール設計</a></li>
+  </ul></li>
+  <li><a href="#クラスの実装" id="toc-クラスの実装" class="nav-link" data-scroll-target="#クラスの実装"><span class="header-section-number">12.4</span> クラスの実装</a></li>
+  <li><a href="#自作環境の動作確認" id="toc-自作環境の動作確認" class="nav-link" data-scroll-target="#自作環境の動作確認"><span class="header-section-number">12.5</span> 自作環境の動作確認</a></li>
+  <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">12.6</span> まとめ</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./12_custom_env.html">第4部：自作ゲーム環境の作成と強化学習</a></li><li class="breadcrumb-item"><a href="./12_custom_env.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">自作ゲームの作成</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">自作ゲームの作成</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> コード</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="本章のねらい" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="本章のねらい"><span class="header-section-number">12.1</span> 本章のねらい</h2>
+<p>Gymnasium にあらかじめ用意された既存の環境だけでなく、<strong>自分自身のオリジナルゲームやシミュレータを強化学習環境として構築する方法</strong>を学びます。Gymnasiumの基底クラスである <code>gymnasium.Env</code> を継承し、必須のメソッド（<code>reset</code>、<code>step</code>、<code>render</code>）と空間定義（<code>observation_space</code>、<code>action_space</code>）を実装する手順を習得します。</p>
+<hr>
+</section>
+<section id="gymnasium環境の基本アーキテクチャ" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="gymnasium環境の基本アーキテクチャ"><span class="header-section-number">12.2</span> Gymnasium環境の基本アーキテクチャ</h2>
+<p>オリジナルの強化学習環境を作るには、Pythonのクラスとして <code>gymnasium.Env</code> を継承し、以下の主要メンバーを定義します：</p>
+<pre><code>+-------------------------------------------------------------+
+| class MyCustomEnv(gymnasium.Env):                           |
+|                                                             |
+|   - action_space      : 行動の定義 (Discrete / Box など)     |
+|   - observation_space : 状態の定義 (Discrete / Box など)     |
+|                                                             |
+|   - reset(seed=None)  : ゲーム開始時の状態を初期化して返す   |
+|   - step(action)      : 行動を受け取り、次状態・報酬等を返す |
+|   - render()          : 画面やテキストによる状況の描画       |
++-------------------------------------------------------------+</code></pre>
+<section id="空間の型spaces" class="level3" data-number="12.2.1">
+<h3 data-number="12.2.1" class="anchored" data-anchor-id="空間の型spaces"><span class="header-section-number">12.2.1</span> 空間の型（Spaces）</h3>
+<p>エージェントが「どんな行動を取れるか」「どんな状態が見えるか」を規定します。 - <code>spaces.Discrete(n)</code>: <span class="math inline">\(0\)</span> から <span class="math inline">\(n-1\)</span> までの離散整数値（例: 4方向移動） - <code>spaces.Box(low, high, shape)</code>: 多次元の連続実数（例: 座標や速度）</p>
+<hr>
+</section>
+</section>
+<section id="今回作成する自作ゲームgridtreasureenv宝探しゲーム" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="今回作成する自作ゲームgridtreasureenv宝探しゲーム"><span class="header-section-number">12.3</span> 今回作成する自作ゲーム：GridTreasureEnv（宝探しゲーム）</h2>
+<p>シンプルながら強化学習の要点がすべて詰まった「<strong>5×5の宝探しグリッドゲーム</strong>」を自作してみましょう。</p>
+<section id="ルール設計" class="level3" data-number="12.3.1">
+<h3 data-number="12.3.1" class="anchored" data-anchor-id="ルール設計"><span class="header-section-number">12.3.1</span> ルール設計</h3>
+<ul>
+<li><strong>フィールド</strong>: <span class="math inline">\(5 \times 5\)</span> のマス目（座標 <code>(0, 0)</code> から <code>(4, 4)</code>）</li>
+<li><strong>スタート</strong>: 左上 <code>(0, 0)</code></li>
+<li><strong>お宝（Goal）</strong>: 右下 <code>(4, 4)</code>（到達で報酬 <span class="math inline">\(+100\)</span>、ゲームクリア）</li>
+<li><strong>トラップ（罠）</strong>: <code>(1, 1)</code>, <code>(2, 3)</code>, <code>(3, 1)</code>（踏むとペナルティ <span class="math inline">\(-50\)</span>、ゲームオーバー）</li>
+<li><strong>壁</strong>: グリッドの外には出られない（移動せず元の位置に留まる）</li>
+<li><strong>通常移動</strong>: 1歩ごとに <span class="math inline">\(-1\)</span> のステップコスト（最短クリアを促す）</li>
+<li><strong>最大ステップ数</strong>: 50ステップで時間切れ打ち切り</li>
+</ul>
+<pre><code>+---+---+---+---+---+
+| S |   |   |   |   |   S: スタート (0, 0)
++---+---+---+---+---+   T: トラップ (罠)
+|   | T |   |   |   |   G: お宝 (4, 4)
++---+---+---+---+---+
+|   |   |   | T |   |
++---+---+---+---+---+
+|   | T |   |   |   |
++---+---+---+---+---+
+|   |   |   |   | G |
++---+---+---+---+---+</code></pre>
+<hr>
+</section>
+</section>
+<section id="クラスの実装" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="クラスの実装"><span class="header-section-number">12.4</span> クラスの実装</h2>
+<p>それでは、Pythonで実際にコードを書いてみましょう。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="im">import</span> gymnasium <span class="im">as</span> gym</span>
+<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a><span class="im">from</span> gymnasium <span class="im">import</span> spaces</span>
+<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a><span class="kw">class</span> GridTreasureEnv(gym.Env):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-label="6"></a>    metadata <span class="op">=</span> {<span class="st">"render_modes"</span>: [<span class="st">"ansi"</span>]}</span>
+<span id="cb3-7"><a href="#cb3-7" aria-label="7"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-label="8"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, render_mode<span class="op">=</span><span class="st">"ansi"</span>):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-label="9"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb3-10"><a href="#cb3-10" aria-label="10"></a>        <span class="va">self</span>.grid_size <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-label="11"></a>        <span class="va">self</span>.render_mode <span class="op">=</span> render_mode</span>
+<span id="cb3-12"><a href="#cb3-12" aria-label="12"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-label="13"></a>        <span class="co"># 行動空間: 0:上, 1:右, 2:下, 3:左</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-label="14"></a>        <span class="va">self</span>.action_space <span class="op">=</span> spaces.Discrete(<span class="dv">4</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-label="15"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-label="16"></a>        <span class="co"># 状態空間: 5x5 = 25通りの離散整数値 (y * 5 + x)</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-label="17"></a>        <span class="va">self</span>.observation_space <span class="op">=</span> spaces.Discrete(<span class="va">self</span>.grid_size <span class="op">*</span> <span class="va">self</span>.grid_size)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-label="18"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-label="19"></a>        <span class="co"># ゲーム要素の配置</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-label="20"></a>        <span class="va">self</span>.start_pos <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-label="21"></a>        <span class="va">self</span>.goal_pos <span class="op">=</span> (<span class="dv">4</span>, <span class="dv">4</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-label="22"></a>        <span class="va">self</span>.traps <span class="op">=</span> [(<span class="dv">1</span>, <span class="dv">1</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">3</span>, <span class="dv">1</span>)]</span>
+<span id="cb3-23"><a href="#cb3-23" aria-label="23"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-label="24"></a>        <span class="va">self</span>.agent_pos <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-label="25"></a>        <span class="va">self</span>.current_step <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-label="26"></a>        <span class="va">self</span>.max_steps <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-label="27"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-label="28"></a>    <span class="kw">def</span> _get_obs(<span class="va">self</span>):</span>
+<span id="cb3-29"><a href="#cb3-29" aria-label="29"></a>        <span class="co"># (y, x) を 0~24 の単一整数に変換して返す</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-label="30"></a>        y, x <span class="op">=</span> <span class="va">self</span>.agent_pos</span>
+<span id="cb3-31"><a href="#cb3-31" aria-label="31"></a>        <span class="cf">return</span> y <span class="op">*</span> <span class="va">self</span>.grid_size <span class="op">+</span> x</span>
+<span id="cb3-32"><a href="#cb3-32" aria-label="32"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-label="33"></a>    <span class="kw">def</span> reset(<span class="va">self</span>, seed<span class="op">=</span><span class="va">None</span>, options<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb3-34"><a href="#cb3-34" aria-label="34"></a>        <span class="bu">super</span>().reset(seed<span class="op">=</span>seed)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-label="35"></a>        <span class="va">self</span>.agent_pos <span class="op">=</span> <span class="va">self</span>.start_pos</span>
+<span id="cb3-36"><a href="#cb3-36" aria-label="36"></a>        <span class="va">self</span>.current_step <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-label="37"></a>        </span>
+<span id="cb3-38"><a href="#cb3-38" aria-label="38"></a>        observation <span class="op">=</span> <span class="va">self</span>._get_obs()</span>
+<span id="cb3-39"><a href="#cb3-39" aria-label="39"></a>        info <span class="op">=</span> {}</span>
+<span id="cb3-40"><a href="#cb3-40" aria-label="40"></a>        <span class="cf">return</span> observation, info</span>
+<span id="cb3-41"><a href="#cb3-41" aria-label="41"></a></span>
+<span id="cb3-42"><a href="#cb3-42" aria-label="42"></a>    <span class="kw">def</span> step(<span class="va">self</span>, action):</span>
+<span id="cb3-43"><a href="#cb3-43" aria-label="43"></a>        <span class="va">self</span>.current_step <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-label="44"></a>        y, x <span class="op">=</span> <span class="va">self</span>.agent_pos</span>
+<span id="cb3-45"><a href="#cb3-45" aria-label="45"></a></span>
+<span id="cb3-46"><a href="#cb3-46" aria-label="46"></a>        <span class="co"># 行動に応じた移動</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-label="47"></a>        <span class="cf">if</span> action <span class="op">==</span> <span class="dv">0</span>:   <span class="co"># 上</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-label="48"></a>            y <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, y <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-label="49"></a>        <span class="cf">elif</span> action <span class="op">==</span> <span class="dv">1</span>: <span class="co"># 右</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-label="50"></a>            x <span class="op">=</span> <span class="bu">min</span>(<span class="va">self</span>.grid_size <span class="op">-</span> <span class="dv">1</span>, x <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-label="51"></a>        <span class="cf">elif</span> action <span class="op">==</span> <span class="dv">2</span>: <span class="co"># 下</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-label="52"></a>            y <span class="op">=</span> <span class="bu">min</span>(<span class="va">self</span>.grid_size <span class="op">-</span> <span class="dv">1</span>, y <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb3-53"><a href="#cb3-53" aria-label="53"></a>        <span class="cf">elif</span> action <span class="op">==</span> <span class="dv">3</span>: <span class="co"># 左</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-label="54"></a>            x <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, x <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb3-55"><a href="#cb3-55" aria-label="55"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-label="56"></a>        <span class="va">self</span>.agent_pos <span class="op">=</span> (y, x)</span>
+<span id="cb3-57"><a href="#cb3-57" aria-label="57"></a>        obs <span class="op">=</span> <span class="va">self</span>._get_obs()</span>
+<span id="cb3-58"><a href="#cb3-58" aria-label="58"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-label="59"></a>        <span class="co"># 報酬と終了判定のロジック</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-label="60"></a>        reward <span class="op">=</span> <span class="op">-</span><span class="fl">1.0</span>  <span class="co"># 基本移動コスト</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-label="61"></a>        terminated <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-label="62"></a>        truncated <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-label="63"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-label="64"></a>        <span class="cf">if</span> <span class="va">self</span>.agent_pos <span class="op">==</span> <span class="va">self</span>.goal_pos:</span>
+<span id="cb3-65"><a href="#cb3-65" aria-label="65"></a>            reward <span class="op">=</span> <span class="fl">100.0</span></span>
+<span id="cb3-66"><a href="#cb3-66" aria-label="66"></a>            terminated <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-label="67"></a>        <span class="cf">elif</span> <span class="va">self</span>.agent_pos <span class="kw">in</span> <span class="va">self</span>.traps:</span>
+<span id="cb3-68"><a href="#cb3-68" aria-label="68"></a>            reward <span class="op">=</span> <span class="op">-</span><span class="fl">50.0</span></span>
+<span id="cb3-69"><a href="#cb3-69" aria-label="69"></a>            terminated <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb3-70"><a href="#cb3-70" aria-label="70"></a>        <span class="cf">elif</span> <span class="va">self</span>.current_step <span class="op">&gt;=</span> <span class="va">self</span>.max_steps:</span>
+<span id="cb3-71"><a href="#cb3-71" aria-label="71"></a>            truncated <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-label="72"></a></span>
+<span id="cb3-73"><a href="#cb3-73" aria-label="73"></a>        <span class="cf">return</span> obs, reward, terminated, truncated, {}</span>
+<span id="cb3-74"><a href="#cb3-74" aria-label="74"></a></span>
+<span id="cb3-75"><a href="#cb3-75" aria-label="75"></a>    <span class="kw">def</span> render(<span class="va">self</span>):</span>
+<span id="cb3-76"><a href="#cb3-76" aria-label="76"></a>        <span class="cf">if</span> <span class="va">self</span>.render_mode <span class="op">!=</span> <span class="st">"ansi"</span>:</span>
+<span id="cb3-77"><a href="#cb3-77" aria-label="77"></a>            <span class="cf">return</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-label="78"></a>        </span>
+<span id="cb3-79"><a href="#cb3-79" aria-label="79"></a>        output <span class="op">=</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb3-80"><a href="#cb3-80" aria-label="80"></a>        <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.grid_size):</span>
+<span id="cb3-81"><a href="#cb3-81" aria-label="81"></a>            row_str <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-label="82"></a>            <span class="cf">for</span> c <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.grid_size):</span>
+<span id="cb3-83"><a href="#cb3-83" aria-label="83"></a>                pos <span class="op">=</span> (r, c)</span>
+<span id="cb3-84"><a href="#cb3-84" aria-label="84"></a>                <span class="cf">if</span> pos <span class="op">==</span> <span class="va">self</span>.agent_pos:</span>
+<span id="cb3-85"><a href="#cb3-85" aria-label="85"></a>                    row_str <span class="op">+=</span> <span class="st">" A "</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-label="86"></a>                <span class="cf">elif</span> pos <span class="op">==</span> <span class="va">self</span>.goal_pos:</span>
+<span id="cb3-87"><a href="#cb3-87" aria-label="87"></a>                    row_str <span class="op">+=</span> <span class="st">" G "</span></span>
+<span id="cb3-88"><a href="#cb3-88" aria-label="88"></a>                <span class="cf">elif</span> pos <span class="kw">in</span> <span class="va">self</span>.traps:</span>
+<span id="cb3-89"><a href="#cb3-89" aria-label="89"></a>                    row_str <span class="op">+=</span> <span class="st">" X "</span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-label="90"></a>                <span class="cf">else</span>:</span>
+<span id="cb3-91"><a href="#cb3-91" aria-label="91"></a>                    row_str <span class="op">+=</span> <span class="st">" . "</span></span>
+<span id="cb3-92"><a href="#cb3-92" aria-label="92"></a>            output <span class="op">+=</span> row_str <span class="op">+</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb3-93"><a href="#cb3-93" aria-label="93"></a>        <span class="cf">return</span> output</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="自作環境の動作確認" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="自作環境の動作確認"><span class="header-section-number">12.5</span> 自作環境の動作確認</h2>
+<p>作成した自作環境をインスタンス化し、ランダムに行動させて描画（render）を確認してみましょう。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a>env <span class="op">=</span> GridTreasureEnv(render_mode<span class="op">=</span><span class="st">"ansi"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a>obs, info <span class="op">=</span> env.reset()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a><span class="bu">print</span>(<span class="st">"=== 初期盤面 ==="</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a><span class="bu">print</span>(env.render())</span>
+<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-label="6"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-label="7"></a>    action <span class="op">=</span> env.action_space.sample()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-label="8"></a>    obs, reward, terminated, truncated, _ <span class="op">=</span> env.step(action)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-label="9"></a>    <span class="bu">print</span>(<span class="ss">f"--- ステップ </span><span class="sc">{</span>step<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: 行動=</span><span class="sc">{</span>action<span class="sc">}</span><span class="ss">, 報酬=</span><span class="sc">{</span>reward<span class="sc">}</span><span class="ss"> ---"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-label="10"></a>    <span class="bu">print</span>(env.render())</span>
+<span id="cb4-11"><a href="#cb4-11" aria-label="11"></a>    <span class="cf">if</span> terminated <span class="kw">or</span> truncated:</span>
+<span id="cb4-12"><a href="#cb4-12" aria-label="12"></a>        <span class="bu">print</span>(<span class="st">"終了！"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-label="13"></a>        <span class="cf">break</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p>これで、Gymnasiumの公式環境と<strong>全く同じインターフェース</strong>を持つ独自のカスタム強化学習環境が完成しました。</p>
+<hr>
+</section>
+<section id="まとめ" class="level2" data-number="12.6">
+<h2 data-number="12.6" class="anchored" data-anchor-id="まとめ"><span class="header-section-number">12.6</span> まとめ</h2>
+<ul>
+<li><code>gymnasium.Env</code> を継承することで、世界中のRLアルゴリズムをそのまま自作ゲームに適用できるようになる。</li>
+<li>最低限 <code>observation_space</code>, <code>action_space</code>, <code>reset()</code>, <code>step()</code>, <code>render()</code> の実装が必要。</li>
+<li>報酬設計（リワードエンジニアリング）が、エージェントに期待通りの振る舞いをさせる鍵となる。</li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "コピーしました");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "コピーしました");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./11_rl_cart_pole.html" class="pagination-link" aria-label="強化学習の例(4)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">強化学習の例(4)</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./13_train_custom_env.html" class="pagination-link" aria-label="自作ゲームのAIプレーヤーを育てる">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">自作ゲームのAIプレーヤーを育てる</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">ソースコード</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="fu"># 自作ゲームの作成</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a><span class="fu">## 本章のねらい</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-label="4"></a>Gymnasium にあらかじめ用意された既存の環境だけでなく、**自分自身のオリジナルゲームやシミュレータを強化学習環境として構築する方法**を学びます。Gymnasiumの基底クラスである <span class="in">`gymnasium.Env`</span> を継承し、必須のメソッド（<span class="in">`reset`</span>、<span class="in">`step`</span>、<span class="in">`render`</span>）と空間定義（<span class="in">`observation_space`</span>、<span class="in">`action_space`</span>）を実装する手順を習得します。</span>
+<span id="cb5-5"><a href="#cb5-5" aria-label="5"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-label="6"></a>---</span>
+<span id="cb5-7"><a href="#cb5-7" aria-label="7"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-label="8"></a><span class="fu">## Gymnasium環境の基本アーキテクチャ</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-label="9"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-label="10"></a>オリジナルの強化学習環境を作るには、Pythonのクラスとして <span class="in">`gymnasium.Env`</span> を継承し、以下の主要メンバーを定義します：</span>
+<span id="cb5-11"><a href="#cb5-11" aria-label="11"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-label="12"></a><span class="in">```</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-label="13"></a><span class="in">+-------------------------------------------------------------+</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-label="14"></a><span class="in">| class MyCustomEnv(gymnasium.Env):                           |</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-label="15"></a><span class="in">|                                                             |</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-label="16"></a><span class="in">|   - action_space      : 行動の定義 (Discrete / Box など)     |</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-label="17"></a><span class="in">|   - observation_space : 状態の定義 (Discrete / Box など)     |</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-label="18"></a><span class="in">|                                                             |</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-label="19"></a><span class="in">|   - reset(seed=None)  : ゲーム開始時の状態を初期化して返す   |</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-label="20"></a><span class="in">|   - step(action)      : 行動を受け取り、次状態・報酬等を返す |</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-label="21"></a><span class="in">|   - render()          : 画面やテキストによる状況の描画       |</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-label="22"></a><span class="in">+-------------------------------------------------------------+</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-label="23"></a><span class="in">```</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-label="24"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-label="25"></a><span class="fu">### 空間の型（Spaces）</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-label="26"></a>エージェントが「どんな行動を取れるか」「どんな状態が見えるか」を規定します。</span>
+<span id="cb5-27"><a href="#cb5-27" aria-label="27"></a><span class="ss">- </span><span class="in">`spaces.Discrete(n)`</span>: $0$ から $n-1$ までの離散整数値（例: 4方向移動）</span>
+<span id="cb5-28"><a href="#cb5-28" aria-label="28"></a><span class="ss">- </span><span class="in">`spaces.Box(low, high, shape)`</span>: 多次元の連続実数（例: 座標や速度）</span>
+<span id="cb5-29"><a href="#cb5-29" aria-label="29"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-label="30"></a>---</span>
+<span id="cb5-31"><a href="#cb5-31" aria-label="31"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-label="32"></a><span class="fu">## 今回作成する自作ゲーム：GridTreasureEnv（宝探しゲーム）</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-label="33"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-label="34"></a>シンプルながら強化学習の要点がすべて詰まった「**5×5の宝探しグリッドゲーム**」を自作してみましょう。</span>
+<span id="cb5-35"><a href="#cb5-35" aria-label="35"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-label="36"></a><span class="fu">### ルール設計</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-label="37"></a><span class="ss">- </span>**フィールド**: $5 \times 5$ のマス目（座標 <span class="in">`(0, 0)`</span> から <span class="in">`(4, 4)`</span>）</span>
+<span id="cb5-38"><a href="#cb5-38" aria-label="38"></a><span class="ss">- </span>**スタート**: 左上 <span class="in">`(0, 0)`</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-label="39"></a><span class="ss">- </span>**お宝（Goal）**: 右下 <span class="in">`(4, 4)`</span>（到達で報酬 $+100$、ゲームクリア）</span>
+<span id="cb5-40"><a href="#cb5-40" aria-label="40"></a><span class="ss">- </span>**トラップ（罠）**: <span class="in">`(1, 1)`</span>, <span class="in">`(2, 3)`</span>, <span class="in">`(3, 1)`</span>（踏むとペナルティ $-50$、ゲームオーバー）</span>
+<span id="cb5-41"><a href="#cb5-41" aria-label="41"></a><span class="ss">- </span>**壁**: グリッドの外には出られない（移動せず元の位置に留まる）</span>
+<span id="cb5-42"><a href="#cb5-42" aria-label="42"></a><span class="ss">- </span>**通常移動**: 1歩ごとに $-1$ のステップコスト（最短クリアを促す）</span>
+<span id="cb5-43"><a href="#cb5-43" aria-label="43"></a><span class="ss">- </span>**最大ステップ数**: 50ステップで時間切れ打ち切り</span>
+<span id="cb5-44"><a href="#cb5-44" aria-label="44"></a></span>
+<span id="cb5-45"><a href="#cb5-45" aria-label="45"></a><span class="in">```</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-label="46"></a><span class="in">+---+---+---+---+---+</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-label="47"></a><span class="in">| S |   |   |   |   |   S: スタート (0, 0)</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-label="48"></a><span class="in">+---+---+---+---+---+   T: トラップ (罠)</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-label="49"></a><span class="in">|   | T |   |   |   |   G: お宝 (4, 4)</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-label="50"></a><span class="in">+---+---+---+---+---+</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-label="51"></a><span class="in">|   |   |   | T |   |</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-label="52"></a><span class="in">+---+---+---+---+---+</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-label="53"></a><span class="in">|   | T |   |   |   |</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-label="54"></a><span class="in">+---+---+---+---+---+</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-label="55"></a><span class="in">|   |   |   |   | G |</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-label="56"></a><span class="in">+---+---+---+---+---+</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-label="57"></a><span class="in">```</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-label="58"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-label="59"></a>---</span>
+<span id="cb5-60"><a href="#cb5-60" aria-label="60"></a></span>
+<span id="cb5-61"><a href="#cb5-61" aria-label="61"></a><span class="fu">## クラスの実装</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-label="62"></a></span>
+<span id="cb5-63"><a href="#cb5-63" aria-label="63"></a>それでは、Pythonで実際にコードを書いてみましょう。</span>
+<span id="cb5-64"><a href="#cb5-64" aria-label="64"></a></span>
+<span id="cb5-65"><a href="#cb5-65" aria-label="65"></a><span class="in">```python</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-label="66"></a><span class="im">import</span> gymnasium <span class="im">as</span> gym</span>
+<span id="cb5-67"><a href="#cb5-67" aria-label="67"></a><span class="im">from</span> gymnasium <span class="im">import</span> spaces</span>
+<span id="cb5-68"><a href="#cb5-68" aria-label="68"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-69"><a href="#cb5-69" aria-label="69"></a></span>
+<span id="cb5-70"><a href="#cb5-70" aria-label="70"></a><span class="kw">class</span> GridTreasureEnv(gym.Env):</span>
+<span id="cb5-71"><a href="#cb5-71" aria-label="71"></a>    metadata <span class="op">=</span> {<span class="st">"render_modes"</span>: [<span class="st">"ansi"</span>]}</span>
+<span id="cb5-72"><a href="#cb5-72" aria-label="72"></a></span>
+<span id="cb5-73"><a href="#cb5-73" aria-label="73"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, render_mode<span class="op">=</span><span class="st">"ansi"</span>):</span>
+<span id="cb5-74"><a href="#cb5-74" aria-label="74"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb5-75"><a href="#cb5-75" aria-label="75"></a>        <span class="va">self</span>.grid_size <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb5-76"><a href="#cb5-76" aria-label="76"></a>        <span class="va">self</span>.render_mode <span class="op">=</span> render_mode</span>
+<span id="cb5-77"><a href="#cb5-77" aria-label="77"></a></span>
+<span id="cb5-78"><a href="#cb5-78" aria-label="78"></a>        <span class="co"># 行動空間: 0:上, 1:右, 2:下, 3:左</span></span>
+<span id="cb5-79"><a href="#cb5-79" aria-label="79"></a>        <span class="va">self</span>.action_space <span class="op">=</span> spaces.Discrete(<span class="dv">4</span>)</span>
+<span id="cb5-80"><a href="#cb5-80" aria-label="80"></a></span>
+<span id="cb5-81"><a href="#cb5-81" aria-label="81"></a>        <span class="co"># 状態空間: 5x5 = 25通りの離散整数値 (y * 5 + x)</span></span>
+<span id="cb5-82"><a href="#cb5-82" aria-label="82"></a>        <span class="va">self</span>.observation_space <span class="op">=</span> spaces.Discrete(<span class="va">self</span>.grid_size <span class="op">*</span> <span class="va">self</span>.grid_size)</span>
+<span id="cb5-83"><a href="#cb5-83" aria-label="83"></a></span>
+<span id="cb5-84"><a href="#cb5-84" aria-label="84"></a>        <span class="co"># ゲーム要素の配置</span></span>
+<span id="cb5-85"><a href="#cb5-85" aria-label="85"></a>        <span class="va">self</span>.start_pos <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb5-86"><a href="#cb5-86" aria-label="86"></a>        <span class="va">self</span>.goal_pos <span class="op">=</span> (<span class="dv">4</span>, <span class="dv">4</span>)</span>
+<span id="cb5-87"><a href="#cb5-87" aria-label="87"></a>        <span class="va">self</span>.traps <span class="op">=</span> [(<span class="dv">1</span>, <span class="dv">1</span>), (<span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">3</span>, <span class="dv">1</span>)]</span>
+<span id="cb5-88"><a href="#cb5-88" aria-label="88"></a></span>
+<span id="cb5-89"><a href="#cb5-89" aria-label="89"></a>        <span class="va">self</span>.agent_pos <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb5-90"><a href="#cb5-90" aria-label="90"></a>        <span class="va">self</span>.current_step <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-91"><a href="#cb5-91" aria-label="91"></a>        <span class="va">self</span>.max_steps <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb5-92"><a href="#cb5-92" aria-label="92"></a></span>
+<span id="cb5-93"><a href="#cb5-93" aria-label="93"></a>    <span class="kw">def</span> _get_obs(<span class="va">self</span>):</span>
+<span id="cb5-94"><a href="#cb5-94" aria-label="94"></a>        <span class="co"># (y, x) を 0~24 の単一整数に変換して返す</span></span>
+<span id="cb5-95"><a href="#cb5-95" aria-label="95"></a>        y, x <span class="op">=</span> <span class="va">self</span>.agent_pos</span>
+<span id="cb5-96"><a href="#cb5-96" aria-label="96"></a>        <span class="cf">return</span> y <span class="op">*</span> <span class="va">self</span>.grid_size <span class="op">+</span> x</span>
+<span id="cb5-97"><a href="#cb5-97" aria-label="97"></a></span>
+<span id="cb5-98"><a href="#cb5-98" aria-label="98"></a>    <span class="kw">def</span> reset(<span class="va">self</span>, seed<span class="op">=</span><span class="va">None</span>, options<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb5-99"><a href="#cb5-99" aria-label="99"></a>        <span class="bu">super</span>().reset(seed<span class="op">=</span>seed)</span>
+<span id="cb5-100"><a href="#cb5-100" aria-label="100"></a>        <span class="va">self</span>.agent_pos <span class="op">=</span> <span class="va">self</span>.start_pos</span>
+<span id="cb5-101"><a href="#cb5-101" aria-label="101"></a>        <span class="va">self</span>.current_step <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-102"><a href="#cb5-102" aria-label="102"></a>        </span>
+<span id="cb5-103"><a href="#cb5-103" aria-label="103"></a>        observation <span class="op">=</span> <span class="va">self</span>._get_obs()</span>
+<span id="cb5-104"><a href="#cb5-104" aria-label="104"></a>        info <span class="op">=</span> {}</span>
+<span id="cb5-105"><a href="#cb5-105" aria-label="105"></a>        <span class="cf">return</span> observation, info</span>
+<span id="cb5-106"><a href="#cb5-106" aria-label="106"></a></span>
+<span id="cb5-107"><a href="#cb5-107" aria-label="107"></a>    <span class="kw">def</span> step(<span class="va">self</span>, action):</span>
+<span id="cb5-108"><a href="#cb5-108" aria-label="108"></a>        <span class="va">self</span>.current_step <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb5-109"><a href="#cb5-109" aria-label="109"></a>        y, x <span class="op">=</span> <span class="va">self</span>.agent_pos</span>
+<span id="cb5-110"><a href="#cb5-110" aria-label="110"></a></span>
+<span id="cb5-111"><a href="#cb5-111" aria-label="111"></a>        <span class="co"># 行動に応じた移動</span></span>
+<span id="cb5-112"><a href="#cb5-112" aria-label="112"></a>        <span class="cf">if</span> action <span class="op">==</span> <span class="dv">0</span>:   <span class="co"># 上</span></span>
+<span id="cb5-113"><a href="#cb5-113" aria-label="113"></a>            y <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, y <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb5-114"><a href="#cb5-114" aria-label="114"></a>        <span class="cf">elif</span> action <span class="op">==</span> <span class="dv">1</span>: <span class="co"># 右</span></span>
+<span id="cb5-115"><a href="#cb5-115" aria-label="115"></a>            x <span class="op">=</span> <span class="bu">min</span>(<span class="va">self</span>.grid_size <span class="op">-</span> <span class="dv">1</span>, x <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb5-116"><a href="#cb5-116" aria-label="116"></a>        <span class="cf">elif</span> action <span class="op">==</span> <span class="dv">2</span>: <span class="co"># 下</span></span>
+<span id="cb5-117"><a href="#cb5-117" aria-label="117"></a>            y <span class="op">=</span> <span class="bu">min</span>(<span class="va">self</span>.grid_size <span class="op">-</span> <span class="dv">1</span>, y <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb5-118"><a href="#cb5-118" aria-label="118"></a>        <span class="cf">elif</span> action <span class="op">==</span> <span class="dv">3</span>: <span class="co"># 左</span></span>
+<span id="cb5-119"><a href="#cb5-119" aria-label="119"></a>            x <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, x <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb5-120"><a href="#cb5-120" aria-label="120"></a></span>
+<span id="cb5-121"><a href="#cb5-121" aria-label="121"></a>        <span class="va">self</span>.agent_pos <span class="op">=</span> (y, x)</span>
+<span id="cb5-122"><a href="#cb5-122" aria-label="122"></a>        obs <span class="op">=</span> <span class="va">self</span>._get_obs()</span>
+<span id="cb5-123"><a href="#cb5-123" aria-label="123"></a></span>
+<span id="cb5-124"><a href="#cb5-124" aria-label="124"></a>        <span class="co"># 報酬と終了判定のロジック</span></span>
+<span id="cb5-125"><a href="#cb5-125" aria-label="125"></a>        reward <span class="op">=</span> <span class="op">-</span><span class="fl">1.0</span>  <span class="co"># 基本移動コスト</span></span>
+<span id="cb5-126"><a href="#cb5-126" aria-label="126"></a>        terminated <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-127"><a href="#cb5-127" aria-label="127"></a>        truncated <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb5-128"><a href="#cb5-128" aria-label="128"></a></span>
+<span id="cb5-129"><a href="#cb5-129" aria-label="129"></a>        <span class="cf">if</span> <span class="va">self</span>.agent_pos <span class="op">==</span> <span class="va">self</span>.goal_pos:</span>
+<span id="cb5-130"><a href="#cb5-130" aria-label="130"></a>            reward <span class="op">=</span> <span class="fl">100.0</span></span>
+<span id="cb5-131"><a href="#cb5-131" aria-label="131"></a>            terminated <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-132"><a href="#cb5-132" aria-label="132"></a>        <span class="cf">elif</span> <span class="va">self</span>.agent_pos <span class="kw">in</span> <span class="va">self</span>.traps:</span>
+<span id="cb5-133"><a href="#cb5-133" aria-label="133"></a>            reward <span class="op">=</span> <span class="op">-</span><span class="fl">50.0</span></span>
+<span id="cb5-134"><a href="#cb5-134" aria-label="134"></a>            terminated <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-135"><a href="#cb5-135" aria-label="135"></a>        <span class="cf">elif</span> <span class="va">self</span>.current_step <span class="op">&gt;=</span> <span class="va">self</span>.max_steps:</span>
+<span id="cb5-136"><a href="#cb5-136" aria-label="136"></a>            truncated <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-137"><a href="#cb5-137" aria-label="137"></a></span>
+<span id="cb5-138"><a href="#cb5-138" aria-label="138"></a>        <span class="cf">return</span> obs, reward, terminated, truncated, {}</span>
+<span id="cb5-139"><a href="#cb5-139" aria-label="139"></a></span>
+<span id="cb5-140"><a href="#cb5-140" aria-label="140"></a>    <span class="kw">def</span> render(<span class="va">self</span>):</span>
+<span id="cb5-141"><a href="#cb5-141" aria-label="141"></a>        <span class="cf">if</span> <span class="va">self</span>.render_mode <span class="op">!=</span> <span class="st">"ansi"</span>:</span>
+<span id="cb5-142"><a href="#cb5-142" aria-label="142"></a>            <span class="cf">return</span></span>
+<span id="cb5-143"><a href="#cb5-143" aria-label="143"></a>        </span>
+<span id="cb5-144"><a href="#cb5-144" aria-label="144"></a>        output <span class="op">=</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb5-145"><a href="#cb5-145" aria-label="145"></a>        <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.grid_size):</span>
+<span id="cb5-146"><a href="#cb5-146" aria-label="146"></a>            row_str <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb5-147"><a href="#cb5-147" aria-label="147"></a>            <span class="cf">for</span> c <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.grid_size):</span>
+<span id="cb5-148"><a href="#cb5-148" aria-label="148"></a>                pos <span class="op">=</span> (r, c)</span>
+<span id="cb5-149"><a href="#cb5-149" aria-label="149"></a>                <span class="cf">if</span> pos <span class="op">==</span> <span class="va">self</span>.agent_pos:</span>
+<span id="cb5-150"><a href="#cb5-150" aria-label="150"></a>                    row_str <span class="op">+=</span> <span class="st">" A "</span></span>
+<span id="cb5-151"><a href="#cb5-151" aria-label="151"></a>                <span class="cf">elif</span> pos <span class="op">==</span> <span class="va">self</span>.goal_pos:</span>
+<span id="cb5-152"><a href="#cb5-152" aria-label="152"></a>                    row_str <span class="op">+=</span> <span class="st">" G "</span></span>
+<span id="cb5-153"><a href="#cb5-153" aria-label="153"></a>                <span class="cf">elif</span> pos <span class="kw">in</span> <span class="va">self</span>.traps:</span>
+<span id="cb5-154"><a href="#cb5-154" aria-label="154"></a>                    row_str <span class="op">+=</span> <span class="st">" X "</span></span>
+<span id="cb5-155"><a href="#cb5-155" aria-label="155"></a>                <span class="cf">else</span>:</span>
+<span id="cb5-156"><a href="#cb5-156" aria-label="156"></a>                    row_str <span class="op">+=</span> <span class="st">" . "</span></span>
+<span id="cb5-157"><a href="#cb5-157" aria-label="157"></a>            output <span class="op">+=</span> row_str <span class="op">+</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb5-158"><a href="#cb5-158" aria-label="158"></a>        <span class="cf">return</span> output</span>
+<span id="cb5-159"><a href="#cb5-159" aria-label="159"></a><span class="in">```</span></span>
+<span id="cb5-160"><a href="#cb5-160" aria-label="160"></a></span>
+<span id="cb5-161"><a href="#cb5-161" aria-label="161"></a>---</span>
+<span id="cb5-162"><a href="#cb5-162" aria-label="162"></a></span>
+<span id="cb5-163"><a href="#cb5-163" aria-label="163"></a><span class="fu">## 自作環境の動作確認</span></span>
+<span id="cb5-164"><a href="#cb5-164" aria-label="164"></a></span>
+<span id="cb5-165"><a href="#cb5-165" aria-label="165"></a>作成した自作環境をインスタンス化し、ランダムに行動させて描画（render）を確認してみましょう。</span>
+<span id="cb5-166"><a href="#cb5-166" aria-label="166"></a></span>
+<span id="cb5-167"><a href="#cb5-167" aria-label="167"></a><span class="in">```python</span></span>
+<span id="cb5-168"><a href="#cb5-168" aria-label="168"></a>env <span class="op">=</span> GridTreasureEnv(render_mode<span class="op">=</span><span class="st">"ansi"</span>)</span>
+<span id="cb5-169"><a href="#cb5-169" aria-label="169"></a>obs, info <span class="op">=</span> env.reset()</span>
+<span id="cb5-170"><a href="#cb5-170" aria-label="170"></a><span class="bu">print</span>(<span class="st">"=== 初期盤面 ==="</span>)</span>
+<span id="cb5-171"><a href="#cb5-171" aria-label="171"></a><span class="bu">print</span>(env.render())</span>
+<span id="cb5-172"><a href="#cb5-172" aria-label="172"></a></span>
+<span id="cb5-173"><a href="#cb5-173" aria-label="173"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb5-174"><a href="#cb5-174" aria-label="174"></a>    action <span class="op">=</span> env.action_space.sample()</span>
+<span id="cb5-175"><a href="#cb5-175" aria-label="175"></a>    obs, reward, terminated, truncated, _ <span class="op">=</span> env.step(action)</span>
+<span id="cb5-176"><a href="#cb5-176" aria-label="176"></a>    <span class="bu">print</span>(<span class="ss">f"--- ステップ </span><span class="sc">{</span>step<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: 行動=</span><span class="sc">{</span>action<span class="sc">}</span><span class="ss">, 報酬=</span><span class="sc">{</span>reward<span class="sc">}</span><span class="ss"> ---"</span>)</span>
+<span id="cb5-177"><a href="#cb5-177" aria-label="177"></a>    <span class="bu">print</span>(env.render())</span>
+<span id="cb5-178"><a href="#cb5-178" aria-label="178"></a>    <span class="cf">if</span> terminated <span class="kw">or</span> truncated:</span>
+<span id="cb5-179"><a href="#cb5-179" aria-label="179"></a>        <span class="bu">print</span>(<span class="st">"終了！"</span>)</span>
+<span id="cb5-180"><a href="#cb5-180" aria-label="180"></a>        <span class="cf">break</span></span>
+<span id="cb5-181"><a href="#cb5-181" aria-label="181"></a><span class="in">```</span></span>
+<span id="cb5-182"><a href="#cb5-182" aria-label="182"></a></span>
+<span id="cb5-183"><a href="#cb5-183" aria-label="183"></a>これで、Gymnasiumの公式環境と**全く同じインターフェース**を持つ独自のカスタム強化学習環境が完成しました。</span>
+<span id="cb5-184"><a href="#cb5-184" aria-label="184"></a></span>
+<span id="cb5-185"><a href="#cb5-185" aria-label="185"></a>---</span>
+<span id="cb5-186"><a href="#cb5-186" aria-label="186"></a></span>
+<span id="cb5-187"><a href="#cb5-187" aria-label="187"></a><span class="fu">## まとめ</span></span>
+<span id="cb5-188"><a href="#cb5-188" aria-label="188"></a><span class="ss">- </span><span class="in">`gymnasium.Env`</span> を継承することで、世界中のRLアルゴリズムをそのまま自作ゲームに適用できるようになる。</span>
+<span id="cb5-189"><a href="#cb5-189" aria-label="189"></a><span class="ss">- </span>最低限 <span class="in">`observation_space`</span>, <span class="in">`action_space`</span>, <span class="in">`reset()`</span>, <span class="in">`step()`</span>, <span class="in">`render()`</span> の実装が必要。</span>
+<span id="cb5-190"><a href="#cb5-190" aria-label="190"></a><span class="ss">- </span>報酬設計（リワードエンジニアリング）が、エージェントに期待通りの振る舞いをさせる鍵となる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
