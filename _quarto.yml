@@ -1,13 +1,12 @@
 project:
   type: book
-  output-dir: _site
+  output-dir: docs
 
 lang: ja
 
 book:
-  title: "情報技術科目: 強化学習入門"
-  subtitle: "PythonとGymnasiumで学ぶエージェントの基礎"
-  author: "教材作成チーム"
+  title: "情報基礎２"
+  subtitle: "PythonとGymnasiumで学ぶ強化学習の基礎"
   chapters:
     - index.qmd
     - part: "第1部：プログラミングとアルゴリズムの基礎"
