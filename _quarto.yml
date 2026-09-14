@@ -41,4 +41,5 @@ format:
     code-fold: false
     code-tools: true
     code-line-numbers: true
+    css: custom.css
     html-math-method: mathjax

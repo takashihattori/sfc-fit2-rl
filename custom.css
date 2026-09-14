@@ -1,0 +1,20 @@
+/* 行番号（数字）の色と見た目を変更 */
+pre.numberSource code > span > a:first-child::before {
+  color: #c678dd !important;       /* 行番号の色（例：パープル） */
+  opacity: 1 !important;           /* 透明度（1でくっきり表示） */
+  font-weight: bold;               /* 太字にする */
+  text-decoration: none;           /* 下線を消す */
+/*  border-right: 1px solid #ced4da; */ /* コードとの境界線 */
+  padding-right: 0.5em;            /* 境界線と数字の間の余白 */
+}
+
+/* 行番号リンクの下線を消す */
+pre.numberSource code > span > a:first-child {
+  text-decoration: none;
+}
+
+/* コードブロック全体の左側（行番号列）に帯状の背景色をつける場合 */
+div.sourceCode {
+  /* 左側 2.8em を薄いグレー、それ以降をコード領域の背景色にする */
+  background: linear-gradient(to right, #e9ecef 2.8em, transparent 2.8em), rgba(240, 240, 240, 0.65);
+}
