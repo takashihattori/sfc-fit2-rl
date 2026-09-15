@@ -232,6 +232,45 @@ print("1から10までの合計:", total)
 ### while文の書き方
 `while` 文は、「指定した条件が成り立っている間（`True` である間）」ずっと処理を繰り返します。データの並びとは関係ありません。
 
+```{=html}
+<svg viewBox="0 0 380 290" width="100%" height="290" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;">
+  <defs>
+    <marker id="arrow-fc-while" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#333" />
+    </marker>
+  </defs>
+  <!-- 入力から合流点へ -->
+  <line x1="190" y1="12" x2="190" y2="35" stroke="#333" stroke-width="2"/>
+  <circle cx="190" cy="35" r="3.5" fill="#333"/>
+  <line x1="190" y1="35" x2="190" y2="47" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/>
+  
+  <!-- 条件式 -->
+  <polygon points="190,50 265,85 190,120 115,85" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="190" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">条件式</text>
+  
+  <!-- True (成立): 繰り返す処理へ -->
+  <line x1="190" y1="120" x2="190" y2="152" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/>
+  <text x="205" y="142" font-size="12" font-weight="bold" fill="#2e7d32">True (成立)</text>
+  
+  <rect x="120" y="155" width="140" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="190" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20">繰り返す処理</text>
+  
+  <!-- ループの戻り線 -->
+  <line x1="190" y1="195" x2="190" y2="220" stroke="#333" stroke-width="2"/>
+  <line x1="190" y1="220" x2="55" y2="220" stroke="#333" stroke-width="2"/>
+  <line x1="55" y1="220" x2="55" y2="35" stroke="#333" stroke-width="2"/>
+  <line x1="55" y1="35" x2="184" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/>
+  
+  <!-- False (不成立): ループ脱出 -->
+  <line x1="265" y1="85" x2="325" y2="85" stroke="#333" stroke-width="2"/>
+  <text x="270" y="78" font-size="11" font-weight="bold" fill="#c62828">False (不成立)</text>
+  <line x1="325" y1="85" x2="325" y2="245" stroke="#333" stroke-width="2"/>
+  <line x1="325" y1="245" x2="190" y2="245" stroke="#333" stroke-width="2"/>
+  <line x1="190" y1="245" x2="190" y2="268" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/>
+  <text x="190" y="283" text-anchor="middle" font-size="11" fill="#666">（ループ終了・次の処理へ）</text>
+</svg>
+```
+
 ```python
 count = 5
 while count > 0:

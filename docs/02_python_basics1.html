@@ -611,6 +611,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="while文の書き方" class="level3" data-number="2.3.3">
 <h3 data-number="2.3.3" class="anchored" data-anchor-id="while文の書き方"><span class="header-section-number">2.3.3</span> while文の書き方</h3>
 <p><code>while</code> 文は、「指定した条件が成り立っている間（<code>True</code> である間）」ずっと処理を繰り返します。データの並びとは関係ありません。</p>
+<svg viewbox="0 0 380 290" width="100%" height="290" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;">
+  <defs>
+    <marker id="arrow-fc-while" viewbox="0 0 10 10" refx="6" refy="5" markerwidth="6" markerheight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#333"></path>
+    </marker>
+  </defs>
+  <!-- 入力から合流点へ -->
+  <line x1="190" y1="12" x2="190" y2="35" stroke="#333" stroke-width="2"></line>
+  <circle cx="190" cy="35" r="3.5" fill="#333"></circle>
+  <line x1="190" y1="35" x2="190" y2="47" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"></line>
+  
+  <!-- 条件式 -->
+  <polygon points="190,50 265,85 190,120 115,85" fill="#fff3e0" stroke="#f57c00" stroke-width="2"></polygon>
+  <text x="190" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">条件式</text>
+  
+  <!-- True (成立): 繰り返す処理へ -->
+  <line x1="190" y1="120" x2="190" y2="152" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"></line>
+  <text x="205" y="142" font-size="12" font-weight="bold" fill="#2e7d32">True (成立)</text>
+  
+  <rect x="120" y="155" width="140" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"></rect>
+  <text x="190" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20">繰り返す処理</text>
+  
+  <!-- ループの戻り線 -->
+  <line x1="190" y1="195" x2="190" y2="220" stroke="#333" stroke-width="2"></line>
+  <line x1="190" y1="220" x2="55" y2="220" stroke="#333" stroke-width="2"></line>
+  <line x1="55" y1="220" x2="55" y2="35" stroke="#333" stroke-width="2"></line>
+  <line x1="55" y1="35" x2="184" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"></line>
+  
+  <!-- False (不成立): ループ脱出 -->
+  <line x1="265" y1="85" x2="325" y2="85" stroke="#333" stroke-width="2"></line>
+  <text x="270" y="78" font-size="11" font-weight="bold" fill="#c62828">False (不成立)</text>
+  <line x1="325" y1="85" x2="325" y2="245" stroke="#333" stroke-width="2"></line>
+  <line x1="325" y1="245" x2="190" y2="245" stroke="#333" stroke-width="2"></line>
+  <line x1="190" y1="245" x2="190" y2="268" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"></line>
+  <text x="190" y="283" text-anchor="middle" font-size="11" fill="#666">（ループ終了・次の処理へ）</text>
+</svg>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a>count <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-label="2"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
 <span id="cb8-3"><a href="#cb8-3" aria-label="3"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
@@ -1406,83 +1442,122 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-232"><a href="#cb12-232" aria-label="232"></a><span class="fu">### while文の書き方</span></span>
 <span id="cb12-233"><a href="#cb12-233" aria-label="233"></a><span class="in">`while`</span> 文は、「指定した条件が成り立っている間（<span class="in">`True`</span> である間）」ずっと処理を繰り返します。データの並びとは関係ありません。</span>
 <span id="cb12-234"><a href="#cb12-234" aria-label="234"></a></span>
-<span id="cb12-235"><a href="#cb12-235" aria-label="235"></a><span class="in">```python</span></span>
-<span id="cb12-236"><a href="#cb12-236" aria-label="236"></a>count <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb12-237"><a href="#cb12-237" aria-label="237"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb12-238"><a href="#cb12-238" aria-label="238"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
-<span id="cb12-239"><a href="#cb12-239" aria-label="239"></a>    count <span class="op">=</span> count <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb12-240"><a href="#cb12-240" aria-label="240"></a><span class="bu">print</span>(<span class="st">"スタート！"</span>)</span>
-<span id="cb12-241"><a href="#cb12-241" aria-label="241"></a><span class="in">```</span></span>
-<span id="cb12-242"><a href="#cb12-242" aria-label="242"></a></span>
-<span id="cb12-243"><a href="#cb12-243" aria-label="243"></a>※条件が常に <span class="in">`True`</span> のままだと、ループが終わらない**無限ループ**になるため、ループ内で終了条件に向かう変数の更新が必要です。</span>
-<span id="cb12-244"><a href="#cb12-244" aria-label="244"></a></span>
-<span id="cb12-245"><a href="#cb12-245" aria-label="245"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-246"><a href="#cb12-246" aria-label="246"></a><span class="fu">### 練習問題 02-05：while文によるカウントアップ</span></span>
-<span id="cb12-247"><a href="#cb12-247" aria-label="247"></a>変数 <span class="in">`n = 1`</span> から始め、<span class="in">`n`</span> が 100 以下の間、値を2倍にしながら表示するプログラムを <span class="in">`while`</span> 文を用いて作成してください。</span>
-<span id="cb12-248"><a href="#cb12-248" aria-label="248"></a>:::</span>
-<span id="cb12-249"><a href="#cb12-249" aria-label="249"></a></span>
-<span id="cb12-250"><a href="#cb12-250" aria-label="250"></a>---</span>
-<span id="cb12-251"><a href="#cb12-251" aria-label="251"></a></span>
-<span id="cb12-252"><a href="#cb12-252" aria-label="252"></a><span class="fu">## 繰り返しと場合分けの組み合わせ</span></span>
-<span id="cb12-253"><a href="#cb12-253" aria-label="253"></a></span>
-<span id="cb12-254"><a href="#cb12-254" aria-label="254"></a>実際のプログラミングでは、ループ（繰り返し）の中で <span class="in">`if`</span> 文（場合分け）を使って特定のデータだけを選別・処理することが非常に多くあります。</span>
-<span id="cb12-255"><a href="#cb12-255" aria-label="255"></a></span>
-<span id="cb12-256"><a href="#cb12-256" aria-label="256"></a><span class="in">```python</span></span>
-<span id="cb12-257"><a href="#cb12-257" aria-label="257"></a><span class="co"># 1から20までの数値のうち、3の倍数だけを表示する</span></span>
-<span id="cb12-258"><a href="#cb12-258" aria-label="258"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>):</span>
-<span id="cb12-259"><a href="#cb12-259" aria-label="259"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">3</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb12-260"><a href="#cb12-260" aria-label="260"></a>        <span class="bu">print</span>(i, <span class="st">"は3の倍数です"</span>)</span>
-<span id="cb12-261"><a href="#cb12-261" aria-label="261"></a><span class="in">```</span></span>
-<span id="cb12-262"><a href="#cb12-262" aria-label="262"></a></span>
-<span id="cb12-263"><a href="#cb12-263" aria-label="263"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-264"><a href="#cb12-264" aria-label="264"></a><span class="fu">### 練習問題 02-06：奇数の合計を計算する2種類の方法</span></span>
-<span id="cb12-265"><a href="#cb12-265" aria-label="265"></a>1から99までの奇数の合計を計算するプログラムを、次の2種類の方法で書いてください。</span>
-<span id="cb12-266"><a href="#cb12-266" aria-label="266"></a></span>
-<span id="cb12-267"><a href="#cb12-267" aria-label="267"></a><span class="ss">- </span>1から99までの奇数の並びを作り、それを合計する。</span>
-<span id="cb12-268"><a href="#cb12-268" aria-label="268"></a><span class="ss">- </span>1から99までの整数の並びを作り、<span class="in">`if`</span>文でそれが奇数の時だけ合計に加える。</span>
-<span id="cb12-269"><a href="#cb12-269" aria-label="269"></a>:::</span>
-<span id="cb12-270"><a href="#cb12-270" aria-label="270"></a></span>
-<span id="cb12-271"><a href="#cb12-271" aria-label="271"></a>また、ループの途中で中断する <span class="in">`break`</span> や、その回の処理を飛ばして次へ進む <span class="in">`continue`</span> を <span class="in">`if`</span> 文と組み合わせて使うこともできます。</span>
-<span id="cb12-272"><a href="#cb12-272" aria-label="272"></a></span>
-<span id="cb12-273"><a href="#cb12-273" aria-label="273"></a><span class="in">```python</span></span>
-<span id="cb12-274"><a href="#cb12-274" aria-label="274"></a><span class="co"># 4という値を探索（見つかったら即座に中断）</span></span>
-<span id="cb12-275"><a href="#cb12-275" aria-label="275"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
-<span id="cb12-276"><a href="#cb12-276" aria-label="276"></a>    <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
-<span id="cb12-277"><a href="#cb12-277" aria-label="277"></a>        <span class="bu">print</span>(<span class="st">"目的のアイテムが見つかったので探索を終了します（ステップ"</span>, step, <span class="st">"）"</span>)</span>
-<span id="cb12-278"><a href="#cb12-278" aria-label="278"></a>        <span class="cf">break</span></span>
-<span id="cb12-279"><a href="#cb12-279" aria-label="279"></a>    <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
+<span id="cb12-235"><a href="#cb12-235" aria-label="235"></a><span class="in">```{=html}</span></span>
+<span id="cb12-236"><a href="#cb12-236" aria-label="236"></a><span class="in">&lt;svg viewBox="0 0 380 290" width="100%" height="290" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
+<span id="cb12-237"><a href="#cb12-237" aria-label="237"></a><span class="in">  &lt;defs&gt;</span></span>
+<span id="cb12-238"><a href="#cb12-238" aria-label="238"></a><span class="in">    &lt;marker id="arrow-fc-while" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb12-239"><a href="#cb12-239" aria-label="239"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
+<span id="cb12-240"><a href="#cb12-240" aria-label="240"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb12-241"><a href="#cb12-241" aria-label="241"></a><span class="in">  &lt;/defs&gt;</span></span>
+<span id="cb12-242"><a href="#cb12-242" aria-label="242"></a><span class="in">  &lt;!-- 入力から合流点へ --&gt;</span></span>
+<span id="cb12-243"><a href="#cb12-243" aria-label="243"></a><span class="in">  &lt;line x1="190" y1="12" x2="190" y2="35" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb12-244"><a href="#cb12-244" aria-label="244"></a><span class="in">  &lt;circle cx="190" cy="35" r="3.5" fill="#333"/&gt;</span></span>
+<span id="cb12-245"><a href="#cb12-245" aria-label="245"></a><span class="in">  &lt;line x1="190" y1="35" x2="190" y2="47" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb12-246"><a href="#cb12-246" aria-label="246"></a><span class="in">  </span></span>
+<span id="cb12-247"><a href="#cb12-247" aria-label="247"></a><span class="in">  &lt;!-- 条件式 --&gt;</span></span>
+<span id="cb12-248"><a href="#cb12-248" aria-label="248"></a><span class="in">  &lt;polygon points="190,50 265,85 190,120 115,85" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
+<span id="cb12-249"><a href="#cb12-249" aria-label="249"></a><span class="in">  &lt;text x="190" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式&lt;/text&gt;</span></span>
+<span id="cb12-250"><a href="#cb12-250" aria-label="250"></a><span class="in">  </span></span>
+<span id="cb12-251"><a href="#cb12-251" aria-label="251"></a><span class="in">  &lt;!-- True (成立): 繰り返す処理へ --&gt;</span></span>
+<span id="cb12-252"><a href="#cb12-252" aria-label="252"></a><span class="in">  &lt;line x1="190" y1="120" x2="190" y2="152" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb12-253"><a href="#cb12-253" aria-label="253"></a><span class="in">  &lt;text x="205" y="142" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True (成立)&lt;/text&gt;</span></span>
+<span id="cb12-254"><a href="#cb12-254" aria-label="254"></a><span class="in">  </span></span>
+<span id="cb12-255"><a href="#cb12-255" aria-label="255"></a><span class="in">  &lt;rect x="120" y="155" width="140" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
+<span id="cb12-256"><a href="#cb12-256" aria-label="256"></a><span class="in">  &lt;text x="190" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;繰り返す処理&lt;/text&gt;</span></span>
+<span id="cb12-257"><a href="#cb12-257" aria-label="257"></a><span class="in">  </span></span>
+<span id="cb12-258"><a href="#cb12-258" aria-label="258"></a><span class="in">  &lt;!-- ループの戻り線 --&gt;</span></span>
+<span id="cb12-259"><a href="#cb12-259" aria-label="259"></a><span class="in">  &lt;line x1="190" y1="195" x2="190" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb12-260"><a href="#cb12-260" aria-label="260"></a><span class="in">  &lt;line x1="190" y1="220" x2="55" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb12-261"><a href="#cb12-261" aria-label="261"></a><span class="in">  &lt;line x1="55" y1="220" x2="55" y2="35" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb12-262"><a href="#cb12-262" aria-label="262"></a><span class="in">  &lt;line x1="55" y1="35" x2="184" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb12-263"><a href="#cb12-263" aria-label="263"></a><span class="in">  </span></span>
+<span id="cb12-264"><a href="#cb12-264" aria-label="264"></a><span class="in">  &lt;!-- False (不成立): ループ脱出 --&gt;</span></span>
+<span id="cb12-265"><a href="#cb12-265" aria-label="265"></a><span class="in">  &lt;line x1="265" y1="85" x2="325" y2="85" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb12-266"><a href="#cb12-266" aria-label="266"></a><span class="in">  &lt;text x="270" y="78" font-size="11" font-weight="bold" fill="#c62828"&gt;False (不成立)&lt;/text&gt;</span></span>
+<span id="cb12-267"><a href="#cb12-267" aria-label="267"></a><span class="in">  &lt;line x1="325" y1="85" x2="325" y2="245" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb12-268"><a href="#cb12-268" aria-label="268"></a><span class="in">  &lt;line x1="325" y1="245" x2="190" y2="245" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb12-269"><a href="#cb12-269" aria-label="269"></a><span class="in">  &lt;line x1="190" y1="245" x2="190" y2="268" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb12-270"><a href="#cb12-270" aria-label="270"></a><span class="in">  &lt;text x="190" y="283" text-anchor="middle" font-size="11" fill="#666"&gt;（ループ終了・次の処理へ）&lt;/text&gt;</span></span>
+<span id="cb12-271"><a href="#cb12-271" aria-label="271"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb12-272"><a href="#cb12-272" aria-label="272"></a><span class="in">```</span></span>
+<span id="cb12-273"><a href="#cb12-273" aria-label="273"></a></span>
+<span id="cb12-274"><a href="#cb12-274" aria-label="274"></a><span class="in">```python</span></span>
+<span id="cb12-275"><a href="#cb12-275" aria-label="275"></a>count <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb12-276"><a href="#cb12-276" aria-label="276"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb12-277"><a href="#cb12-277" aria-label="277"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
+<span id="cb12-278"><a href="#cb12-278" aria-label="278"></a>    count <span class="op">=</span> count <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb12-279"><a href="#cb12-279" aria-label="279"></a><span class="bu">print</span>(<span class="st">"スタート！"</span>)</span>
 <span id="cb12-280"><a href="#cb12-280" aria-label="280"></a><span class="in">```</span></span>
 <span id="cb12-281"><a href="#cb12-281" aria-label="281"></a></span>
-<span id="cb12-282"><a href="#cb12-282" aria-label="282"></a>関数定義の中では、ある条件が成り立った時にループを途中で中断し、関数の実行も終了させることがよくあります。そのような場合には <span class="in">`if`</span> と <span class="in">`return`</span> を組み合わせて使います。</span>
+<span id="cb12-282"><a href="#cb12-282" aria-label="282"></a>※条件が常に <span class="in">`True`</span> のままだと、ループが終わらない**無限ループ**になるため、ループ内で終了条件に向かう変数の更新が必要です。</span>
 <span id="cb12-283"><a href="#cb12-283" aria-label="283"></a></span>
-<span id="cb12-284"><a href="#cb12-284" aria-label="284"></a><span class="in">```python</span></span>
-<span id="cb12-285"><a href="#cb12-285" aria-label="285"></a><span class="kw">def</span> search4():</span>
-<span id="cb12-286"><a href="#cb12-286" aria-label="286"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
-<span id="cb12-287"><a href="#cb12-287" aria-label="287"></a>        <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
-<span id="cb12-288"><a href="#cb12-288" aria-label="288"></a>            <span class="cf">return</span> <span class="st">"見つかりました"</span></span>
-<span id="cb12-289"><a href="#cb12-289" aria-label="289"></a>        <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
-<span id="cb12-290"><a href="#cb12-290" aria-label="290"></a>    <span class="cf">return</span> <span class="st">"見つかりませんでした"</span></span>
-<span id="cb12-291"><a href="#cb12-291" aria-label="291"></a><span class="in">```</span></span>
+<span id="cb12-284"><a href="#cb12-284" aria-label="284"></a>::: {.callout-note icon=false}</span>
+<span id="cb12-285"><a href="#cb12-285" aria-label="285"></a><span class="fu">### 練習問題 02-05：while文によるカウントアップ</span></span>
+<span id="cb12-286"><a href="#cb12-286" aria-label="286"></a>変数 <span class="in">`n = 1`</span> から始め、<span class="in">`n`</span> が 100 以下の間、値を2倍にしながら表示するプログラムを <span class="in">`while`</span> 文を用いて作成してください。</span>
+<span id="cb12-287"><a href="#cb12-287" aria-label="287"></a>:::</span>
+<span id="cb12-288"><a href="#cb12-288" aria-label="288"></a></span>
+<span id="cb12-289"><a href="#cb12-289" aria-label="289"></a>---</span>
+<span id="cb12-290"><a href="#cb12-290" aria-label="290"></a></span>
+<span id="cb12-291"><a href="#cb12-291" aria-label="291"></a><span class="fu">## 繰り返しと場合分けの組み合わせ</span></span>
 <span id="cb12-292"><a href="#cb12-292" aria-label="292"></a></span>
-<span id="cb12-293"><a href="#cb12-293" aria-label="293"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-294"><a href="#cb12-294" aria-label="294"></a><span class="fu">### 練習問題 02-07：素数の判定</span></span>
-<span id="cb12-295"><a href="#cb12-295" aria-label="295"></a>引数として2以上の整数を受け取り、それが素数なら True を、素数でなければ False を返す関数を定義してください。</span>
-<span id="cb12-296"><a href="#cb12-296" aria-label="296"></a></span>
-<span id="cb12-297"><a href="#cb12-297" aria-label="297"></a><span class="ss">- </span>2以上でその数未満の数の並びについて、順に割り切るかどうかを試し、割り切れたら素数ではないので <span class="in">`return False`</span> で脱出します。</span>
-<span id="cb12-298"><a href="#cb12-298" aria-label="298"></a><span class="ss">- </span>どの数でも割り切れなければ素数なので <span class="in">`return True`</span> で True を返します。</span>
-<span id="cb12-299"><a href="#cb12-299" aria-label="299"></a></span>
-<span id="cb12-300"><a href="#cb12-300" aria-label="300"></a>:::</span>
+<span id="cb12-293"><a href="#cb12-293" aria-label="293"></a>実際のプログラミングでは、ループ（繰り返し）の中で <span class="in">`if`</span> 文（場合分け）を使って特定のデータだけを選別・処理することが非常に多くあります。</span>
+<span id="cb12-294"><a href="#cb12-294" aria-label="294"></a></span>
+<span id="cb12-295"><a href="#cb12-295" aria-label="295"></a><span class="in">```python</span></span>
+<span id="cb12-296"><a href="#cb12-296" aria-label="296"></a><span class="co"># 1から20までの数値のうち、3の倍数だけを表示する</span></span>
+<span id="cb12-297"><a href="#cb12-297" aria-label="297"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>):</span>
+<span id="cb12-298"><a href="#cb12-298" aria-label="298"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">3</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb12-299"><a href="#cb12-299" aria-label="299"></a>        <span class="bu">print</span>(i, <span class="st">"は3の倍数です"</span>)</span>
+<span id="cb12-300"><a href="#cb12-300" aria-label="300"></a><span class="in">```</span></span>
 <span id="cb12-301"><a href="#cb12-301" aria-label="301"></a></span>
-<span id="cb12-302"><a href="#cb12-302" aria-label="302"></a>---</span>
-<span id="cb12-303"><a href="#cb12-303" aria-label="303"></a></span>
-<span id="cb12-304"><a href="#cb12-304" aria-label="304"></a><span class="fu">## まとめ</span></span>
+<span id="cb12-302"><a href="#cb12-302" aria-label="302"></a>::: {.callout-note icon=false}</span>
+<span id="cb12-303"><a href="#cb12-303" aria-label="303"></a><span class="fu">### 練習問題 02-06：奇数の合計を計算する2種類の方法</span></span>
+<span id="cb12-304"><a href="#cb12-304" aria-label="304"></a>1から99までの奇数の合計を計算するプログラムを、次の2種類の方法で書いてください。</span>
 <span id="cb12-305"><a href="#cb12-305" aria-label="305"></a></span>
-<span id="cb12-306"><a href="#cb12-306" aria-label="306"></a><span class="ss">- </span>**真偽値と論理判定**: <span class="in">`True`</span>/<span class="in">`False`</span> の2値があり、比較演算子（<span class="in">`==`</span>, <span class="in">`!=`</span>, <span class="in">`&gt;`</span>, <span class="in">`&lt;`</span>, <span class="in">`&gt;=`</span>, <span class="in">`&lt;=`</span>）で生成される。</span>
-<span id="cb12-307"><a href="#cb12-307" aria-label="307"></a><span class="ss">- </span>**場合分け（if文）**: 条件が1個、2個（<span class="in">`else`</span>）、3個以上（<span class="in">`elif`</span>）の構文を使い分ける。</span>
-<span id="cb12-308"><a href="#cb12-308" aria-label="308"></a><span class="ss">- </span>**繰り返し（for文・while文）**:</span>
-<span id="cb12-309"><a href="#cb12-309" aria-label="309"></a><span class="ss">  - </span><span class="in">`for`</span> 文は文字列や <span class="in">`range`</span> などの「データの並び」を順に走査する。</span>
-<span id="cb12-310"><a href="#cb12-310" aria-label="310"></a><span class="ss">  - </span><span class="in">`while`</span> 文は「条件が満たされている間」ループを継続する。</span>
-<span id="cb12-311"><a href="#cb12-311" aria-label="311"></a><span class="ss">- </span>**組み合わせ**: 繰り返しの中で条件分岐を行うことで、データの選別や特定の条件での処理中断（<span class="in">`break`</span>）など柔軟なアルゴリズムが構築できる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb12-306"><a href="#cb12-306" aria-label="306"></a><span class="ss">- </span>1から99までの奇数の並びを作り、それを合計する。</span>
+<span id="cb12-307"><a href="#cb12-307" aria-label="307"></a><span class="ss">- </span>1から99までの整数の並びを作り、<span class="in">`if`</span>文でそれが奇数の時だけ合計に加える。</span>
+<span id="cb12-308"><a href="#cb12-308" aria-label="308"></a>:::</span>
+<span id="cb12-309"><a href="#cb12-309" aria-label="309"></a></span>
+<span id="cb12-310"><a href="#cb12-310" aria-label="310"></a>また、ループの途中で中断する <span class="in">`break`</span> や、その回の処理を飛ばして次へ進む <span class="in">`continue`</span> を <span class="in">`if`</span> 文と組み合わせて使うこともできます。</span>
+<span id="cb12-311"><a href="#cb12-311" aria-label="311"></a></span>
+<span id="cb12-312"><a href="#cb12-312" aria-label="312"></a><span class="in">```python</span></span>
+<span id="cb12-313"><a href="#cb12-313" aria-label="313"></a><span class="co"># 4という値を探索（見つかったら即座に中断）</span></span>
+<span id="cb12-314"><a href="#cb12-314" aria-label="314"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
+<span id="cb12-315"><a href="#cb12-315" aria-label="315"></a>    <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb12-316"><a href="#cb12-316" aria-label="316"></a>        <span class="bu">print</span>(<span class="st">"目的のアイテムが見つかったので探索を終了します（ステップ"</span>, step, <span class="st">"）"</span>)</span>
+<span id="cb12-317"><a href="#cb12-317" aria-label="317"></a>        <span class="cf">break</span></span>
+<span id="cb12-318"><a href="#cb12-318" aria-label="318"></a>    <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
+<span id="cb12-319"><a href="#cb12-319" aria-label="319"></a><span class="in">```</span></span>
+<span id="cb12-320"><a href="#cb12-320" aria-label="320"></a></span>
+<span id="cb12-321"><a href="#cb12-321" aria-label="321"></a>関数定義の中では、ある条件が成り立った時にループを途中で中断し、関数の実行も終了させることがよくあります。そのような場合には <span class="in">`if`</span> と <span class="in">`return`</span> を組み合わせて使います。</span>
+<span id="cb12-322"><a href="#cb12-322" aria-label="322"></a></span>
+<span id="cb12-323"><a href="#cb12-323" aria-label="323"></a><span class="in">```python</span></span>
+<span id="cb12-324"><a href="#cb12-324" aria-label="324"></a><span class="kw">def</span> search4():</span>
+<span id="cb12-325"><a href="#cb12-325" aria-label="325"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
+<span id="cb12-326"><a href="#cb12-326" aria-label="326"></a>        <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb12-327"><a href="#cb12-327" aria-label="327"></a>            <span class="cf">return</span> <span class="st">"見つかりました"</span></span>
+<span id="cb12-328"><a href="#cb12-328" aria-label="328"></a>        <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
+<span id="cb12-329"><a href="#cb12-329" aria-label="329"></a>    <span class="cf">return</span> <span class="st">"見つかりませんでした"</span></span>
+<span id="cb12-330"><a href="#cb12-330" aria-label="330"></a><span class="in">```</span></span>
+<span id="cb12-331"><a href="#cb12-331" aria-label="331"></a></span>
+<span id="cb12-332"><a href="#cb12-332" aria-label="332"></a>::: {.callout-note icon=false}</span>
+<span id="cb12-333"><a href="#cb12-333" aria-label="333"></a><span class="fu">### 練習問題 02-07：素数の判定</span></span>
+<span id="cb12-334"><a href="#cb12-334" aria-label="334"></a>引数として2以上の整数を受け取り、それが素数なら True を、素数でなければ False を返す関数を定義してください。</span>
+<span id="cb12-335"><a href="#cb12-335" aria-label="335"></a></span>
+<span id="cb12-336"><a href="#cb12-336" aria-label="336"></a><span class="ss">- </span>2以上でその数未満の数の並びについて、順に割り切るかどうかを試し、割り切れたら素数ではないので <span class="in">`return False`</span> で脱出します。</span>
+<span id="cb12-337"><a href="#cb12-337" aria-label="337"></a><span class="ss">- </span>どの数でも割り切れなければ素数なので <span class="in">`return True`</span> で True を返します。</span>
+<span id="cb12-338"><a href="#cb12-338" aria-label="338"></a></span>
+<span id="cb12-339"><a href="#cb12-339" aria-label="339"></a>:::</span>
+<span id="cb12-340"><a href="#cb12-340" aria-label="340"></a></span>
+<span id="cb12-341"><a href="#cb12-341" aria-label="341"></a>---</span>
+<span id="cb12-342"><a href="#cb12-342" aria-label="342"></a></span>
+<span id="cb12-343"><a href="#cb12-343" aria-label="343"></a><span class="fu">## まとめ</span></span>
+<span id="cb12-344"><a href="#cb12-344" aria-label="344"></a></span>
+<span id="cb12-345"><a href="#cb12-345" aria-label="345"></a><span class="ss">- </span>**真偽値と論理判定**: <span class="in">`True`</span>/<span class="in">`False`</span> の2値があり、比較演算子（<span class="in">`==`</span>, <span class="in">`!=`</span>, <span class="in">`&gt;`</span>, <span class="in">`&lt;`</span>, <span class="in">`&gt;=`</span>, <span class="in">`&lt;=`</span>）で生成される。</span>
+<span id="cb12-346"><a href="#cb12-346" aria-label="346"></a><span class="ss">- </span>**場合分け（if文）**: 条件が1個、2個（<span class="in">`else`</span>）、3個以上（<span class="in">`elif`</span>）の構文を使い分ける。</span>
+<span id="cb12-347"><a href="#cb12-347" aria-label="347"></a><span class="ss">- </span>**繰り返し（for文・while文）**:</span>
+<span id="cb12-348"><a href="#cb12-348" aria-label="348"></a><span class="ss">  - </span><span class="in">`for`</span> 文は文字列や <span class="in">`range`</span> などの「データの並び」を順に走査する。</span>
+<span id="cb12-349"><a href="#cb12-349" aria-label="349"></a><span class="ss">  - </span><span class="in">`while`</span> 文は「条件が満たされている間」ループを継続する。</span>
+<span id="cb12-350"><a href="#cb12-350" aria-label="350"></a><span class="ss">- </span>**組み合わせ**: 繰り返しの中で条件分岐を行うことで、データの選別や特定の条件での処理中断（<span class="in">`break`</span>）など柔軟なアルゴリズムが構築できる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

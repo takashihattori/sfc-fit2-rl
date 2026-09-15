@@ -1,14 +1,12 @@
 # データ型
 
-## 本章のねらい
-Pythonにおける「データ型」の根本的な意味を理解した上で、複数のデータを柔軟に管理・操作するための代表的なデータ構造である **`list`（リスト）型** と **`dict`（ディクショナリ / 辞書）型** をマスターします。データの並びからの取り出し、変更、追加、辞書のキー操作などを学び、将来の強化学習におけるエージェントの行動履歴管理や価値マップ（Qテーブル）の基礎を固めます。
-
----
-
 ## データ型とは
 
-コンピュータのメモリ上では、すべてのデータは `0` と `1` のビット列として記録されています。
-そのビット列を「整数」として解釈するのか、「小数（実数）」として解釈するのか、「文字の並び」として解釈するのか、それとも「複数のデータの集まり」として解釈するのかを規定する分類を**データ型（型 / Type）**と呼びます。
+プログラムで扱うデータを分類したものを**データ型（型 / Type）**と呼びます。
+
+- データには性質の違うものがあります。例えば、整数は四則演算ができますが、文字列は掛けたり割ったりできません。性質が違うものは区別して扱う必要があります。
+- コンピュータのメモリ上では、すべてのデータは `0` と `1` のビット列として記録されています。
+そのビット列を「整数」として解釈するのか、「小数（実数）」として解釈するのか、「文字の並び」として解釈するのか、それとも「複数のデータの集まり」として解釈するのかを規定する必要があります。
 
 Pythonでは、値の型を `type()` 関数で調べることができます：
 
@@ -74,9 +72,92 @@ print(fruits[2])   # 3番目: orange
 print(fruits[-1])  # 末尾: grape
 ```
 
+```{=html}
+<svg viewBox="0 0 620 222" width="100%" height="222" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;">
+  <defs>
+    <marker id="arrow-idx-pos" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="arrow-idx-neg" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c62828" />
+    </marker>
+  </defs>
+
+  <!-- 左側ラベル：インデックス -->
+  <text x="105" y="30" text-anchor="end" font-size="12" font-weight="bold" fill="#1565c0">インデックス</text>
+  <text x="105" y="44" text-anchor="end" font-size="10" fill="#5c6bc0">(先頭は 0)</text>
+
+  <!-- 上部：正のインデックス（0, 1, 2, 3） -->
+  <rect x="155" y="16" width="42" height="24" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="176" y="33" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#0d47a1">0</text>
+  <line x1="176" y1="42" x2="176" y2="70" stroke="#1976d2" stroke-width="1.5" marker-end="url(#arrow-idx-pos)"/>
+
+  <rect x="265" y="16" width="42" height="24" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="286" y="33" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#0d47a1">1</text>
+  <line x1="286" y1="42" x2="286" y2="70" stroke="#1976d2" stroke-width="1.5" marker-end="url(#arrow-idx-pos)"/>
+
+  <rect x="375" y="16" width="42" height="24" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="396" y="33" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#0d47a1">2</text>
+  <line x1="396" y1="42" x2="396" y2="70" stroke="#1976d2" stroke-width="1.5" marker-end="url(#arrow-idx-pos)"/>
+
+  <rect x="485" y="16" width="42" height="24" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="506" y="33" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#0d47a1">3</text>
+  <line x1="506" y1="42" x2="506" y2="70" stroke="#1976d2" stroke-width="1.5" marker-end="url(#arrow-idx-pos)"/>
+
+  <!-- 中央部：リスト変数と括弧 -->
+  <text x="95" y="93" text-anchor="end" font-size="11" font-weight="bold" fill="#2e7d32">要素（値）</text>
+  <text x="95" y="108" text-anchor="end" font-size="13" font-family="monospace" font-weight="bold" fill="#333">fruits =</text>
+  <text x="110" y="107" font-size="34" font-weight="300" fill="#777">[</text>
+
+  <!-- 要素の箱（4個） -->
+  <rect x="128" y="74" width="96" height="46" rx="6" fill="#f1f8e9" stroke="#558b2f" stroke-width="2"/>
+  <text x="176" y="103" text-anchor="middle" font-size="15" font-family="monospace" font-weight="bold" fill="#2e7d32">"apple"</text>
+  <text x="231" y="104" text-anchor="middle" font-size="18" font-weight="bold" fill="#777">,</text>
+
+  <rect x="238" y="74" width="96" height="46" rx="6" fill="#f1f8e9" stroke="#558b2f" stroke-width="2"/>
+  <text x="286" y="103" text-anchor="middle" font-size="15" font-family="monospace" font-weight="bold" fill="#2e7d32">"banana"</text>
+  <text x="341" y="104" text-anchor="middle" font-size="18" font-weight="bold" fill="#777">,</text>
+
+  <rect x="348" y="74" width="96" height="46" rx="6" fill="#f1f8e9" stroke="#558b2f" stroke-width="2"/>
+  <text x="396" y="103" text-anchor="middle" font-size="15" font-family="monospace" font-weight="bold" fill="#2e7d32">"orange"</text>
+  <text x="451" y="104" text-anchor="middle" font-size="18" font-weight="bold" fill="#777">,</text>
+
+  <rect x="458" y="74" width="96" height="46" rx="6" fill="#f1f8e9" stroke="#558b2f" stroke-width="2"/>
+  <text x="506" y="103" text-anchor="middle" font-size="15" font-family="monospace" font-weight="bold" fill="#2e7d32">"grape"</text>
+  <text x="560" y="107" font-size="34" font-weight="300" fill="#777">]</text>
+
+  <!-- 左側ラベル：負のインデックス -->
+  <text x="105" y="152" text-anchor="end" font-size="12" font-weight="bold" fill="#c62828">負のインデックス</text>
+  <text x="105" y="166" text-anchor="end" font-size="10" fill="#e57373">(末尾は -1)</text>
+
+  <!-- 下部：負のインデックス（-4, -3, -2, -1） -->
+  <line x1="176" y1="146" x2="176" y2="124" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrow-idx-neg)"/>
+  <rect x="153" y="148" width="46" height="24" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+  <text x="176" y="165" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#b71c1c">-4</text>
+
+  <line x1="286" y1="146" x2="286" y2="124" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrow-idx-neg)"/>
+  <rect x="263" y="148" width="46" height="24" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+  <text x="286" y="165" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#b71c1c">-3</text>
+
+  <line x1="396" y1="146" x2="396" y2="124" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrow-idx-neg)"/>
+  <rect x="373" y="148" width="46" height="24" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+  <text x="396" y="165" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#b71c1c">-2</text>
+
+  <line x1="506" y1="146" x2="506" y2="124" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrow-idx-neg)"/>
+  <rect x="483" y="148" width="46" height="24" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+  <text x="506" y="165" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#b71c1c">-1</text>
+
+  <!-- 下部注記バー -->
+  <rect x="35" y="184" width="550" height="28" rx="4" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="310" y="202" text-anchor="middle" font-size="12" fill="#444">
+    <tspan font-family="monospace" font-weight="bold" fill="#0d47a1">fruits[0]</tspan> → <tspan font-weight="bold" fill="#2e7d32">"apple"</tspan>（先頭）　|　<tspan font-family="monospace" font-weight="bold" fill="#0d47a1">fruits[2]</tspan> → <tspan font-weight="bold" fill="#2e7d32">"orange"</tspan>（3番目）　|　<tspan font-family="monospace" font-weight="bold" fill="#c62828">fruits[-1]</tspan> → <tspan font-weight="bold" fill="#2e7d32">"grape"</tspan>（末尾）
+  </text>
+</svg>
+```
+
 ::: {.callout-note icon=false}
 ### 練習問題 03-03：インデックス指定での取得
-リスト `scores = [88, 92, 75, 64, 99]` の先頭の要素と末尾の要素をインデックスを指定してそれぞれ表示してください。
+リスト `scores = [88, 92, 75, 64, 99]` の中の75という要素と、99という要素を取り出すには、どのように書けばよいでしょうか。
 :::
 
 ### スライスで複数個まとめて取り出す
@@ -137,11 +218,11 @@ print(history)  # ['S0', 'S1', 'S2']
 辞書の定数は中括弧 `{...}` を使い、`キー: 値` のペアをカンマ区切りで記述します。
 
 ```python
-# 状態に対する推定価値の辞書
-state_values = {
-    "Start": 0.0,
-    "Goal": 100.0,
-    "Trap": -50.0
+# 人の名前（キー）と点数（値）を対応付けた辞書
+scores = {
+    "Alice": 80,
+    "Bob": 65,
+    "Charlie": 90
 }
 ```
 
@@ -149,8 +230,8 @@ state_values = {
 辞書の値を取り出すには、角括弧の中にキーを指定します：`辞書[キー]`
 
 ```python
-print(state_values["Goal"])   # 100.0
-print(state_values["Start"])  # 0.0
+print(scores["Alice"])  # 80
+print(scores["Bob"])    # 65
 ```
 
 ::: {.callout-note icon=false}
@@ -162,26 +243,26 @@ print(state_values["Start"])  # 0.0
 既存のキーに対して値を代入することで、そのキーに紐づく値を上書き・変更できます。
 
 ```python
-state_values["Start"] = 5.0
-print(state_values["Start"])  # 5.0
+scores["Bob"] = 75
+print(scores["Bob"])  # 75
 ```
 
 ::: {.callout-note icon=false}
 ### 練習問題 03-08：辞書の値の更新
-辞書 `scores = {"Alice": 80, "Bob": 65}` において、`Bob` のスコアを `75` に更新して辞書全体を表示してください。
+上記の辞書 `scores` において、`Alice` のスコアを `85` に更新して辞書全体を表示してください。
 :::
 
 ### 新しいキーと値を追加
 辞書に存在しない新しいキーを指定して値を代入すると、辞書に新たなペアが自動的に追加されます。
 
 ```python
-state_values["Cliff"] = -100.0
-print(state_values)
+scores["Dave"] = 70
+print(scores)
 ```
 
 ::: {.callout-note icon=false}
 ### 練習問題 03-09：新しいキーと値の追加
-上記の辞書 `scores` に、新しいキー `"Charlie"` とその値 `90` を追加し、辞書全体を表示してください。
+上記の辞書 `scores` に、新しいキー `"Eve"` とその値 `95` を追加し、辞書全体を表示してください。
 :::
 
 ### for文でキーを取り出す
@@ -189,21 +270,213 @@ print(state_values)
 キーを使って対応する値を参照することもできます。
 
 ```python
-for state in state_values:
-    val = state_values[state]
-    print(f"状態: {state} -> 価値: {val}")
+for name in scores:
+    score = scores[name]
+    print(f"{name}さんの点数: {score}点")
 ```
 
 また、`items()` メソッドを使うと、キーと値を同時に取り出すこともできます：
 
 ```python
-for state, val in state_values.items():
-    print(f"状態: {state} -> 価値: {val}")
+for name, score in scores.items():
+    print(f"{name}さんの点数: {score}点")
 ```
 
 ::: {.callout-note icon=false}
 ### 練習問題 03-10：for文での辞書走査
 果物の名前と値段の辞書 `prices = {"apple": 150, "banana": 100, "orange": 120}` のすべてのキーと値段を、`for` 文を用いて「〇〇は〇〇円です」の形式で表示してください。
+:::
+
+---
+
+## オブジェクトとは
+
+ここまで `list` や `dictionary`、数値、文字列など様々なデータを扱ってきました。
+Pythonでは、これらプログラムで扱われるすべてのデータが**「オブジェクト（Object）」**です。
+
+先ほど `type([1, 2, 3])` や `type({"a": 1})` を調べたとき、`<class 'list'>` や `<class 'dict'>` と表示されたのを覚えているでしょうか。
+この `class`（クラス）とはオブジェクトを作るための「設計図」のことであり、具体的なリストや辞書は、その設計図から生み出された1つひとつのオブジェクト（実体）であることを表しています。
+
+オブジェクトとは、直訳すると「モノ（物体・対象）」です。
+プログラミングにおけるオブジェクトは、**「データ（値・状態・属性）」**と、そのデータに対する**「操作（振る舞い・手続き / メソッド）」**が1つのカプセルにまとまったものです。
+
+### list や dictionary のメソッドの実例
+リストを操作する際に使った `append()` や、辞書で使った `items()` は、まさにオブジェクトが持っている**「メソッド（Method）」**です。
+
+通常の関数（`len()` や `type()`、`print()` など）は `関数(引数)` の形で呼び出し、「引数をどのように処理するか」という考え方です。
+これに対し、メソッドは `オブジェクト.メソッド(引数)` の形で呼び出します。英語の文法で言えば「**〇〇（オブジェクト＝主語）が、〇〇（引数＝目的語）を〇〇する（メソッド＝動詞）**」という書き方になります。
+
+#### リストオブジェクトのメソッド例
+リストオブジェクトは、自身の要素を追加・削除・整列するための様々なメソッドを備えています：
+
+```python
+fruits = ["apple", "banana", "orange"]
+
+# append(): リストの末尾に要素を追加する
+fruits.append("grape")
+print(fruits)  # ['apple', 'banana', 'orange', 'grape']
+
+# pop(): リストの末尾から要素を取り出して削除する
+last_item = fruits.pop()
+print("取り出した要素:", last_item)  # grape
+print("pop後のリスト:", fruits)      # ['apple', 'banana', 'orange']
+
+# sort(): リストの要素を昇順（アルファベット順・数値順）に並べ替える
+fruits.sort()
+print("並べ替え後:", fruits)         # ['apple', 'banana', 'orange']
+```
+
+::: {.callout-note icon=false}
+### 練習問題 03-11：末尾から順に要素を取り出していく
+引数としてリストを受け取り、`pop()`を使って末尾から順にすべての要素を表示する関数を定義してください。
+:::
+
+#### 辞書オブジェクトのメソッド例
+辞書オブジェクトも、キーや値を柔軟に取り出すためのメソッドを備えています：
+
+```python
+scores = {"Alice": 80, "Bob": 65, "Charlie": 90}
+
+# keys(): すべてのキーの一覧を取得
+print(scores.keys())    # dict_keys(['Alice', 'Bob', 'Charlie'])
+
+# values(): すべての値の一覧を取得
+print(scores.values())  # dict_values([80, 65, 90])
+
+# items(): すべてのキーと値のペアを取得（for文でよく使われます）
+print(scores.items())   # dict_items([('Alice', 80), ('Bob', 65), ('Charlie', 90)])
+
+# get(): キーが存在すればその値を、存在しなければデフォルト値を返す（安全な取得）
+print(scores.get("Alice", 0))  # 80
+print(scores.get("Dave", 0))   # 0（キーが存在しなくてもエラーにならない）
+```
+
+### 別の変数への代入と実体（参照）の共有
+
+ここで、Pythonでオブジェクトを扱う上で**極めて重要、かつ多くの初学者がつまずく最大の注意点**があります。
+それは、**「リストや辞書などのオブジェクトを別の変数に代入したとき、実体は複製されず、共有される」**という点です。
+
+Pythonにおいて、変数は「データそのものを入れる箱」というよりも、メモリ上に存在するオブジェクト実体を指し示す**「名札（参照 / ポインタ）」**のような働きをします。
+
+次のコードを実行したとき、何が起きるか見てみましょう：
+
+```python
+a = [1, 2, 3]
+b = a  # a を b に代入
+
+b.append(4)  # b の末尾に 4 を追加
+
+print("b:", b)  # [1, 2, 3, 4]
+print("a:", a)  # [1, 2, 3, 4]  <- a の中身まで変わっている！
+```
+
+`b` に対してしか `append(4)` を行っていないにもかかわらず、`a` を表示すると `[1, 2, 3, 4]` に変化しています。
+
+これは、`b = a` という代入によってリストがコピーされたのではなく、**「`a` が指しているのと同じリスト実体に、`b` というもう1つの名札を貼り付けた（参照を共有した）」**ためです。そのため、`b` を通じて実体を書き換えると、同じ実体を見ている `a` から見ても内容が変わってしまうのです。
+
+辞書でも同様の現象が起こります：
+
+```python
+d1 = {"apple": 100}
+d2 = d1
+
+d2["banana"] = 200
+
+print("d2:", d2)  # {'apple': 100, 'banana': 200}
+print("d1:", d1)  # {'apple': 100, 'banana': 200} <- d1 も書き換わる！
+```
+
+#### 実体を複製して独立したコピーにするには
+元のオブジェクトとは独立した別の実体を作りたい（複製したい）場合は、オブジェクトの **`.copy()` メソッド** や型変換関数（`list()` / `dict()`）を使用します。
+
+```python
+a = [1, 2, 3]
+b = a.copy()  # 実体そのものを新しく複製する
+
+b.append(4)
+
+print("b:", b)  # [1, 2, 3, 4]
+print("a:", a)  # [1, 2, 3]  <- a は影響を受けず、元のまま保たれる！
+```
+
+```{=html}
+<svg viewBox="0 0 680 330" width="100%" height="330" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;">
+  <defs>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="arr-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+  </defs>
+
+  <!-- パターン1：参照の共有 -->
+  <rect x="15" y="15" width="650" height="135" rx="8" fill="#ffffff" stroke="#e0e0e0" stroke-width="1.5"/>
+  <rect x="15" y="15" width="650" height="26" rx="8" fill="#ffebee"/>
+  <text x="30" y="33" font-size="12" font-weight="bold" fill="#c62828">パターン1：b = a （参照の代入：実体を共有する）</text>
+
+  <!-- 変数名札 a, b -->
+  <rect x="35" y="55" width="70" height="32" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="70" y="76" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#0d47a1">a</text>
+
+  <rect x="35" y="100" width="70" height="32" rx="4" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="70" y="121" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#e65100">b</text>
+
+  <!-- 矢印 -->
+  <path d="M 105 71 Q 165 71 210 88" fill="none" stroke="#1976d2" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <path d="M 105 116 Q 165 116 210 98" fill="none" stroke="#e65100" stroke-width="2" marker-end="url(#arr-orange)"/>
+
+  <!-- 実体オブジェクト -->
+  <rect x="220" y="55" width="180" height="75" rx="8" fill="#f1f8e9" stroke="#558b2f" stroke-width="2"/>
+  <text x="310" y="76" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">リスト実体（メモリ上: 1個だけ）</text>
+  <rect x="235" y="86" width="150" height="32" rx="4" fill="#ffffff" stroke="#81c784" stroke-width="1"/>
+  <text x="310" y="107" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#1b5e20">[1, 2, 3, 4]</text>
+
+  <!-- 右側説明 -->
+  <rect x="420" y="55" width="230" height="75" rx="6" fill="#fbe9e7" stroke="#ffab91" stroke-width="1"/>
+  <text x="430" y="76" font-size="12" font-weight="bold" fill="#d84315">⚠️ 実体は1つを共有！</text>
+  <text x="430" y="96" font-size="11" fill="#444"><tspan font-family="monospace" font-weight="bold">b.append(4)</tspan> を実行すると、</text>
+  <text x="430" y="114" font-size="11" fill="#c62828" font-weight="bold">同じ実体を見ている a も [1, 2, 3, 4] に！</text>
+
+  <!-- パターン2：実体の複製 -->
+  <rect x="15" y="165" width="650" height="150" rx="8" fill="#ffffff" stroke="#e0e0e0" stroke-width="1.5"/>
+  <rect x="15" y="165" width="650" height="26" rx="8" fill="#e8f5e9"/>
+  <text x="30" y="183" font-size="12" font-weight="bold" fill="#2e7d32">パターン2：b = a.copy() （実体の複製：別の実体を作る）</text>
+
+  <!-- 変数名札 a, b -->
+  <rect x="35" y="205" width="70" height="32" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="70" y="226" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#0d47a1">a</text>
+
+  <rect x="35" y="265" width="70" height="32" rx="4" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="70" y="286" text-anchor="middle" font-size="14" font-family="monospace" font-weight="bold" fill="#e65100">b</text>
+
+  <!-- 矢印 a -> 実体a -->
+  <line x1="105" y1="221" x2="210" y2="221" stroke="#1976d2" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <!-- 矢印 b -> 実体b -->
+  <line x1="105" y1="281" x2="210" y2="281" stroke="#e65100" stroke-width="2" marker-end="url(#arr-orange)"/>
+
+  <!-- 実体 a -->
+  <rect x="220" y="200" width="180" height="44" rx="6" fill="#f1f8e9" stroke="#558b2f" stroke-width="1.5"/>
+  <text x="230" y="217" font-size="10" fill="#558b2f">aの実体:</text>
+  <text x="310" y="228" text-anchor="middle" font-size="13" font-family="monospace" font-weight="bold" fill="#1b5e20">[1, 2, 3]</text>
+
+  <!-- 実体 b -->
+  <rect x="220" y="260" width="180" height="44" rx="6" fill="#fff8e1" stroke="#fbc02d" stroke-width="1.5"/>
+  <text x="230" y="277" font-size="10" fill="#f57f17">bの実体（複製）:</text>
+  <text x="310" y="288" text-anchor="middle" font-size="13" font-family="monospace" font-weight="bold" fill="#e65100">[1, 2, 3, 4]</text>
+
+  <!-- 右側説明 -->
+  <rect x="420" y="205" width="230" height="98" rx="6" fill="#e8f5e9" stroke="#c8e6c9" stroke-width="1"/>
+  <text x="430" y="226" font-size="12" font-weight="bold" fill="#2e7d32">✓ 実体は独立している！</text>
+  <text x="430" y="248" font-size="11" fill="#444"><tspan font-family="monospace" font-weight="bold">b.append(4)</tspan> を実行しても、</text>
+  <text x="430" y="266" font-size="11" fill="#444">影響を受けるのは <tspan font-family="monospace" font-weight="bold">b</tspan> の実体のみ。</text>
+  <text x="430" y="286" font-size="11" fill="#1b5e20" font-weight="bold">a は [1, 2, 3] のまま保たれる！</text>
+</svg>
+```
+
+::: {.callout-note icon=false}
+### 練習問題 03-12：参照の共有とコピーの確認
+リスト `list1 = [10, 20, 30]` に対し、`list2 = list1` と代入した後に `list2.append(40)` を実行した場合、`print(list1)` の結果はどうなるでしょうか。また、`list1` を変更させずに `list2` だけに `40` を追加したい場合、どのように代入すればよいでしょうか。
 :::
 
 ---
@@ -214,8 +487,13 @@ for state, val in state_values.items():
 - **list型**:
   - 順序付きの変更可能なデータの並び（`[...]`）。
   - インデックス（0始まり）やスライス（`[start:end]`）による要素の参照・書き換えが可能。
-  - `append()` で要素を末尾に追加。
+  - `append()` や `pop()`, `sort()` などのメソッドを持つ。
 - **dictionary型**:
   - キーと値のペアで管理する連想構造（`{key: value}`）。
   - キーを使った高速な参照・変更・新規追加。
-  - 強化学習における状態空間やQテーブルの記録に極めて適している。
+  - `keys()`, `values()`, `items()`, `get()` などのメソッドを持つ。
+- **オブジェクト**:
+  - Pythonではすべてのデータ（数値、文字列、リスト、辞書など）がオブジェクト。
+  - 「データ（属性 / 状態）」と「操作（メソッド / 振る舞い）」が1つにまとまったもの。
+  - `オブジェクト.メソッド()` の記法により、対象のオブジェクトに対して操作を命令する。
+  - **実体の共有**: 別の変数に代入（`b = a`）したとき、オブジェクトの実体は複製されず共有（参照）される。独立した複製を作りたい場合は `.copy()` を用いる。
