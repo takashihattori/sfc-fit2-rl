@@ -293,7 +293,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#本章のねらい" id="toc-本章のねらい" class="nav-link active" data-scroll-target="#本章のねらい"><span class="header-section-number">2.1</span> 本章のねらい</a></li>
+  <li><a href="#キーボードからの入力" id="toc-キーボードからの入力" class="nav-link active" data-scroll-target="#キーボードからの入力"><span class="header-section-number">2.1</span> キーボードからの入力</a>
+  <ul class="collapse">
+  <li><a href="#input-関数の使い方" id="toc-input-関数の使い方" class="nav-link" data-scroll-target="#input-関数の使い方"><span class="header-section-number">2.1.1</span> <code>input()</code> 関数の使い方</a></li>
+  <li><a href="#idleでの入力方法" id="toc-idleでの入力方法" class="nav-link" data-scroll-target="#idleでの入力方法"><span class="header-section-number">2.1.2</span> IDLEでの入力方法</a></li>
+  </ul></li>
   <li><a href="#場合分け" id="toc-場合分け" class="nav-link" data-scroll-target="#場合分け"><span class="header-section-number">2.2</span> 場合分け</a>
   <ul class="collapse">
   <li><a href="#真偽値" id="toc-真偽値" class="nav-link" data-scroll-target="#真偽値"><span class="header-section-number">2.2.1</span> 真偽値</a></li>
@@ -305,6 +309,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#データの並び" id="toc-データの並び" class="nav-link" data-scroll-target="#データの並び"><span class="header-section-number">2.3.1</span> データの並び</a></li>
   <li><a href="#for文の書き方" id="toc-for文の書き方" class="nav-link" data-scroll-target="#for文の書き方"><span class="header-section-number">2.3.2</span> for文の書き方</a></li>
   <li><a href="#while文の書き方" id="toc-while文の書き方" class="nav-link" data-scroll-target="#while文の書き方"><span class="header-section-number">2.3.3</span> while文の書き方</a></li>
+  <li><a href="#無限ループと強制終了の方法" id="toc-無限ループと強制終了の方法" class="nav-link" data-scroll-target="#無限ループと強制終了の方法"><span class="header-section-number">2.3.4</span> 無限ループと強制終了の方法</a></li>
   </ul></li>
   <li><a href="#繰り返しと場合分けの組み合わせ" id="toc-繰り返しと場合分けの組み合わせ" class="nav-link" data-scroll-target="#繰り返しと場合分けの組み合わせ"><span class="header-section-number">2.4</span> 繰り返しと場合分けの組み合わせ</a></li>
   <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">2.5</span> まとめ</a></li>
@@ -333,10 +338,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="本章のねらい" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="本章のねらい"><span class="header-section-number">2.1</span> 本章のねらい</h2>
-<p>プログラムの実行の流れをコントロールする「場合分け（条件分岐）」と「繰り返し（ループ処理）」について学びます。真偽値や比較演算子の使い方、<code>if</code> 文による様々なパターンの条件分岐、そして文字列や <code>range</code> などのデータの並びに対する <code>for</code> 文や <code>while</code> 文、さらにこれらを組み合わせた制御構造を習得します。</p>
-<hr>
+<section id="キーボードからの入力" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="キーボードからの入力"><span class="header-section-number">2.1</span> キーボードからの入力</h2>
+<p>プログラムを実行したあとに、利用者がキーボードから文字や数値を自由に入力して処理を行いたい場合があります。Pythonでは、キーボードからの入力を受け取るために <code>input()</code> 関数を使用します。</p>
+<section id="input-関数の使い方" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="input-関数の使い方"><span class="header-section-number">2.1.1</span> <code>input()</code> 関数の使い方</h3>
+<p><code>input()</code> 関数を実行すると、プログラムはキーボードからの入力待ち状態（一時停止）になります。キーボードで文字を入力し、<strong>Enter キー（Return キー）</strong> を押すと、入力された内容がプログラムに渡されます。</p>
+<p>括弧の中に文字列（プロンプト）を指定すると、入力待ちの際にそのメッセージを画面に表示させることができます。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a>name <span class="op">=</span> <span class="bu">input</span>(<span class="st">"お名前を入力してください: "</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="bu">print</span>(<span class="st">"こんにちは、"</span> <span class="op">+</span> name <span class="op">+</span> <span class="st">"さん！"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">重要</span><code>input()</code> で受け取った値はすべて「文字列型（str）」になる
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>input()</code> 関数で受け取った値は、たとえキーボードから数字を入力したとしても、すべて<strong>文字列型（str）</strong>として扱われます（データ型については次回に説明します）。</p>
+<p>数値を入力して計算に利用したい場合は、<code>int()</code> 関数を使って整数に変換するか、<code>float()</code> 関数を使って浮動小数点数（実数）に型変換（キャスト）する必要があります。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a>age_str <span class="op">=</span> <span class="bu">input</span>(<span class="st">"年齢を入力してください: "</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a>age <span class="op">=</span> <span class="bu">int</span>(age_str)  <span class="co"># 文字列から整数に変換</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-label="3"></a><span class="bu">print</span>(<span class="st">"来年は"</span>, age <span class="op">+</span> <span class="dv">1</span>, <span class="st">"歳ですね。"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p>慣れてきたら、次のように1行にまとめて書くことも一般的です：</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a>age <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"年齢を入力してください: "</span>))</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</section>
+<section id="idleでの入力方法" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="idleでの入力方法"><span class="header-section-number">2.1.2</span> IDLEでの入力方法</h3>
+<p>第1回で紹介した統合開発環境「<strong>IDLE</strong>」でプログラムを実行し、キーボードから入力を行う際の手順と挙動を確認しましょう。</p>
+<ol type="1">
+<li><strong>スクリプトの実行</strong>: エディタウィンドウでプログラムを作成・保存し、メニューの「<strong>Run</strong>」→「<strong>Run Module</strong>」（または <strong>F5</strong> キー）を押して実行します。</li>
+<li><strong>Python Shell ウィンドウの確認</strong>: 実行すると <strong>Python Shell</strong> ウィンドウに画面が切り替わります。 <code>input()</code> のプロンプト文字列（例: <code>お名前を入力してください:</code>）が表示され、その末尾でカーソルが点滅して入力待ち状態になります。</li>
+<li><strong>キーボードからの入力と確定</strong>: キーボードから文字や数値を入力します（直接入力や日本語入力どちらも可能です）。 入力が終わったら、必ず <strong>Enter キー</strong> を押して入力を確定させます。Enter キーを押すことで初めて値がプログラムへ送られ、次の行の処理が進みます。</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a>==================== RESTART: .../input_sample.py ====================</span>
+<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a>お名前を入力してください: アリス</span>
+<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a>こんにちは、アリスさん！</span>
+<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a>&gt;&gt;&gt; </span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>練習問題 02-01：キーボード入力と計算
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>キーボードから2つの整数を順番に入力させ、それらの足し算の結果を表示するプログラムを作成してください。</p>
+</div>
+</div>
+</section>
 </section>
 <section id="場合分け" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="場合分け"><span class="header-section-number">2.2</span> 場合分け</h2>
@@ -348,9 +404,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>True</code>: 正しい（真）</li>
 <li><code>False</code>: 正しくない（偽）</li>
 </ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a>flag <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a><span class="bu">print</span>(flag)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="bu">print</span>(<span class="bu">type</span>(flag))  <span class="co"># &lt;class 'bool'&gt;</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a>flag <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a><span class="bu">print</span>(flag)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a><span class="bu">print</span>(<span class="bu">type</span>(flag))  <span class="co"># &lt;class 'bool'&gt;</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="比較演算子" class="level3" data-number="2.2.2">
 <h3 data-number="2.2.2" class="anchored" data-anchor-id="比較演算子"><span class="header-section-number">2.2.2</span> 比較演算子</h3>
@@ -409,11 +465,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>練習問題 02-01：比較演算子の結果の確認
+<span class="screen-reader-only">ノート</span>練習問題 02-02：比較演算子の結果の確認
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>変数 <code>x = 15</code> に対し、<code>x &gt; 10</code>、<code>x == 20</code>、<code>x % 2 == 1</code> の実行結果（真偽値）がそれぞれどうなるか確認してください。</p>
+<p>キーボードから入力した数値を変数 <code>x</code> に記憶し、<code>x &gt; 10</code>、<code>x == 20</code>、<code>x % 2 == 1</code> の実行結果（真偽値）を表示するプログラムを作ってください。</p>
 </div>
 </div>
 </section>
@@ -444,10 +500,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <circle cx="180" cy="220" r="4" fill="#333"></circle>
   <line x1="180" y1="220" x2="180" y2="245" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"></line>
 </svg>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a>score <span class="op">=</span> <span class="dv">85</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-label="2"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-label="3"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
-<span id="cb2-4"><a href="#cb2-4" aria-label="4"></a>    <span class="bu">print</span>(<span class="st">"合格です！"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a>score <span class="op">=</span> <span class="dv">85</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-label="2"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-label="3"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
+<span id="cb6-4"><a href="#cb6-4" aria-label="4"></a>    <span class="bu">print</span>(<span class="st">"合格です！"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="場合の数が2個のとき" class="level4" data-number="2.2.3.2">
 <h4 data-number="2.2.3.2" class="anchored" data-anchor-id="場合の数が2個のとき"><span class="header-section-number">2.2.3.2</span> 場合の数が2個のとき</h4>
@@ -478,25 +534,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <circle cx="210" cy="195" r="4" fill="#333"></circle>
   <line x1="210" y1="195" x2="210" y2="230" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"></line>
 </svg>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a>score <span class="op">=</span> <span class="dv">45</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
-<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>    <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a><span class="cf">else</span>:</span>
-<span id="cb3-6"><a href="#cb3-6" aria-label="6"></a>    <span class="bu">print</span>(<span class="st">"不合格"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a>score <span class="op">=</span> <span class="dv">45</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-label="2"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-label="3"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-label="4"></a>    <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-label="5"></a><span class="cf">else</span>:</span>
+<span id="cb7-6"><a href="#cb7-6" aria-label="6"></a>    <span class="bu">print</span>(<span class="st">"不合格"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="else-があるときのインデント" class="level5" data-number="2.2.3.2.1">
+<h5 data-number="2.2.3.2.1" class="anchored" data-anchor-id="else-があるときのインデント"><span class="header-section-number">2.2.3.2.1</span> else があるときのインデント</h5>
+<p><code>else:</code> を記述する際は、<strong><code>if</code> と同じインデント位置（行頭の深さ）に揃える</strong>必要があります。</p>
+<ol type="1">
+<li><code>if</code> の条件が真のときに実行する処理が終わったら、インデントを1段戻して <code>else:</code> を書きます。</li>
+<li><code>else:</code> の末尾にも必ずコロン <code>:</code> を付けます。</li>
+<li><code>else:</code> の下にある「条件が成り立たなかったときの処理」は、再び<strong>半角スペース4個分インデント（字下げ）</strong>します。</li>
+</ol>
+<p>IDLEなどのエディタでは、<code>if</code> ブロックの処理のあとで Enter キーを押すと、自動的に次の行もインデントされた状態になります。そのため、<strong>Backspace キー（Mac の場合は Delete キー）を1回押してインデントを1段戻してから</strong> <code>else:</code> を入力してください。</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>練習問題 02-02：偶数・奇数の判定
+<span class="screen-reader-only">ノート</span>練習問題 02-03：偶数・奇数の判定
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>ある整数変数 <code>num</code> の値が偶数か奇数かを <code>if-else</code> 文を用いて判定し、「偶数です」または「奇数です」と表示するプログラムを作成してください。</p>
+<p>キーボードから整数を入力して変数 <code>num</code> に保存し、それが偶数か奇数かを <code>if-else</code> 文を用いて判定し、「偶数です」または「奇数です」と表示するプログラムを作成してください。</p>
 </div>
 </div>
+</section>
 </section>
 <section id="場合の数が3個以上のとき" class="level4" data-number="2.2.3.3">
 <h4 data-number="2.2.3.3" class="anchored" data-anchor-id="場合の数が3個以上のとき"><span class="header-section-number">2.2.3.3</span> 場合の数が3個以上のとき</h4>
@@ -535,27 +601,129 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <line x1="150" y1="275" x2="150" y2="291" stroke="#333" stroke-width="2"></line>
   <line x1="150" y1="299" x2="150" y2="320" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"></line>
 </svg>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a>score <span class="op">=</span> <span class="dv">75</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-label="2"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-label="3"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
-<span id="cb4-4"><a href="#cb4-4" aria-label="4"></a>    <span class="bu">print</span>(<span class="st">"評価: 優"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-label="5"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">70</span>:</span>
-<span id="cb4-6"><a href="#cb4-6" aria-label="6"></a>    <span class="bu">print</span>(<span class="st">"評価: 良"</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-label="7"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
-<span id="cb4-8"><a href="#cb4-8" aria-label="8"></a>    <span class="bu">print</span>(<span class="st">"評価: 可"</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-label="9"></a><span class="cf">else</span>:</span>
-<span id="cb4-10"><a href="#cb4-10" aria-label="10"></a>    <span class="bu">print</span>(<span class="st">"評価: 不可"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a>score <span class="op">=</span> <span class="dv">75</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-label="2"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-label="3"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
+<span id="cb8-4"><a href="#cb8-4" aria-label="4"></a>    <span class="bu">print</span>(<span class="st">"評価: 優"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-label="5"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">70</span>:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-label="6"></a>    <span class="bu">print</span>(<span class="st">"評価: 良"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-label="7"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb8-8"><a href="#cb8-8" aria-label="8"></a>    <span class="bu">print</span>(<span class="st">"評価: 可"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-label="9"></a><span class="cf">else</span>:</span>
+<span id="cb8-10"><a href="#cb8-10" aria-label="10"></a>    <span class="bu">print</span>(<span class="st">"評価: 不可"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="elif-があるときのインデント" class="level5" data-number="2.2.3.3.1">
+<h5 data-number="2.2.3.3.1" class="anchored" data-anchor-id="elif-があるときのインデント"><span class="header-section-number">2.2.3.3.1</span> elif があるときのインデント</h5>
+<p><code>elif</code> を使う場合も、基本のインデントルールは <code>else</code> と同様です。</p>
+<ol type="1">
+<li><strong><code>if</code>、<code>elif</code>、<code>else</code> の行頭をすべて同じインデント位置（深さ）に揃えます。</strong> <code>elif</code> を前の条件ブロックの内側にインデントしてはいけません。</li>
+<li>それぞれの条件が成り立ったときに実行する文は、各行の下で<strong>半角スペース4個分インデント</strong>します。</li>
+</ol>
+</section>
+</section>
+<section id="ifelifelse-のインデント構造と注意点" class="level4" data-number="2.2.3.4">
+<h4 data-number="2.2.3.4" class="anchored" data-anchor-id="ifelifelse-のインデント構造と注意点"><span class="header-section-number">2.2.3.4</span> if・elif・else のインデント構造と注意点</h4>
+<p><code>if</code>、<code>elif</code>、<code>else</code> を組み合わせる際のインデントの全体像をまとめると、以下のようになります。</p>
+<svg viewbox="0 0 620 290" width="100%" height="290" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;">
+  <!-- タイトル -->
+  <text x="20" y="28" font-size="14" font-weight="bold" fill="#333">if / elif / else のインデント構造</text>
+
+  <!-- コード表示枠 -->
+  <rect x="20" y="42" width="310" height="230" rx="6" fill="#1e293b"></rect>
+
+  <!-- 1行目: if -->
+  <text x="35" y="72" font-family="Consolas, Monaco, monospace" font-size="14" font-weight="bold" fill="#f472b6">if</text>
+  <text x="58" y="72" font-family="Consolas, Monaco, monospace" font-size="14" fill="#f8fafc"> 条件式1:</text>
+
+  <!-- 2行目: 処理1（インデント） -->
+  <rect x="35" y="85" width="48" height="20" fill="#334155" rx="3"></rect>
+  <text x="39" y="99" font-family="Consolas, Monaco, monospace" font-size="10" fill="#94a3b8">␣␣␣␣</text>
+  <text x="90" y="100" font-family="Consolas, Monaco, monospace" font-size="14" fill="#4ade80">処理1</text>
+
+  <!-- 3行目: elif -->
+  <text x="35" y="135" font-family="Consolas, Monaco, monospace" font-size="14" font-weight="bold" fill="#f472b6">elif</text>
+  <text x="75" y="135" font-family="Consolas, Monaco, monospace" font-size="14" fill="#f8fafc"> 条件式2:</text>
+
+  <!-- 4行目: 処理2（インデント） -->
+  <rect x="35" y="148" width="48" height="20" fill="#334155" rx="3"></rect>
+  <text x="39" y="162" font-family="Consolas, Monaco, monospace" font-size="10" fill="#94a3b8">␣␣␣␣</text>
+  <text x="90" y="163" font-family="Consolas, Monaco, monospace" font-size="14" fill="#4ade80">処理2</text>
+
+  <!-- 5行目: else -->
+  <text x="35" y="198" font-family="Consolas, Monaco, monospace" font-size="14" font-weight="bold" fill="#f472b6">else:</text>
+
+  <!-- 6行目: 処理3（インデント） -->
+  <rect x="35" y="211" width="48" height="20" fill="#334155" rx="3"></rect>
+  <text x="39" y="225" font-family="Consolas, Monaco, monospace" font-size="10" fill="#94a3b8">␣␣␣␣</text>
+  <text x="90" y="226" font-family="Consolas, Monaco, monospace" font-size="14" fill="#4ade80">処理3</text>
+
+  <!-- 先頭を揃えるガイド線 (赤の破線) -->
+  <line x1="28" y1="58" x2="28" y2="204" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,3"></line>
+  <circle cx="28" cy="68" r="3" fill="#ef4444"></circle>
+  <circle cx="28" cy="131" r="3" fill="#ef4444"></circle>
+  <circle cx="28" cy="194" r="3" fill="#ef4444"></circle>
+
+  <!-- 右側説明ボックス1: 先頭を揃える -->
+  <rect x="350" y="52" width="250" height="90" rx="6" fill="#ffffff" stroke="#ef4444" stroke-width="1.5"></rect>
+  <text x="365" y="75" font-size="13" font-weight="bold" fill="#dc2626">● 先頭の位置を揃える</text>
+  <text x="365" y="97" font-size="12" fill="#334155">・if, elif, else は同じインデント位置</text>
+  <text x="365" y="117" font-size="12" fill="#334155">・ブロックが終わったらインデントを戻す</text>
+  <text x="365" y="133" font-size="11" fill="#64748b">（IDLEでは Backspace で戻す）</text>
+
+  <!-- 右側説明ボックス2: インデントする -->
+  <rect x="350" y="162" width="250" height="90" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"></rect>
+  <text x="365" y="185" font-size="13" font-weight="bold" fill="#1d4ed8">● 実行文はインデントする</text>
+  <text x="365" y="207" font-size="12" fill="#334155">・半角スペース4つ分（字下げ）</text>
+  <text x="365" y="227" font-size="12" fill="#334155">・コロン (:) の次の行は必ずインデント</text>
+  <text x="365" y="243" font-size="11" fill="#64748b">・ずれると IndentationError になる</text>
+</svg>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">重要</span>インデントでよくある間違い
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pythonでは、波括弧 <code>{ }</code> ではなく「行頭の空白の数（インデント）」によってどこからどこまでがひとかたまりの処理（ブロック）なのかを判断します。そのため、インデントがずれるとエラーの原因になります。</p>
+<p>特に初心者がつまずきやすいのは以下の2点です：</p>
+<ol type="1">
+<li><p><strong><code>else</code> や <code>elif</code> 自体をインデントしてしまう（構文エラー）</strong> <code>if</code> の中の処理が終わったあと、インデントを戻さずに <code>else:</code> や <code>elif:</code> を書いてしまうとエラーになります。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="co"># ✕ 誤った例（else が if の処理の中にインデントされている）</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-label="2"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb9-3"><a href="#cb9-3" aria-label="3"></a>    <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-label="4"></a>    <span class="cf">else</span>:          <span class="co"># SyntaxError になる！</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-label="5"></a>        <span class="bu">print</span>(<span class="st">"不合格"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>対処法</strong>: <code>if</code> と同じ列（行頭）までインデントを戻して記述します。</p></li>
+<li><p><strong><code>else</code> や <code>elif</code> の直下の処理をインデントし忘れる（インデントエラー）</strong> コロン <code>:</code> の次の行でインデントを行わないとエラーになります。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-label="1"></a><span class="co"># ✕ 誤った例（処理がインデントされていない）</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-label="2"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb10-3"><a href="#cb10-3" aria-label="3"></a>    <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-label="4"></a><span class="cf">else</span>:</span>
+<span id="cb10-5"><a href="#cb10-5" aria-label="5"></a><span class="bu">print</span>(<span class="st">"不合格"</span>)    <span class="co"># IndentationError になる！</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>対処法</strong>: 条件が成り立ったときの処理は、必ず半角スペース4個分インデントします。</p></li>
+</ol>
+</div>
+</div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>練習問題 02-03：気温に応じたメッセージの表示
+<span class="screen-reader-only">ノート</span>練習問題 02-04：気温に応じたメッセージの表示
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>最高気温が変数 <code>temp</code>に入っているとして、40℃以上なら「酷暑日」、35℃以上40℃未満なら「猛暑日」、30℃以上35℃未満なら「真夏日」、25℃以上30℃未満なら「夏日」、それ以外なら「普通の日」と表示するプログラムを作成してください。</p>
+<p>今日の最高気温を表す変数 <code>temperature</code> の値に応じて、以下のメッセージを表示するプログラムを <code>if-elif-else</code> 文を用いて作成してください：</p>
+<ul>
+<li>40度以上：「酷暑日」</li>
+<li>35度以上40度未満：「猛暑日」</li>
+<li>30度以上35度未満：「真夏日」</li>
+<li>25度以上30度未満：「夏日」</li>
+<li>それ以外なら「普通の日」</li>
+</ul>
 </div>
 </div>
 <hr>
@@ -583,7 +751,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>練習問題 02-04：rangeを用いた整数の並び
+<span class="screen-reader-only">ノート</span>練習問題 02-05：rangeを用いた整数の並び
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -595,18 +763,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 data-number="2.3.2" class="anchored" data-anchor-id="for文の書き方"><span class="header-section-number">2.3.2</span> for文の書き方</h3>
 <p><code>for 変数 in データの並び:</code> の形で書き、繰り返したい処理をインデントします。</p>
 <p>文字列の中の文字を1文字ずつ取り出す例：</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a>word <span class="op">=</span> <span class="st">"Python"</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-label="2"></a><span class="cf">for</span> ch <span class="kw">in</span> word:</span>
-<span id="cb5-3"><a href="#cb5-3" aria-label="3"></a>    <span class="bu">print</span>(ch)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a>word <span class="op">=</span> <span class="st">"Python"</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-label="2"></a><span class="cf">for</span> ch <span class="kw">in</span> word:</span>
+<span id="cb11-3"><a href="#cb11-3" aria-label="3"></a>    <span class="bu">print</span>(ch)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>整数の並びを順に取り出す例：</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="co"># 0から4まで表示</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-label="2"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
-<span id="cb6-3"><a href="#cb6-3" aria-label="3"></a>    <span class="bu">print</span>(i)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-label="1"></a><span class="co"># 0から4まで表示</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-label="2"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb12-3"><a href="#cb12-3" aria-label="3"></a>    <span class="bu">print</span>(i)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>取り出した数を使って合計を計算する例：</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-label="1"></a>total <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-label="2"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>):</span>
-<span id="cb7-3"><a href="#cb7-3" aria-label="3"></a>    total <span class="op">=</span> total <span class="op">+</span> i</span>
-<span id="cb7-4"><a href="#cb7-4" aria-label="4"></a><span class="bu">print</span>(<span class="st">"1から10までの合計:"</span>, total)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-label="1"></a>total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-label="2"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>):</span>
+<span id="cb13-3"><a href="#cb13-3" aria-label="3"></a>    total <span class="op">=</span> total <span class="op">+</span> i</span>
+<span id="cb13-4"><a href="#cb13-4" aria-label="4"></a><span class="bu">print</span>(<span class="st">"1から10までの合計:"</span>, total)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>練習問題 02-06：キーボードからの入力と合計
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>キーボードから5個の数値を入力して、その合計を表示するプログラムを作成してください。</p>
+</div>
+</div>
 </section>
 <section id="while文の書き方" class="level3" data-number="2.3.3">
 <h3 data-number="2.3.3" class="anchored" data-anchor-id="while文の書き方"><span class="header-section-number">2.3.3</span> while文の書き方</h3>
@@ -647,23 +828,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <line x1="190" y1="245" x2="190" y2="268" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"></line>
   <text x="190" y="283" text-anchor="middle" font-size="11" fill="#666">（ループ終了・次の処理へ）</text>
 </svg>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a>count <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-label="2"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb8-3"><a href="#cb8-3" aria-label="3"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-label="4"></a>    count <span class="op">=</span> count <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-label="5"></a><span class="bu">print</span>(<span class="st">"スタート！"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<p>※条件が常に <code>True</code> のままだと、ループが終わらない<strong>無限ループ</strong>になるため、ループ内で終了条件に向かう変数の更新が必要です。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-label="1"></a>count <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-label="2"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb14-3"><a href="#cb14-3" aria-label="3"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-label="4"></a>    count <span class="op">=</span> count <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-label="5"></a><span class="bu">print</span>(<span class="st">"スタート！"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>練習問題 02-05：while文によるカウントアップ
+<span class="screen-reader-only">ノート</span>練習問題 02-07：while文によるカウントアップ
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>変数 <code>n = 1</code> から始め、<code>n</code> が 100 以下の間、値を2倍にしながら表示するプログラムを <code>while</code> 文を用いて作成してください。</p>
+</div>
+</div>
+</section>
+<section id="無限ループと強制終了の方法" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="無限ループと強制終了の方法"><span class="header-section-number">2.3.4</span> 無限ループと強制終了の方法</h3>
+<p><code>while</code> 文の条件式が常に <code>True</code> のままだと、処理が永久に終わりません。これを<strong>無限ループ</strong>と呼びます。</p>
+<p>例えば、次のコードのようにカウンタ変数の更新（<code>count = count - 1</code>）を書き忘れると、<code>count</code> がずっと <code>5</code> のまま変わらないため、条件式 <code>count &gt; 0</code> が永遠に成立し続け、画面に「残り: 5」が出力され続けてしまいます。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="co"># 無限ループの例（変数 count が更新されない）</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-label="2"></a>count <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-label="3"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb15-4"><a href="#cb15-4" aria-label="4"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-label="5"></a>    <span class="co"># count = count - 1 を書き忘れている！</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">警告</span>無限ループが起きたときの挙動と強制終了
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>もしプログラムが止まらなくなってしまった場合は、慌てずに以下の方法で強制終了（中断）させてください。</p>
+<ol type="1">
+<li><strong>キーボードによる強制中断 (<code>Ctrl + C</code>)</strong>:
+<ul>
+<li>Python Shell ウィンドウをクリックして選択した状態で、キーボードの <strong><code>Ctrl + C</code></strong> を押します。</li>
+<li>※ <strong>Mac を使っている場合でも、<code>Command</code> ではなく <code>Control + C</code></strong> です。</li>
+<li>画面に <code>KeyboardInterrupt</code> と表示されて実行が止まり、通常のプロンプト（<code>&gt;&gt;&gt;</code>）に戻ります。</li>
+</ul></li>
+<li><strong>メニューからのシェル再起動 (<code>Restart Shell</code>)</strong>:
+<ul>
+<li><code>print()</code> で大量の文字が高速に出力され続けると、画面の描画処理が追いつかずに IDLE が応答不能（フリーズ）になり、キー入力を受け付けなくなることがあります。</li>
+<li>その場合は、IDLE の上部メニューから <strong><code>Shell</code> → <code>Restart Shell</code></strong> を選択してください。Python の実行環境が初期化され、<code>&gt;&gt;&gt;</code> に復帰します。</li>
+</ul></li>
+<li><strong>IDLE 自体の強制終了</strong>:
+<ul>
+<li>ウィンドウ全体が白っぽくなったり、虹色のカーソル（回転ビーチボール）のまま完全に固まって操作できない場合は、OS の機能を使って IDLE を強制終了します（Mac: <code>Option + Command + Esc</code>、Windows: <code>Ctrl + Shift + Esc</code> でタスクマネージャーを開いて終了）。</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>練習問題 02-08：無限ループ
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>無限ループになるプログラムを実行し、強制終了してみましょう。</p>
 </div>
 </div>
 <hr>
@@ -672,17 +905,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="繰り返しと場合分けの組み合わせ" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="繰り返しと場合分けの組み合わせ"><span class="header-section-number">2.4</span> 繰り返しと場合分けの組み合わせ</h2>
 <p>実際のプログラミングでは、ループ（繰り返し）の中で <code>if</code> 文（場合分け）を使って特定のデータだけを選別・処理することが非常に多くあります。</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-label="1"></a><span class="co"># 1から20までの数値のうち、3の倍数だけを表示する</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-label="2"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>):</span>
-<span id="cb9-3"><a href="#cb9-3" aria-label="3"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">3</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb9-4"><a href="#cb9-4" aria-label="4"></a>        <span class="bu">print</span>(i, <span class="st">"は3の倍数です"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-label="1"></a><span class="co"># 1から20までの数値のうち、3の倍数だけを表示する</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-label="2"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>):</span>
+<span id="cb16-3"><a href="#cb16-3" aria-label="3"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">3</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb16-4"><a href="#cb16-4" aria-label="4"></a>        <span class="bu">print</span>(i, <span class="st">"は3の倍数です"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>練習問題 02-06：奇数の合計を計算する2種類の方法
+<span class="screen-reader-only">ノート</span>練習問題 02-09：奇数の合計を計算する2種類の方法
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -694,26 +927,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>また、ループの途中で中断する <code>break</code> や、その回の処理を飛ばして次へ進む <code>continue</code> を <code>if</code> 文と組み合わせて使うこともできます。</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-label="1"></a><span class="co"># 4という値を探索（見つかったら即座に中断）</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-label="2"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
-<span id="cb10-3"><a href="#cb10-3" aria-label="3"></a>    <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
-<span id="cb10-4"><a href="#cb10-4" aria-label="4"></a>        <span class="bu">print</span>(<span class="st">"目的のアイテムが見つかったので探索を終了します（ステップ"</span>, step, <span class="st">"）"</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-label="5"></a>        <span class="cf">break</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-label="6"></a>    <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-label="1"></a><span class="co"># 4という値を探索（見つかったら即座に中断）</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-label="2"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
+<span id="cb17-3"><a href="#cb17-3" aria-label="3"></a>    <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb17-4"><a href="#cb17-4" aria-label="4"></a>        <span class="bu">print</span>(<span class="st">"目的のアイテムが見つかったので探索を終了します（ステップ"</span>, step, <span class="st">"）"</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-label="5"></a>        <span class="cf">break</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-label="6"></a>    <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>関数定義の中では、ある条件が成り立った時にループを途中で中断し、関数の実行も終了させることがよくあります。そのような場合には <code>if</code> と <code>return</code> を組み合わせて使います。</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-label="1"></a><span class="kw">def</span> search4():</span>
-<span id="cb11-2"><a href="#cb11-2" aria-label="2"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
-<span id="cb11-3"><a href="#cb11-3" aria-label="3"></a>        <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
-<span id="cb11-4"><a href="#cb11-4" aria-label="4"></a>            <span class="cf">return</span> <span class="st">"見つかりました"</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-label="5"></a>        <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-label="6"></a>    <span class="cf">return</span> <span class="st">"見つかりませんでした"</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-label="1"></a><span class="kw">def</span> search4():</span>
+<span id="cb18-2"><a href="#cb18-2" aria-label="2"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
+<span id="cb18-3"><a href="#cb18-3" aria-label="3"></a>        <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb18-4"><a href="#cb18-4" aria-label="4"></a>            <span class="cf">return</span> <span class="st">"見つかりました"</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-label="5"></a>        <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-label="6"></a>    <span class="cf">return</span> <span class="st">"見つかりませんでした"</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>練習問題 02-07：素数の判定
+<span class="screen-reader-only">ノート</span>練習問題 02-10：素数の判定
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1208,356 +1441,561 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">ソースコード</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-label="1"></a><span class="fu"># 場合分けと繰り返し</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-label="2"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-label="3"></a><span class="fu">## 本章のねらい</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-label="4"></a>プログラムの実行の流れをコントロールする「場合分け（条件分岐）」と「繰り返し（ループ処理）」について学びます。真偽値や比較演算子の使い方、<span class="in">`if`</span> 文による様々なパターンの条件分岐、そして文字列や <span class="in">`range`</span> などのデータの並びに対する <span class="in">`for`</span> 文や <span class="in">`while`</span> 文、さらにこれらを組み合わせた制御構造を習得します。</span>
-<span id="cb12-5"><a href="#cb12-5" aria-label="5"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-label="6"></a>---</span>
-<span id="cb12-7"><a href="#cb12-7" aria-label="7"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-label="8"></a><span class="fu">## 場合分け</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-label="9"></a></span>
-<span id="cb12-10"><a href="#cb12-10" aria-label="10"></a>プログラムの中で「もし〜ならばAを行い、そうでなければBを行う」というように、状況に応じて処理を枝分かれさせることを**場合分け（条件分岐）**と呼びます。</span>
-<span id="cb12-11"><a href="#cb12-11" aria-label="11"></a></span>
-<span id="cb12-12"><a href="#cb12-12" aria-label="12"></a><span class="fu">### 真偽値</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-label="13"></a>場合分けの判定には、**真偽値（しんぎち / ブール値 / bool型）**が使われます。</span>
-<span id="cb12-14"><a href="#cb12-14" aria-label="14"></a>真偽値には次の2つの値しか存在しません：</span>
-<span id="cb12-15"><a href="#cb12-15" aria-label="15"></a></span>
-<span id="cb12-16"><a href="#cb12-16" aria-label="16"></a><span class="ss">- </span><span class="in">`True`</span>: 正しい（真）</span>
-<span id="cb12-17"><a href="#cb12-17" aria-label="17"></a><span class="ss">- </span><span class="in">`False`</span>: 正しくない（偽）</span>
-<span id="cb12-18"><a href="#cb12-18" aria-label="18"></a></span>
-<span id="cb12-19"><a href="#cb12-19" aria-label="19"></a><span class="in">```python</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-label="20"></a>flag <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-label="21"></a><span class="bu">print</span>(flag)</span>
-<span id="cb12-22"><a href="#cb12-22" aria-label="22"></a><span class="bu">print</span>(<span class="bu">type</span>(flag))  <span class="co"># &lt;class 'bool'&gt;</span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-label="23"></a><span class="in">```</span></span>
-<span id="cb12-24"><a href="#cb12-24" aria-label="24"></a></span>
-<span id="cb12-25"><a href="#cb12-25" aria-label="25"></a><span class="fu">### 比較演算子</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-label="26"></a>2つの値の大小や等しさを比べるには**比較演算子**を使用します。比較した結果は必ず <span class="in">`True`</span> または <span class="in">`False`</span> の真偽値になります。</span>
-<span id="cb12-27"><a href="#cb12-27" aria-label="27"></a></span>
-<span id="cb12-28"><a href="#cb12-28" aria-label="28"></a><span class="pp">|</span> 演算子 <span class="pp">|</span> 意味 <span class="pp">|</span> 例 <span class="pp">|</span> 結果 <span class="pp">|</span></span>
-<span id="cb12-29"><a href="#cb12-29" aria-label="29"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-label="30"></a><span class="pp">|</span> <span class="in">`==`</span> <span class="pp">|</span> 等しい <span class="pp">|</span> <span class="in">`5 == 5`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
-<span id="cb12-31"><a href="#cb12-31" aria-label="31"></a><span class="pp">|</span> <span class="in">`!=`</span> <span class="pp">|</span> 等しくない <span class="pp">|</span> <span class="in">`5 != 3`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
-<span id="cb12-32"><a href="#cb12-32" aria-label="32"></a><span class="pp">|</span> <span class="in">`&gt;`</span> <span class="pp">|</span> より大きい <span class="pp">|</span> <span class="in">`7 &gt; 10`</span> <span class="pp">|</span> <span class="in">`False`</span> <span class="pp">|</span></span>
-<span id="cb12-33"><a href="#cb12-33" aria-label="33"></a><span class="pp">|</span> <span class="in">`&lt;`</span> <span class="pp">|</span> より小さい <span class="pp">|</span> <span class="in">`3 &lt; 8`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
-<span id="cb12-34"><a href="#cb12-34" aria-label="34"></a><span class="pp">|</span> <span class="in">`&gt;=`</span> <span class="pp">|</span> 以上 <span class="pp">|</span> <span class="in">`5 &gt;= 5`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
-<span id="cb12-35"><a href="#cb12-35" aria-label="35"></a><span class="pp">|</span> <span class="in">`&lt;=`</span> <span class="pp">|</span> 以下 <span class="pp">|</span> <span class="in">`4 &lt;= 2`</span> <span class="pp">|</span> <span class="in">`False`</span> <span class="pp">|</span></span>
-<span id="cb12-36"><a href="#cb12-36" aria-label="36"></a></span>
-<span id="cb12-37"><a href="#cb12-37" aria-label="37"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-38"><a href="#cb12-38" aria-label="38"></a><span class="fu">### 練習問題 02-01：比較演算子の結果の確認</span></span>
-<span id="cb12-39"><a href="#cb12-39" aria-label="39"></a>変数 <span class="in">`x = 15`</span> に対し、<span class="in">`x &gt; 10`</span>、<span class="in">`x == 20`</span>、<span class="in">`x % 2 == 1`</span> の実行結果（真偽値）がそれぞれどうなるか確認してください。</span>
-<span id="cb12-40"><a href="#cb12-40" aria-label="40"></a>:::</span>
-<span id="cb12-41"><a href="#cb12-41" aria-label="41"></a></span>
-<span id="cb12-42"><a href="#cb12-42" aria-label="42"></a><span class="fu">### if文の書き方</span></span>
-<span id="cb12-43"><a href="#cb12-43" aria-label="43"></a>Pythonでは <span class="in">`if`</span> キーワードを使って条件分岐を記述します。条件式の後ろにコロン <span class="in">`:`</span> を書き、条件が成り立ったときに実行する文を**インデント（字下げ）**して並べます。</span>
-<span id="cb12-44"><a href="#cb12-44" aria-label="44"></a>条件分岐の構造を視覚的に理解するために、フローチャート（流れ図）とともに確認していきましょう。</span>
-<span id="cb12-45"><a href="#cb12-45" aria-label="45"></a></span>
-<span id="cb12-46"><a href="#cb12-46" aria-label="46"></a><span class="fu">#### 場合の数が1個のとき</span></span>
-<span id="cb12-47"><a href="#cb12-47" aria-label="47"></a>「条件が成り立つときだけ処理を実行し、成り立たないときは何もしない」というパターンです。</span>
-<span id="cb12-48"><a href="#cb12-48" aria-label="48"></a></span>
-<span id="cb12-49"><a href="#cb12-49" aria-label="49"></a><span class="in">```{=html}</span></span>
-<span id="cb12-50"><a href="#cb12-50" aria-label="50"></a><span class="in">&lt;svg viewBox="0 0 360 260" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
-<span id="cb12-51"><a href="#cb12-51" aria-label="51"></a><span class="in">  &lt;defs&gt;</span></span>
-<span id="cb12-52"><a href="#cb12-52" aria-label="52"></a><span class="in">    &lt;marker id="arrow-fc1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb12-53"><a href="#cb12-53" aria-label="53"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
-<span id="cb12-54"><a href="#cb12-54" aria-label="54"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb12-55"><a href="#cb12-55" aria-label="55"></a><span class="in">  &lt;/defs&gt;</span></span>
-<span id="cb12-56"><a href="#cb12-56" aria-label="56"></a><span class="in">  &lt;line x1="180" y1="15" x2="180" y2="42" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
-<span id="cb12-57"><a href="#cb12-57" aria-label="57"></a><span class="in">  &lt;polygon points="180,45 250,85 180,125 110,85" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
-<span id="cb12-58"><a href="#cb12-58" aria-label="58"></a><span class="in">  &lt;text x="180" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式&lt;/text&gt;</span></span>
-<span id="cb12-59"><a href="#cb12-59" aria-label="59"></a><span class="in">  &lt;line x1="180" y1="125" x2="180" y2="152" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
-<span id="cb12-60"><a href="#cb12-60" aria-label="60"></a><span class="in">  &lt;text x="195" y="142" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True (成立)&lt;/text&gt;</span></span>
-<span id="cb12-61"><a href="#cb12-61" aria-label="61"></a><span class="in">  &lt;rect x="110" y="155" width="140" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
-<span id="cb12-62"><a href="#cb12-62" aria-label="62"></a><span class="in">  &lt;text x="180" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理を実行&lt;/text&gt;</span></span>
-<span id="cb12-63"><a href="#cb12-63" aria-label="63"></a><span class="in">  &lt;line x1="250" y1="85" x2="300" y2="85" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-64"><a href="#cb12-64" aria-label="64"></a><span class="in">  &lt;line x1="300" y1="85" x2="300" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-65"><a href="#cb12-65" aria-label="65"></a><span class="in">  &lt;line x1="300" y1="220" x2="188" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
-<span id="cb12-66"><a href="#cb12-66" aria-label="66"></a><span class="in">  &lt;text x="255" y="78" font-size="11" font-weight="bold" fill="#c62828"&gt;False (不成立)&lt;/text&gt;</span></span>
-<span id="cb12-67"><a href="#cb12-67" aria-label="67"></a><span class="in">  &lt;line x1="180" y1="195" x2="180" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-68"><a href="#cb12-68" aria-label="68"></a><span class="in">  &lt;circle cx="180" cy="220" r="4" fill="#333"/&gt;</span></span>
-<span id="cb12-69"><a href="#cb12-69" aria-label="69"></a><span class="in">  &lt;line x1="180" y1="220" x2="180" y2="245" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
-<span id="cb12-70"><a href="#cb12-70" aria-label="70"></a><span class="in">&lt;/svg&gt;</span></span>
-<span id="cb12-71"><a href="#cb12-71" aria-label="71"></a><span class="in">```</span></span>
-<span id="cb12-72"><a href="#cb12-72" aria-label="72"></a></span>
-<span id="cb12-73"><a href="#cb12-73" aria-label="73"></a><span class="in">```python</span></span>
-<span id="cb12-74"><a href="#cb12-74" aria-label="74"></a>score <span class="op">=</span> <span class="dv">85</span></span>
-<span id="cb12-75"><a href="#cb12-75" aria-label="75"></a></span>
-<span id="cb12-76"><a href="#cb12-76" aria-label="76"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
-<span id="cb12-77"><a href="#cb12-77" aria-label="77"></a>    <span class="bu">print</span>(<span class="st">"合格です！"</span>)</span>
-<span id="cb12-78"><a href="#cb12-78" aria-label="78"></a><span class="in">```</span></span>
-<span id="cb12-79"><a href="#cb12-79" aria-label="79"></a></span>
-<span id="cb12-80"><a href="#cb12-80" aria-label="80"></a><span class="fu">#### 場合の数が2個のとき</span></span>
-<span id="cb12-81"><a href="#cb12-81" aria-label="81"></a>「条件が成り立つときは処理A、成り立たないときは処理Bを実行する」というパターンです。<span class="in">`else:`</span> を使います。</span>
-<span id="cb12-82"><a href="#cb12-82" aria-label="82"></a></span>
-<span id="cb12-83"><a href="#cb12-83" aria-label="83"></a><span class="in">```{=html}</span></span>
-<span id="cb12-84"><a href="#cb12-84" aria-label="84"></a><span class="in">&lt;svg viewBox="0 0 420 250" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
-<span id="cb12-85"><a href="#cb12-85" aria-label="85"></a><span class="in">  &lt;defs&gt;</span></span>
-<span id="cb12-86"><a href="#cb12-86" aria-label="86"></a><span class="in">    &lt;marker id="arrow-fc2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb12-87"><a href="#cb12-87" aria-label="87"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
-<span id="cb12-88"><a href="#cb12-88" aria-label="88"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb12-89"><a href="#cb12-89" aria-label="89"></a><span class="in">  &lt;/defs&gt;</span></span>
-<span id="cb12-90"><a href="#cb12-90" aria-label="90"></a><span class="in">  &lt;line x1="210" y1="15" x2="210" y2="38" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
-<span id="cb12-91"><a href="#cb12-91" aria-label="91"></a><span class="in">  &lt;polygon points="210,40 280,75 210,110 140,75" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
-<span id="cb12-92"><a href="#cb12-92" aria-label="92"></a><span class="in">  &lt;text x="210" y="80" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式&lt;/text&gt;</span></span>
-<span id="cb12-93"><a href="#cb12-93" aria-label="93"></a><span class="in">  &lt;line x1="140" y1="75" x2="100" y2="75" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-94"><a href="#cb12-94" aria-label="94"></a><span class="in">  &lt;line x1="100" y1="75" x2="100" y2="115" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
-<span id="cb12-95"><a href="#cb12-95" aria-label="95"></a><span class="in">  &lt;text x="75" y="65" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True&lt;/text&gt;</span></span>
-<span id="cb12-96"><a href="#cb12-96" aria-label="96"></a><span class="in">  &lt;rect x="35" y="118" width="130" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
-<span id="cb12-97"><a href="#cb12-97" aria-label="97"></a><span class="in">  &lt;text x="100" y="143" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理A (if)&lt;/text&gt;</span></span>
-<span id="cb12-98"><a href="#cb12-98" aria-label="98"></a><span class="in">  &lt;line x1="280" y1="75" x2="320" y2="75" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-99"><a href="#cb12-99" aria-label="99"></a><span class="in">  &lt;line x1="320" y1="75" x2="320" y2="115" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
-<span id="cb12-100"><a href="#cb12-100" aria-label="100"></a><span class="in">  &lt;text x="295" y="65" font-size="12" font-weight="bold" fill="#c62828"&gt;False&lt;/text&gt;</span></span>
-<span id="cb12-101"><a href="#cb12-101" aria-label="101"></a><span class="in">  &lt;rect x="255" y="118" width="130" height="40" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="2"/&gt;</span></span>
-<span id="cb12-102"><a href="#cb12-102" aria-label="102"></a><span class="in">  &lt;text x="320" y="143" text-anchor="middle" font-size="13" font-weight="bold" fill="#b71c1c"&gt;処理B (else)&lt;/text&gt;</span></span>
-<span id="cb12-103"><a href="#cb12-103" aria-label="103"></a><span class="in">  &lt;line x1="100" y1="158" x2="100" y2="195" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-104"><a href="#cb12-104" aria-label="104"></a><span class="in">  &lt;line x1="320" y1="158" x2="320" y2="195" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-105"><a href="#cb12-105" aria-label="105"></a><span class="in">  &lt;line x1="100" y1="195" x2="202" y2="195" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
-<span id="cb12-106"><a href="#cb12-106" aria-label="106"></a><span class="in">  &lt;line x1="320" y1="195" x2="218" y2="195" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
-<span id="cb12-107"><a href="#cb12-107" aria-label="107"></a><span class="in">  &lt;circle cx="210" cy="195" r="4" fill="#333"/&gt;</span></span>
-<span id="cb12-108"><a href="#cb12-108" aria-label="108"></a><span class="in">  &lt;line x1="210" y1="195" x2="210" y2="230" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
-<span id="cb12-109"><a href="#cb12-109" aria-label="109"></a><span class="in">&lt;/svg&gt;</span></span>
-<span id="cb12-110"><a href="#cb12-110" aria-label="110"></a><span class="in">```</span></span>
-<span id="cb12-111"><a href="#cb12-111" aria-label="111"></a></span>
-<span id="cb12-112"><a href="#cb12-112" aria-label="112"></a><span class="in">```python</span></span>
-<span id="cb12-113"><a href="#cb12-113" aria-label="113"></a>score <span class="op">=</span> <span class="dv">45</span></span>
-<span id="cb12-114"><a href="#cb12-114" aria-label="114"></a></span>
-<span id="cb12-115"><a href="#cb12-115" aria-label="115"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
-<span id="cb12-116"><a href="#cb12-116" aria-label="116"></a>    <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
-<span id="cb12-117"><a href="#cb12-117" aria-label="117"></a><span class="cf">else</span>:</span>
-<span id="cb12-118"><a href="#cb12-118" aria-label="118"></a>    <span class="bu">print</span>(<span class="st">"不合格"</span>)</span>
-<span id="cb12-119"><a href="#cb12-119" aria-label="119"></a><span class="in">```</span></span>
-<span id="cb12-120"><a href="#cb12-120" aria-label="120"></a></span>
-<span id="cb12-121"><a href="#cb12-121" aria-label="121"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-122"><a href="#cb12-122" aria-label="122"></a><span class="fu">### 練習問題 02-02：偶数・奇数の判定</span></span>
-<span id="cb12-123"><a href="#cb12-123" aria-label="123"></a>ある整数変数 <span class="in">`num`</span> の値が偶数か奇数かを <span class="in">`if-else`</span> 文を用いて判定し、「偶数です」または「奇数です」と表示するプログラムを作成してください。</span>
-<span id="cb12-124"><a href="#cb12-124" aria-label="124"></a>:::</span>
-<span id="cb12-125"><a href="#cb12-125" aria-label="125"></a></span>
-<span id="cb12-126"><a href="#cb12-126" aria-label="126"></a><span class="fu">#### 場合の数が3個以上のとき</span></span>
-<span id="cb12-127"><a href="#cb12-127" aria-label="127"></a>複数の条件を順番に判定していく場合は <span class="in">`elif`</span>（else if の略）を使います。上から順に条件が評価され、最初に成り立ったブロックだけが実行されます。</span>
-<span id="cb12-128"><a href="#cb12-128" aria-label="128"></a></span>
-<span id="cb12-129"><a href="#cb12-129" aria-label="129"></a><span class="in">```{=html}</span></span>
-<span id="cb12-130"><a href="#cb12-130" aria-label="130"></a><span class="in">&lt;svg viewBox="0 0 500 330" width="100%" height="330" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
-<span id="cb12-131"><a href="#cb12-131" aria-label="131"></a><span class="in">  &lt;defs&gt;</span></span>
-<span id="cb12-132"><a href="#cb12-132" aria-label="132"></a><span class="in">    &lt;marker id="arrow-fc3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb12-133"><a href="#cb12-133" aria-label="133"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
-<span id="cb12-134"><a href="#cb12-134" aria-label="134"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb12-135"><a href="#cb12-135" aria-label="135"></a><span class="in">  &lt;/defs&gt;</span></span>
-<span id="cb12-136"><a href="#cb12-136" aria-label="136"></a><span class="in">  &lt;line x1="150" y1="12" x2="150" y2="32" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
-<span id="cb12-137"><a href="#cb12-137" aria-label="137"></a><span class="in">  &lt;polygon points="150,35 220,70 150,105 80,70" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
-<span id="cb12-138"><a href="#cb12-138" aria-label="138"></a><span class="in">  &lt;text x="150" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式1&lt;/text&gt;</span></span>
-<span id="cb12-139"><a href="#cb12-139" aria-label="139"></a><span class="in">  &lt;line x1="220" y1="70" x2="290" y2="70" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
-<span id="cb12-140"><a href="#cb12-140" aria-label="140"></a><span class="in">  &lt;text x="240" y="62" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True&lt;/text&gt;</span></span>
-<span id="cb12-141"><a href="#cb12-141" aria-label="141"></a><span class="in">  &lt;rect x="295" y="50" width="130" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
-<span id="cb12-142"><a href="#cb12-142" aria-label="142"></a><span class="in">  &lt;text x="360" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理1 (if)&lt;/text&gt;</span></span>
-<span id="cb12-143"><a href="#cb12-143" aria-label="143"></a><span class="in">  &lt;line x1="150" y1="105" x2="150" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
-<span id="cb12-144"><a href="#cb12-144" aria-label="144"></a><span class="in">  &lt;text x="160" y="122" font-size="11" font-weight="bold" fill="#c62828"&gt;False&lt;/text&gt;</span></span>
-<span id="cb12-145"><a href="#cb12-145" aria-label="145"></a><span class="in">  &lt;polygon points="150,135 220,170 150,205 80,170" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
-<span id="cb12-146"><a href="#cb12-146" aria-label="146"></a><span class="in">  &lt;text x="150" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式2&lt;/text&gt;</span></span>
-<span id="cb12-147"><a href="#cb12-147" aria-label="147"></a><span class="in">  &lt;line x1="220" y1="170" x2="290" y2="170" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
-<span id="cb12-148"><a href="#cb12-148" aria-label="148"></a><span class="in">  &lt;text x="240" y="162" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True&lt;/text&gt;</span></span>
-<span id="cb12-149"><a href="#cb12-149" aria-label="149"></a><span class="in">  &lt;rect x="295" y="150" width="130" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
-<span id="cb12-150"><a href="#cb12-150" aria-label="150"></a><span class="in">  &lt;text x="360" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理2 (elif)&lt;/text&gt;</span></span>
-<span id="cb12-151"><a href="#cb12-151" aria-label="151"></a><span class="in">  &lt;line x1="150" y1="205" x2="150" y2="230" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
-<span id="cb12-152"><a href="#cb12-152" aria-label="152"></a><span class="in">  &lt;text x="160" y="222" font-size="11" font-weight="bold" fill="#c62828"&gt;False&lt;/text&gt;</span></span>
-<span id="cb12-153"><a href="#cb12-153" aria-label="153"></a><span class="in">  &lt;rect x="85" y="235" width="130" height="40" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="2"/&gt;</span></span>
-<span id="cb12-154"><a href="#cb12-154" aria-label="154"></a><span class="in">  &lt;text x="150" y="260" text-anchor="middle" font-size="13" font-weight="bold" fill="#b71c1c"&gt;処理3 (else)&lt;/text&gt;</span></span>
-<span id="cb12-155"><a href="#cb12-155" aria-label="155"></a><span class="in">  &lt;line x1="425" y1="70" x2="455" y2="70" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-156"><a href="#cb12-156" aria-label="156"></a><span class="in">  &lt;line x1="425" y1="170" x2="455" y2="170" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-157"><a href="#cb12-157" aria-label="157"></a><span class="in">  &lt;line x1="215" y1="255" x2="455" y2="255" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-158"><a href="#cb12-158" aria-label="158"></a><span class="in">  &lt;line x1="455" y1="70" x2="455" y2="295" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-159"><a href="#cb12-159" aria-label="159"></a><span class="in">  &lt;line x1="455" y1="295" x2="158" y2="295" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
-<span id="cb12-160"><a href="#cb12-160" aria-label="160"></a><span class="in">  &lt;circle cx="150" cy="295" r="4" fill="#333"/&gt;</span></span>
-<span id="cb12-161"><a href="#cb12-161" aria-label="161"></a><span class="in">  &lt;line x1="150" y1="275" x2="150" y2="291" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-162"><a href="#cb12-162" aria-label="162"></a><span class="in">  &lt;line x1="150" y1="299" x2="150" y2="320" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
-<span id="cb12-163"><a href="#cb12-163" aria-label="163"></a><span class="in">&lt;/svg&gt;</span></span>
-<span id="cb12-164"><a href="#cb12-164" aria-label="164"></a><span class="in">```</span></span>
-<span id="cb12-165"><a href="#cb12-165" aria-label="165"></a></span>
-<span id="cb12-166"><a href="#cb12-166" aria-label="166"></a><span class="in">```python</span></span>
-<span id="cb12-167"><a href="#cb12-167" aria-label="167"></a>score <span class="op">=</span> <span class="dv">75</span></span>
-<span id="cb12-168"><a href="#cb12-168" aria-label="168"></a></span>
-<span id="cb12-169"><a href="#cb12-169" aria-label="169"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
-<span id="cb12-170"><a href="#cb12-170" aria-label="170"></a>    <span class="bu">print</span>(<span class="st">"評価: 優"</span>)</span>
-<span id="cb12-171"><a href="#cb12-171" aria-label="171"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">70</span>:</span>
-<span id="cb12-172"><a href="#cb12-172" aria-label="172"></a>    <span class="bu">print</span>(<span class="st">"評価: 良"</span>)</span>
-<span id="cb12-173"><a href="#cb12-173" aria-label="173"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
-<span id="cb12-174"><a href="#cb12-174" aria-label="174"></a>    <span class="bu">print</span>(<span class="st">"評価: 可"</span>)</span>
-<span id="cb12-175"><a href="#cb12-175" aria-label="175"></a><span class="cf">else</span>:</span>
-<span id="cb12-176"><a href="#cb12-176" aria-label="176"></a>    <span class="bu">print</span>(<span class="st">"評価: 不可"</span>)</span>
-<span id="cb12-177"><a href="#cb12-177" aria-label="177"></a><span class="in">```</span></span>
-<span id="cb12-178"><a href="#cb12-178" aria-label="178"></a></span>
-<span id="cb12-179"><a href="#cb12-179" aria-label="179"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-180"><a href="#cb12-180" aria-label="180"></a><span class="fu">### 練習問題 02-03：気温に応じたメッセージの表示</span></span>
-<span id="cb12-181"><a href="#cb12-181" aria-label="181"></a>最高気温が変数 <span class="in">`temp`</span>に入っているとして、40℃以上なら「酷暑日」、35℃以上40℃未満なら「猛暑日」、30℃以上35℃未満なら「真夏日」、25℃以上30℃未満なら「夏日」、それ以外なら「普通の日」と表示するプログラムを作成してください。</span>
-<span id="cb12-182"><a href="#cb12-182" aria-label="182"></a>:::</span>
-<span id="cb12-183"><a href="#cb12-183" aria-label="183"></a></span>
-<span id="cb12-184"><a href="#cb12-184" aria-label="184"></a>---</span>
-<span id="cb12-185"><a href="#cb12-185" aria-label="185"></a></span>
-<span id="cb12-186"><a href="#cb12-186" aria-label="186"></a><span class="fu">## 繰り返し</span></span>
-<span id="cb12-187"><a href="#cb12-187" aria-label="187"></a></span>
-<span id="cb12-188"><a href="#cb12-188" aria-label="188"></a>同じような処理を何度も実行したい場合は**繰り返し（ループ）**を使います。</span>
-<span id="cb12-189"><a href="#cb12-189" aria-label="189"></a></span>
-<span id="cb12-190"><a href="#cb12-190" aria-label="190"></a><span class="fu">### データの並び</span></span>
-<span id="cb12-191"><a href="#cb12-191" aria-label="191"></a>Pythonの <span class="in">`for`</span> 文は、**「データの並び（シーケンス）」**から要素を1つずつ取り出しながら処理を繰り返します。まず、データの並びとは何か見てみましょう。</span>
-<span id="cb12-192"><a href="#cb12-192" aria-label="192"></a></span>
-<span id="cb12-193"><a href="#cb12-193" aria-label="193"></a><span class="ss">- </span>文字列は、文字が順番に並んだデータです。</span>
-<span id="cb12-194"><a href="#cb12-194" aria-label="194"></a><span class="ss">- </span>規則的に並んだ整数は、 <span class="in">`range()`</span> 関数を使って書けます。</span>
-<span id="cb12-195"><a href="#cb12-195" aria-label="195"></a><span class="ss">  - </span><span class="in">`range(n)`</span>: 0 から n-1 までの n 個の整数</span>
-<span id="cb12-196"><a href="#cb12-196" aria-label="196"></a><span class="ss">  - </span><span class="in">`range(start, stop)`</span>: start から stop - 1 までの整数</span>
-<span id="cb12-197"><a href="#cb12-197" aria-label="197"></a><span class="ss">  - </span><span class="in">`range(start, stop, step)`</span>: start から stop - 1 までstep 刻みの整数</span>
-<span id="cb12-198"><a href="#cb12-198" aria-label="198"></a></span>
-<span id="cb12-199"><a href="#cb12-199" aria-label="199"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-200"><a href="#cb12-200" aria-label="200"></a><span class="fu">### 練習問題 02-04：rangeを用いた整数の並び</span></span>
-<span id="cb12-201"><a href="#cb12-201" aria-label="201"></a>1から19までの奇数を並べたものを、<span class="in">`range()`</span> を用いて書いてください。</span>
-<span id="cb12-202"><a href="#cb12-202" aria-label="202"></a>:::</span>
-<span id="cb12-203"><a href="#cb12-203" aria-label="203"></a></span>
-<span id="cb12-204"><a href="#cb12-204" aria-label="204"></a><span class="fu">### for文の書き方</span></span>
-<span id="cb12-205"><a href="#cb12-205" aria-label="205"></a><span class="in">`for 変数 in データの並び:`</span> の形で書き、繰り返したい処理をインデントします。</span>
-<span id="cb12-206"><a href="#cb12-206" aria-label="206"></a></span>
-<span id="cb12-207"><a href="#cb12-207" aria-label="207"></a>文字列の中の文字を1文字ずつ取り出す例：</span>
-<span id="cb12-208"><a href="#cb12-208" aria-label="208"></a></span>
-<span id="cb12-209"><a href="#cb12-209" aria-label="209"></a><span class="in">```python</span></span>
-<span id="cb12-210"><a href="#cb12-210" aria-label="210"></a>word <span class="op">=</span> <span class="st">"Python"</span></span>
-<span id="cb12-211"><a href="#cb12-211" aria-label="211"></a><span class="cf">for</span> ch <span class="kw">in</span> word:</span>
-<span id="cb12-212"><a href="#cb12-212" aria-label="212"></a>    <span class="bu">print</span>(ch)</span>
-<span id="cb12-213"><a href="#cb12-213" aria-label="213"></a><span class="in">```</span></span>
-<span id="cb12-214"><a href="#cb12-214" aria-label="214"></a></span>
-<span id="cb12-215"><a href="#cb12-215" aria-label="215"></a>整数の並びを順に取り出す例：</span>
-<span id="cb12-216"><a href="#cb12-216" aria-label="216"></a></span>
-<span id="cb12-217"><a href="#cb12-217" aria-label="217"></a><span class="in">```python</span></span>
-<span id="cb12-218"><a href="#cb12-218" aria-label="218"></a><span class="co"># 0から4まで表示</span></span>
-<span id="cb12-219"><a href="#cb12-219" aria-label="219"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
-<span id="cb12-220"><a href="#cb12-220" aria-label="220"></a>    <span class="bu">print</span>(i)</span>
-<span id="cb12-221"><a href="#cb12-221" aria-label="221"></a><span class="in">```</span></span>
-<span id="cb12-222"><a href="#cb12-222" aria-label="222"></a></span>
-<span id="cb12-223"><a href="#cb12-223" aria-label="223"></a>取り出した数を使って合計を計算する例：</span>
-<span id="cb12-224"><a href="#cb12-224" aria-label="224"></a></span>
-<span id="cb12-225"><a href="#cb12-225" aria-label="225"></a><span class="in">```python</span></span>
-<span id="cb12-226"><a href="#cb12-226" aria-label="226"></a>total <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb12-227"><a href="#cb12-227" aria-label="227"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>):</span>
-<span id="cb12-228"><a href="#cb12-228" aria-label="228"></a>    total <span class="op">=</span> total <span class="op">+</span> i</span>
-<span id="cb12-229"><a href="#cb12-229" aria-label="229"></a><span class="bu">print</span>(<span class="st">"1から10までの合計:"</span>, total)</span>
-<span id="cb12-230"><a href="#cb12-230" aria-label="230"></a><span class="in">```</span></span>
-<span id="cb12-231"><a href="#cb12-231" aria-label="231"></a></span>
-<span id="cb12-232"><a href="#cb12-232" aria-label="232"></a><span class="fu">### while文の書き方</span></span>
-<span id="cb12-233"><a href="#cb12-233" aria-label="233"></a><span class="in">`while`</span> 文は、「指定した条件が成り立っている間（<span class="in">`True`</span> である間）」ずっと処理を繰り返します。データの並びとは関係ありません。</span>
-<span id="cb12-234"><a href="#cb12-234" aria-label="234"></a></span>
-<span id="cb12-235"><a href="#cb12-235" aria-label="235"></a><span class="in">```{=html}</span></span>
-<span id="cb12-236"><a href="#cb12-236" aria-label="236"></a><span class="in">&lt;svg viewBox="0 0 380 290" width="100%" height="290" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
-<span id="cb12-237"><a href="#cb12-237" aria-label="237"></a><span class="in">  &lt;defs&gt;</span></span>
-<span id="cb12-238"><a href="#cb12-238" aria-label="238"></a><span class="in">    &lt;marker id="arrow-fc-while" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb12-239"><a href="#cb12-239" aria-label="239"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
-<span id="cb12-240"><a href="#cb12-240" aria-label="240"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb12-241"><a href="#cb12-241" aria-label="241"></a><span class="in">  &lt;/defs&gt;</span></span>
-<span id="cb12-242"><a href="#cb12-242" aria-label="242"></a><span class="in">  &lt;!-- 入力から合流点へ --&gt;</span></span>
-<span id="cb12-243"><a href="#cb12-243" aria-label="243"></a><span class="in">  &lt;line x1="190" y1="12" x2="190" y2="35" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-244"><a href="#cb12-244" aria-label="244"></a><span class="in">  &lt;circle cx="190" cy="35" r="3.5" fill="#333"/&gt;</span></span>
-<span id="cb12-245"><a href="#cb12-245" aria-label="245"></a><span class="in">  &lt;line x1="190" y1="35" x2="190" y2="47" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
-<span id="cb12-246"><a href="#cb12-246" aria-label="246"></a><span class="in">  </span></span>
-<span id="cb12-247"><a href="#cb12-247" aria-label="247"></a><span class="in">  &lt;!-- 条件式 --&gt;</span></span>
-<span id="cb12-248"><a href="#cb12-248" aria-label="248"></a><span class="in">  &lt;polygon points="190,50 265,85 190,120 115,85" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
-<span id="cb12-249"><a href="#cb12-249" aria-label="249"></a><span class="in">  &lt;text x="190" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式&lt;/text&gt;</span></span>
-<span id="cb12-250"><a href="#cb12-250" aria-label="250"></a><span class="in">  </span></span>
-<span id="cb12-251"><a href="#cb12-251" aria-label="251"></a><span class="in">  &lt;!-- True (成立): 繰り返す処理へ --&gt;</span></span>
-<span id="cb12-252"><a href="#cb12-252" aria-label="252"></a><span class="in">  &lt;line x1="190" y1="120" x2="190" y2="152" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
-<span id="cb12-253"><a href="#cb12-253" aria-label="253"></a><span class="in">  &lt;text x="205" y="142" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True (成立)&lt;/text&gt;</span></span>
-<span id="cb12-254"><a href="#cb12-254" aria-label="254"></a><span class="in">  </span></span>
-<span id="cb12-255"><a href="#cb12-255" aria-label="255"></a><span class="in">  &lt;rect x="120" y="155" width="140" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
-<span id="cb12-256"><a href="#cb12-256" aria-label="256"></a><span class="in">  &lt;text x="190" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;繰り返す処理&lt;/text&gt;</span></span>
-<span id="cb12-257"><a href="#cb12-257" aria-label="257"></a><span class="in">  </span></span>
-<span id="cb12-258"><a href="#cb12-258" aria-label="258"></a><span class="in">  &lt;!-- ループの戻り線 --&gt;</span></span>
-<span id="cb12-259"><a href="#cb12-259" aria-label="259"></a><span class="in">  &lt;line x1="190" y1="195" x2="190" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-260"><a href="#cb12-260" aria-label="260"></a><span class="in">  &lt;line x1="190" y1="220" x2="55" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-261"><a href="#cb12-261" aria-label="261"></a><span class="in">  &lt;line x1="55" y1="220" x2="55" y2="35" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-262"><a href="#cb12-262" aria-label="262"></a><span class="in">  &lt;line x1="55" y1="35" x2="184" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
-<span id="cb12-263"><a href="#cb12-263" aria-label="263"></a><span class="in">  </span></span>
-<span id="cb12-264"><a href="#cb12-264" aria-label="264"></a><span class="in">  &lt;!-- False (不成立): ループ脱出 --&gt;</span></span>
-<span id="cb12-265"><a href="#cb12-265" aria-label="265"></a><span class="in">  &lt;line x1="265" y1="85" x2="325" y2="85" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-266"><a href="#cb12-266" aria-label="266"></a><span class="in">  &lt;text x="270" y="78" font-size="11" font-weight="bold" fill="#c62828"&gt;False (不成立)&lt;/text&gt;</span></span>
-<span id="cb12-267"><a href="#cb12-267" aria-label="267"></a><span class="in">  &lt;line x1="325" y1="85" x2="325" y2="245" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-268"><a href="#cb12-268" aria-label="268"></a><span class="in">  &lt;line x1="325" y1="245" x2="190" y2="245" stroke="#333" stroke-width="2"/&gt;</span></span>
-<span id="cb12-269"><a href="#cb12-269" aria-label="269"></a><span class="in">  &lt;line x1="190" y1="245" x2="190" y2="268" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
-<span id="cb12-270"><a href="#cb12-270" aria-label="270"></a><span class="in">  &lt;text x="190" y="283" text-anchor="middle" font-size="11" fill="#666"&gt;（ループ終了・次の処理へ）&lt;/text&gt;</span></span>
-<span id="cb12-271"><a href="#cb12-271" aria-label="271"></a><span class="in">&lt;/svg&gt;</span></span>
-<span id="cb12-272"><a href="#cb12-272" aria-label="272"></a><span class="in">```</span></span>
-<span id="cb12-273"><a href="#cb12-273" aria-label="273"></a></span>
-<span id="cb12-274"><a href="#cb12-274" aria-label="274"></a><span class="in">```python</span></span>
-<span id="cb12-275"><a href="#cb12-275" aria-label="275"></a>count <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb12-276"><a href="#cb12-276" aria-label="276"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb12-277"><a href="#cb12-277" aria-label="277"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
-<span id="cb12-278"><a href="#cb12-278" aria-label="278"></a>    count <span class="op">=</span> count <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb12-279"><a href="#cb12-279" aria-label="279"></a><span class="bu">print</span>(<span class="st">"スタート！"</span>)</span>
-<span id="cb12-280"><a href="#cb12-280" aria-label="280"></a><span class="in">```</span></span>
-<span id="cb12-281"><a href="#cb12-281" aria-label="281"></a></span>
-<span id="cb12-282"><a href="#cb12-282" aria-label="282"></a>※条件が常に <span class="in">`True`</span> のままだと、ループが終わらない**無限ループ**になるため、ループ内で終了条件に向かう変数の更新が必要です。</span>
-<span id="cb12-283"><a href="#cb12-283" aria-label="283"></a></span>
-<span id="cb12-284"><a href="#cb12-284" aria-label="284"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-285"><a href="#cb12-285" aria-label="285"></a><span class="fu">### 練習問題 02-05：while文によるカウントアップ</span></span>
-<span id="cb12-286"><a href="#cb12-286" aria-label="286"></a>変数 <span class="in">`n = 1`</span> から始め、<span class="in">`n`</span> が 100 以下の間、値を2倍にしながら表示するプログラムを <span class="in">`while`</span> 文を用いて作成してください。</span>
-<span id="cb12-287"><a href="#cb12-287" aria-label="287"></a>:::</span>
-<span id="cb12-288"><a href="#cb12-288" aria-label="288"></a></span>
-<span id="cb12-289"><a href="#cb12-289" aria-label="289"></a>---</span>
-<span id="cb12-290"><a href="#cb12-290" aria-label="290"></a></span>
-<span id="cb12-291"><a href="#cb12-291" aria-label="291"></a><span class="fu">## 繰り返しと場合分けの組み合わせ</span></span>
-<span id="cb12-292"><a href="#cb12-292" aria-label="292"></a></span>
-<span id="cb12-293"><a href="#cb12-293" aria-label="293"></a>実際のプログラミングでは、ループ（繰り返し）の中で <span class="in">`if`</span> 文（場合分け）を使って特定のデータだけを選別・処理することが非常に多くあります。</span>
-<span id="cb12-294"><a href="#cb12-294" aria-label="294"></a></span>
-<span id="cb12-295"><a href="#cb12-295" aria-label="295"></a><span class="in">```python</span></span>
-<span id="cb12-296"><a href="#cb12-296" aria-label="296"></a><span class="co"># 1から20までの数値のうち、3の倍数だけを表示する</span></span>
-<span id="cb12-297"><a href="#cb12-297" aria-label="297"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>):</span>
-<span id="cb12-298"><a href="#cb12-298" aria-label="298"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">3</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb12-299"><a href="#cb12-299" aria-label="299"></a>        <span class="bu">print</span>(i, <span class="st">"は3の倍数です"</span>)</span>
-<span id="cb12-300"><a href="#cb12-300" aria-label="300"></a><span class="in">```</span></span>
-<span id="cb12-301"><a href="#cb12-301" aria-label="301"></a></span>
-<span id="cb12-302"><a href="#cb12-302" aria-label="302"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-303"><a href="#cb12-303" aria-label="303"></a><span class="fu">### 練習問題 02-06：奇数の合計を計算する2種類の方法</span></span>
-<span id="cb12-304"><a href="#cb12-304" aria-label="304"></a>1から99までの奇数の合計を計算するプログラムを、次の2種類の方法で書いてください。</span>
-<span id="cb12-305"><a href="#cb12-305" aria-label="305"></a></span>
-<span id="cb12-306"><a href="#cb12-306" aria-label="306"></a><span class="ss">- </span>1から99までの奇数の並びを作り、それを合計する。</span>
-<span id="cb12-307"><a href="#cb12-307" aria-label="307"></a><span class="ss">- </span>1から99までの整数の並びを作り、<span class="in">`if`</span>文でそれが奇数の時だけ合計に加える。</span>
-<span id="cb12-308"><a href="#cb12-308" aria-label="308"></a>:::</span>
-<span id="cb12-309"><a href="#cb12-309" aria-label="309"></a></span>
-<span id="cb12-310"><a href="#cb12-310" aria-label="310"></a>また、ループの途中で中断する <span class="in">`break`</span> や、その回の処理を飛ばして次へ進む <span class="in">`continue`</span> を <span class="in">`if`</span> 文と組み合わせて使うこともできます。</span>
-<span id="cb12-311"><a href="#cb12-311" aria-label="311"></a></span>
-<span id="cb12-312"><a href="#cb12-312" aria-label="312"></a><span class="in">```python</span></span>
-<span id="cb12-313"><a href="#cb12-313" aria-label="313"></a><span class="co"># 4という値を探索（見つかったら即座に中断）</span></span>
-<span id="cb12-314"><a href="#cb12-314" aria-label="314"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
-<span id="cb12-315"><a href="#cb12-315" aria-label="315"></a>    <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
-<span id="cb12-316"><a href="#cb12-316" aria-label="316"></a>        <span class="bu">print</span>(<span class="st">"目的のアイテムが見つかったので探索を終了します（ステップ"</span>, step, <span class="st">"）"</span>)</span>
-<span id="cb12-317"><a href="#cb12-317" aria-label="317"></a>        <span class="cf">break</span></span>
-<span id="cb12-318"><a href="#cb12-318" aria-label="318"></a>    <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
-<span id="cb12-319"><a href="#cb12-319" aria-label="319"></a><span class="in">```</span></span>
-<span id="cb12-320"><a href="#cb12-320" aria-label="320"></a></span>
-<span id="cb12-321"><a href="#cb12-321" aria-label="321"></a>関数定義の中では、ある条件が成り立った時にループを途中で中断し、関数の実行も終了させることがよくあります。そのような場合には <span class="in">`if`</span> と <span class="in">`return`</span> を組み合わせて使います。</span>
-<span id="cb12-322"><a href="#cb12-322" aria-label="322"></a></span>
-<span id="cb12-323"><a href="#cb12-323" aria-label="323"></a><span class="in">```python</span></span>
-<span id="cb12-324"><a href="#cb12-324" aria-label="324"></a><span class="kw">def</span> search4():</span>
-<span id="cb12-325"><a href="#cb12-325" aria-label="325"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
-<span id="cb12-326"><a href="#cb12-326" aria-label="326"></a>        <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
-<span id="cb12-327"><a href="#cb12-327" aria-label="327"></a>            <span class="cf">return</span> <span class="st">"見つかりました"</span></span>
-<span id="cb12-328"><a href="#cb12-328" aria-label="328"></a>        <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
-<span id="cb12-329"><a href="#cb12-329" aria-label="329"></a>    <span class="cf">return</span> <span class="st">"見つかりませんでした"</span></span>
-<span id="cb12-330"><a href="#cb12-330" aria-label="330"></a><span class="in">```</span></span>
-<span id="cb12-331"><a href="#cb12-331" aria-label="331"></a></span>
-<span id="cb12-332"><a href="#cb12-332" aria-label="332"></a>::: {.callout-note icon=false}</span>
-<span id="cb12-333"><a href="#cb12-333" aria-label="333"></a><span class="fu">### 練習問題 02-07：素数の判定</span></span>
-<span id="cb12-334"><a href="#cb12-334" aria-label="334"></a>引数として2以上の整数を受け取り、それが素数なら True を、素数でなければ False を返す関数を定義してください。</span>
-<span id="cb12-335"><a href="#cb12-335" aria-label="335"></a></span>
-<span id="cb12-336"><a href="#cb12-336" aria-label="336"></a><span class="ss">- </span>2以上でその数未満の数の並びについて、順に割り切るかどうかを試し、割り切れたら素数ではないので <span class="in">`return False`</span> で脱出します。</span>
-<span id="cb12-337"><a href="#cb12-337" aria-label="337"></a><span class="ss">- </span>どの数でも割り切れなければ素数なので <span class="in">`return True`</span> で True を返します。</span>
-<span id="cb12-338"><a href="#cb12-338" aria-label="338"></a></span>
-<span id="cb12-339"><a href="#cb12-339" aria-label="339"></a>:::</span>
-<span id="cb12-340"><a href="#cb12-340" aria-label="340"></a></span>
-<span id="cb12-341"><a href="#cb12-341" aria-label="341"></a>---</span>
-<span id="cb12-342"><a href="#cb12-342" aria-label="342"></a></span>
-<span id="cb12-343"><a href="#cb12-343" aria-label="343"></a><span class="fu">## まとめ</span></span>
-<span id="cb12-344"><a href="#cb12-344" aria-label="344"></a></span>
-<span id="cb12-345"><a href="#cb12-345" aria-label="345"></a><span class="ss">- </span>**真偽値と論理判定**: <span class="in">`True`</span>/<span class="in">`False`</span> の2値があり、比較演算子（<span class="in">`==`</span>, <span class="in">`!=`</span>, <span class="in">`&gt;`</span>, <span class="in">`&lt;`</span>, <span class="in">`&gt;=`</span>, <span class="in">`&lt;=`</span>）で生成される。</span>
-<span id="cb12-346"><a href="#cb12-346" aria-label="346"></a><span class="ss">- </span>**場合分け（if文）**: 条件が1個、2個（<span class="in">`else`</span>）、3個以上（<span class="in">`elif`</span>）の構文を使い分ける。</span>
-<span id="cb12-347"><a href="#cb12-347" aria-label="347"></a><span class="ss">- </span>**繰り返し（for文・while文）**:</span>
-<span id="cb12-348"><a href="#cb12-348" aria-label="348"></a><span class="ss">  - </span><span class="in">`for`</span> 文は文字列や <span class="in">`range`</span> などの「データの並び」を順に走査する。</span>
-<span id="cb12-349"><a href="#cb12-349" aria-label="349"></a><span class="ss">  - </span><span class="in">`while`</span> 文は「条件が満たされている間」ループを継続する。</span>
-<span id="cb12-350"><a href="#cb12-350" aria-label="350"></a><span class="ss">- </span>**組み合わせ**: 繰り返しの中で条件分岐を行うことで、データの選別や特定の条件での処理中断（<span class="in">`break`</span>）など柔軟なアルゴリズムが構築できる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu"># 場合分けと繰り返し</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-label="2"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-label="3"></a><span class="fu">## キーボードからの入力</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-label="4"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-label="5"></a>プログラムを実行したあとに、利用者がキーボードから文字や数値を自由に入力して処理を行いたい場合があります。Pythonでは、キーボードからの入力を受け取るために <span class="in">`input()`</span> 関数を使用します。</span>
+<span id="cb19-6"><a href="#cb19-6" aria-label="6"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-label="7"></a><span class="fu">### `input()` 関数の使い方</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-label="8"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-label="9"></a><span class="in">`input()`</span> 関数を実行すると、プログラムはキーボードからの入力待ち状態（一時停止）になります。キーボードで文字を入力し、**Enter キー（Return キー）** を押すと、入力された内容がプログラムに渡されます。</span>
+<span id="cb19-10"><a href="#cb19-10" aria-label="10"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-label="11"></a>括弧の中に文字列（プロンプト）を指定すると、入力待ちの際にそのメッセージを画面に表示させることができます。</span>
+<span id="cb19-12"><a href="#cb19-12" aria-label="12"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-label="13"></a><span class="in">```python</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-label="14"></a>name <span class="op">=</span> <span class="bu">input</span>(<span class="st">"お名前を入力してください: "</span>)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-label="15"></a><span class="bu">print</span>(<span class="st">"こんにちは、"</span> <span class="op">+</span> name <span class="op">+</span> <span class="st">"さん！"</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-label="16"></a><span class="in">```</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-label="17"></a></span>
+<span id="cb19-18"><a href="#cb19-18" aria-label="18"></a>::: {.callout-important}</span>
+<span id="cb19-19"><a href="#cb19-19" aria-label="19"></a><span class="fu">#### `input()` で受け取った値はすべて「文字列型（str）」になる</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-label="20"></a><span class="in">`input()`</span> 関数で受け取った値は、たとえキーボードから数字を入力したとしても、すべて**文字列型（str）**として扱われます（データ型については次回に説明します）。</span>
+<span id="cb19-21"><a href="#cb19-21" aria-label="21"></a></span>
+<span id="cb19-22"><a href="#cb19-22" aria-label="22"></a>数値を入力して計算に利用したい場合は、<span class="in">`int()`</span> 関数を使って整数に変換するか、<span class="in">`float()`</span> 関数を使って浮動小数点数（実数）に型変換（キャスト）する必要があります。</span>
+<span id="cb19-23"><a href="#cb19-23" aria-label="23"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-label="24"></a><span class="in">```python</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-label="25"></a>age_str <span class="op">=</span> <span class="bu">input</span>(<span class="st">"年齢を入力してください: "</span>)</span>
+<span id="cb19-26"><a href="#cb19-26" aria-label="26"></a>age <span class="op">=</span> <span class="bu">int</span>(age_str)  <span class="co"># 文字列から整数に変換</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-label="27"></a><span class="bu">print</span>(<span class="st">"来年は"</span>, age <span class="op">+</span> <span class="dv">1</span>, <span class="st">"歳ですね。"</span>)</span>
+<span id="cb19-28"><a href="#cb19-28" aria-label="28"></a><span class="in">```</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-label="29"></a></span>
+<span id="cb19-30"><a href="#cb19-30" aria-label="30"></a>慣れてきたら、次のように1行にまとめて書くことも一般的です：</span>
+<span id="cb19-31"><a href="#cb19-31" aria-label="31"></a></span>
+<span id="cb19-32"><a href="#cb19-32" aria-label="32"></a><span class="in">```python</span></span>
+<span id="cb19-33"><a href="#cb19-33" aria-label="33"></a>age <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="st">"年齢を入力してください: "</span>))</span>
+<span id="cb19-34"><a href="#cb19-34" aria-label="34"></a><span class="in">```</span></span>
+<span id="cb19-35"><a href="#cb19-35" aria-label="35"></a>:::</span>
+<span id="cb19-36"><a href="#cb19-36" aria-label="36"></a></span>
+<span id="cb19-37"><a href="#cb19-37" aria-label="37"></a><span class="fu">### IDLEでの入力方法</span></span>
+<span id="cb19-38"><a href="#cb19-38" aria-label="38"></a></span>
+<span id="cb19-39"><a href="#cb19-39" aria-label="39"></a>第1回で紹介した統合開発環境「**IDLE**」でプログラムを実行し、キーボードから入力を行う際の手順と挙動を確認しましょう。</span>
+<span id="cb19-40"><a href="#cb19-40" aria-label="40"></a></span>
+<span id="cb19-41"><a href="#cb19-41" aria-label="41"></a><span class="ss">1. </span>**スクリプトの実行**:</span>
+<span id="cb19-42"><a href="#cb19-42" aria-label="42"></a>   エディタウィンドウでプログラムを作成・保存し、メニューの「**Run**」→「**Run Module**」（または **F5** キー）を押して実行します。</span>
+<span id="cb19-43"><a href="#cb19-43" aria-label="43"></a><span class="ss">2. </span>**Python Shell ウィンドウの確認**:</span>
+<span id="cb19-44"><a href="#cb19-44" aria-label="44"></a>   実行すると **Python Shell** ウィンドウに画面が切り替わります。</span>
+<span id="cb19-45"><a href="#cb19-45" aria-label="45"></a>   <span class="in">`input()`</span> のプロンプト文字列（例: <span class="in">`お名前を入力してください: `</span>）が表示され、その末尾でカーソルが点滅して入力待ち状態になります。</span>
+<span id="cb19-46"><a href="#cb19-46" aria-label="46"></a><span class="ss">3. </span>**キーボードからの入力と確定**:</span>
+<span id="cb19-47"><a href="#cb19-47" aria-label="47"></a>   キーボードから文字や数値を入力します（直接入力や日本語入力どちらも可能です）。</span>
+<span id="cb19-48"><a href="#cb19-48" aria-label="48"></a>   入力が終わったら、必ず **Enter キー** を押して入力を確定させます。Enter キーを押すことで初めて値がプログラムへ送られ、次の行の処理が進みます。</span>
+<span id="cb19-49"><a href="#cb19-49" aria-label="49"></a></span>
+<span id="cb19-50"><a href="#cb19-50" aria-label="50"></a><span class="in">```text</span></span>
+<span id="cb19-51"><a href="#cb19-51" aria-label="51"></a><span class="in">==================== RESTART: .../input_sample.py ====================</span></span>
+<span id="cb19-52"><a href="#cb19-52" aria-label="52"></a><span class="in">お名前を入力してください: アリス</span></span>
+<span id="cb19-53"><a href="#cb19-53" aria-label="53"></a><span class="in">こんにちは、アリスさん！</span></span>
+<span id="cb19-54"><a href="#cb19-54" aria-label="54"></a><span class="in">&gt;&gt;&gt; </span></span>
+<span id="cb19-55"><a href="#cb19-55" aria-label="55"></a><span class="in">```</span></span>
+<span id="cb19-56"><a href="#cb19-56" aria-label="56"></a></span>
+<span id="cb19-57"><a href="#cb19-57" aria-label="57"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-58"><a href="#cb19-58" aria-label="58"></a><span class="fu">### 練習問題 02-01：キーボード入力と計算</span></span>
+<span id="cb19-59"><a href="#cb19-59" aria-label="59"></a>キーボードから2つの整数を順番に入力させ、それらの足し算の結果を表示するプログラムを作成してください。</span>
+<span id="cb19-60"><a href="#cb19-60" aria-label="60"></a>:::</span>
+<span id="cb19-61"><a href="#cb19-61" aria-label="61"></a></span>
+<span id="cb19-62"><a href="#cb19-62" aria-label="62"></a><span class="fu">## 場合分け</span></span>
+<span id="cb19-63"><a href="#cb19-63" aria-label="63"></a></span>
+<span id="cb19-64"><a href="#cb19-64" aria-label="64"></a>プログラムの中で「もし〜ならばAを行い、そうでなければBを行う」というように、状況に応じて処理を枝分かれさせることを**場合分け（条件分岐）**と呼びます。</span>
+<span id="cb19-65"><a href="#cb19-65" aria-label="65"></a></span>
+<span id="cb19-66"><a href="#cb19-66" aria-label="66"></a><span class="fu">### 真偽値</span></span>
+<span id="cb19-67"><a href="#cb19-67" aria-label="67"></a>場合分けの判定には、**真偽値（しんぎち / ブール値 / bool型）**が使われます。</span>
+<span id="cb19-68"><a href="#cb19-68" aria-label="68"></a>真偽値には次の2つの値しか存在しません：</span>
+<span id="cb19-69"><a href="#cb19-69" aria-label="69"></a></span>
+<span id="cb19-70"><a href="#cb19-70" aria-label="70"></a><span class="ss">- </span><span class="in">`True`</span>: 正しい（真）</span>
+<span id="cb19-71"><a href="#cb19-71" aria-label="71"></a><span class="ss">- </span><span class="in">`False`</span>: 正しくない（偽）</span>
+<span id="cb19-72"><a href="#cb19-72" aria-label="72"></a></span>
+<span id="cb19-73"><a href="#cb19-73" aria-label="73"></a><span class="in">```python</span></span>
+<span id="cb19-74"><a href="#cb19-74" aria-label="74"></a>flag <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb19-75"><a href="#cb19-75" aria-label="75"></a><span class="bu">print</span>(flag)</span>
+<span id="cb19-76"><a href="#cb19-76" aria-label="76"></a><span class="bu">print</span>(<span class="bu">type</span>(flag))  <span class="co"># &lt;class 'bool'&gt;</span></span>
+<span id="cb19-77"><a href="#cb19-77" aria-label="77"></a><span class="in">```</span></span>
+<span id="cb19-78"><a href="#cb19-78" aria-label="78"></a></span>
+<span id="cb19-79"><a href="#cb19-79" aria-label="79"></a><span class="fu">### 比較演算子</span></span>
+<span id="cb19-80"><a href="#cb19-80" aria-label="80"></a>2つの値の大小や等しさを比べるには**比較演算子**を使用します。比較した結果は必ず <span class="in">`True`</span> または <span class="in">`False`</span> の真偽値になります。</span>
+<span id="cb19-81"><a href="#cb19-81" aria-label="81"></a></span>
+<span id="cb19-82"><a href="#cb19-82" aria-label="82"></a><span class="pp">|</span> 演算子 <span class="pp">|</span> 意味 <span class="pp">|</span> 例 <span class="pp">|</span> 結果 <span class="pp">|</span></span>
+<span id="cb19-83"><a href="#cb19-83" aria-label="83"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb19-84"><a href="#cb19-84" aria-label="84"></a><span class="pp">|</span> <span class="in">`==`</span> <span class="pp">|</span> 等しい <span class="pp">|</span> <span class="in">`5 == 5`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
+<span id="cb19-85"><a href="#cb19-85" aria-label="85"></a><span class="pp">|</span> <span class="in">`!=`</span> <span class="pp">|</span> 等しくない <span class="pp">|</span> <span class="in">`5 != 3`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
+<span id="cb19-86"><a href="#cb19-86" aria-label="86"></a><span class="pp">|</span> <span class="in">`&gt;`</span> <span class="pp">|</span> より大きい <span class="pp">|</span> <span class="in">`7 &gt; 10`</span> <span class="pp">|</span> <span class="in">`False`</span> <span class="pp">|</span></span>
+<span id="cb19-87"><a href="#cb19-87" aria-label="87"></a><span class="pp">|</span> <span class="in">`&lt;`</span> <span class="pp">|</span> より小さい <span class="pp">|</span> <span class="in">`3 &lt; 8`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
+<span id="cb19-88"><a href="#cb19-88" aria-label="88"></a><span class="pp">|</span> <span class="in">`&gt;=`</span> <span class="pp">|</span> 以上 <span class="pp">|</span> <span class="in">`5 &gt;= 5`</span> <span class="pp">|</span> <span class="in">`True`</span> <span class="pp">|</span></span>
+<span id="cb19-89"><a href="#cb19-89" aria-label="89"></a><span class="pp">|</span> <span class="in">`&lt;=`</span> <span class="pp">|</span> 以下 <span class="pp">|</span> <span class="in">`4 &lt;= 2`</span> <span class="pp">|</span> <span class="in">`False`</span> <span class="pp">|</span></span>
+<span id="cb19-90"><a href="#cb19-90" aria-label="90"></a></span>
+<span id="cb19-91"><a href="#cb19-91" aria-label="91"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-92"><a href="#cb19-92" aria-label="92"></a><span class="fu">### 練習問題 02-02：比較演算子の結果の確認</span></span>
+<span id="cb19-93"><a href="#cb19-93" aria-label="93"></a>キーボードから入力した数値を変数 <span class="in">`x`</span> に記憶し、<span class="in">`x &gt; 10`</span>、<span class="in">`x == 20`</span>、<span class="in">`x % 2 == 1`</span> の実行結果（真偽値）を表示するプログラムを作ってください。</span>
+<span id="cb19-94"><a href="#cb19-94" aria-label="94"></a>:::</span>
+<span id="cb19-95"><a href="#cb19-95" aria-label="95"></a></span>
+<span id="cb19-96"><a href="#cb19-96" aria-label="96"></a><span class="fu">### if文の書き方</span></span>
+<span id="cb19-97"><a href="#cb19-97" aria-label="97"></a>Pythonでは <span class="in">`if`</span> キーワードを使って条件分岐を記述します。条件式の後ろにコロン <span class="in">`:`</span> を書き、条件が成り立ったときに実行する文を**インデント（字下げ）**して並べます。</span>
+<span id="cb19-98"><a href="#cb19-98" aria-label="98"></a>条件分岐の構造を視覚的に理解するために、フローチャート（流れ図）とともに確認していきましょう。</span>
+<span id="cb19-99"><a href="#cb19-99" aria-label="99"></a></span>
+<span id="cb19-100"><a href="#cb19-100" aria-label="100"></a><span class="fu">#### 場合の数が1個のとき</span></span>
+<span id="cb19-101"><a href="#cb19-101" aria-label="101"></a>「条件が成り立つときだけ処理を実行し、成り立たないときは何もしない」というパターンです。</span>
+<span id="cb19-102"><a href="#cb19-102" aria-label="102"></a></span>
+<span id="cb19-103"><a href="#cb19-103" aria-label="103"></a><span class="in">```{=html}</span></span>
+<span id="cb19-104"><a href="#cb19-104" aria-label="104"></a><span class="in">&lt;svg viewBox="0 0 360 260" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
+<span id="cb19-105"><a href="#cb19-105" aria-label="105"></a><span class="in">  &lt;defs&gt;</span></span>
+<span id="cb19-106"><a href="#cb19-106" aria-label="106"></a><span class="in">    &lt;marker id="arrow-fc1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb19-107"><a href="#cb19-107" aria-label="107"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
+<span id="cb19-108"><a href="#cb19-108" aria-label="108"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb19-109"><a href="#cb19-109" aria-label="109"></a><span class="in">  &lt;/defs&gt;</span></span>
+<span id="cb19-110"><a href="#cb19-110" aria-label="110"></a><span class="in">  &lt;line x1="180" y1="15" x2="180" y2="42" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
+<span id="cb19-111"><a href="#cb19-111" aria-label="111"></a><span class="in">  &lt;polygon points="180,45 250,85 180,125 110,85" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
+<span id="cb19-112"><a href="#cb19-112" aria-label="112"></a><span class="in">  &lt;text x="180" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式&lt;/text&gt;</span></span>
+<span id="cb19-113"><a href="#cb19-113" aria-label="113"></a><span class="in">  &lt;line x1="180" y1="125" x2="180" y2="152" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
+<span id="cb19-114"><a href="#cb19-114" aria-label="114"></a><span class="in">  &lt;text x="195" y="142" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True (成立)&lt;/text&gt;</span></span>
+<span id="cb19-115"><a href="#cb19-115" aria-label="115"></a><span class="in">  &lt;rect x="110" y="155" width="140" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
+<span id="cb19-116"><a href="#cb19-116" aria-label="116"></a><span class="in">  &lt;text x="180" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理を実行&lt;/text&gt;</span></span>
+<span id="cb19-117"><a href="#cb19-117" aria-label="117"></a><span class="in">  &lt;line x1="250" y1="85" x2="300" y2="85" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-118"><a href="#cb19-118" aria-label="118"></a><span class="in">  &lt;line x1="300" y1="85" x2="300" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-119"><a href="#cb19-119" aria-label="119"></a><span class="in">  &lt;line x1="300" y1="220" x2="188" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
+<span id="cb19-120"><a href="#cb19-120" aria-label="120"></a><span class="in">  &lt;text x="255" y="78" font-size="11" font-weight="bold" fill="#c62828"&gt;False (不成立)&lt;/text&gt;</span></span>
+<span id="cb19-121"><a href="#cb19-121" aria-label="121"></a><span class="in">  &lt;line x1="180" y1="195" x2="180" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-122"><a href="#cb19-122" aria-label="122"></a><span class="in">  &lt;circle cx="180" cy="220" r="4" fill="#333"/&gt;</span></span>
+<span id="cb19-123"><a href="#cb19-123" aria-label="123"></a><span class="in">  &lt;line x1="180" y1="220" x2="180" y2="245" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc1)"/&gt;</span></span>
+<span id="cb19-124"><a href="#cb19-124" aria-label="124"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb19-125"><a href="#cb19-125" aria-label="125"></a><span class="in">```</span></span>
+<span id="cb19-126"><a href="#cb19-126" aria-label="126"></a></span>
+<span id="cb19-127"><a href="#cb19-127" aria-label="127"></a><span class="in">```python</span></span>
+<span id="cb19-128"><a href="#cb19-128" aria-label="128"></a>score <span class="op">=</span> <span class="dv">85</span></span>
+<span id="cb19-129"><a href="#cb19-129" aria-label="129"></a></span>
+<span id="cb19-130"><a href="#cb19-130" aria-label="130"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
+<span id="cb19-131"><a href="#cb19-131" aria-label="131"></a>    <span class="bu">print</span>(<span class="st">"合格です！"</span>)</span>
+<span id="cb19-132"><a href="#cb19-132" aria-label="132"></a><span class="in">```</span></span>
+<span id="cb19-133"><a href="#cb19-133" aria-label="133"></a></span>
+<span id="cb19-134"><a href="#cb19-134" aria-label="134"></a><span class="fu">#### 場合の数が2個のとき</span></span>
+<span id="cb19-135"><a href="#cb19-135" aria-label="135"></a>「条件が成り立つときは処理A、成り立たないときは処理Bを実行する」というパターンです。<span class="in">`else:`</span> を使います。</span>
+<span id="cb19-136"><a href="#cb19-136" aria-label="136"></a></span>
+<span id="cb19-137"><a href="#cb19-137" aria-label="137"></a><span class="in">```{=html}</span></span>
+<span id="cb19-138"><a href="#cb19-138" aria-label="138"></a><span class="in">&lt;svg viewBox="0 0 420 250" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
+<span id="cb19-139"><a href="#cb19-139" aria-label="139"></a><span class="in">  &lt;defs&gt;</span></span>
+<span id="cb19-140"><a href="#cb19-140" aria-label="140"></a><span class="in">    &lt;marker id="arrow-fc2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb19-141"><a href="#cb19-141" aria-label="141"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
+<span id="cb19-142"><a href="#cb19-142" aria-label="142"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb19-143"><a href="#cb19-143" aria-label="143"></a><span class="in">  &lt;/defs&gt;</span></span>
+<span id="cb19-144"><a href="#cb19-144" aria-label="144"></a><span class="in">  &lt;line x1="210" y1="15" x2="210" y2="38" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
+<span id="cb19-145"><a href="#cb19-145" aria-label="145"></a><span class="in">  &lt;polygon points="210,40 280,75 210,110 140,75" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
+<span id="cb19-146"><a href="#cb19-146" aria-label="146"></a><span class="in">  &lt;text x="210" y="80" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式&lt;/text&gt;</span></span>
+<span id="cb19-147"><a href="#cb19-147" aria-label="147"></a><span class="in">  &lt;line x1="140" y1="75" x2="100" y2="75" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-148"><a href="#cb19-148" aria-label="148"></a><span class="in">  &lt;line x1="100" y1="75" x2="100" y2="115" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
+<span id="cb19-149"><a href="#cb19-149" aria-label="149"></a><span class="in">  &lt;text x="75" y="65" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True&lt;/text&gt;</span></span>
+<span id="cb19-150"><a href="#cb19-150" aria-label="150"></a><span class="in">  &lt;rect x="35" y="118" width="130" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
+<span id="cb19-151"><a href="#cb19-151" aria-label="151"></a><span class="in">  &lt;text x="100" y="143" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理A (if)&lt;/text&gt;</span></span>
+<span id="cb19-152"><a href="#cb19-152" aria-label="152"></a><span class="in">  &lt;line x1="280" y1="75" x2="320" y2="75" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-153"><a href="#cb19-153" aria-label="153"></a><span class="in">  &lt;line x1="320" y1="75" x2="320" y2="115" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
+<span id="cb19-154"><a href="#cb19-154" aria-label="154"></a><span class="in">  &lt;text x="295" y="65" font-size="12" font-weight="bold" fill="#c62828"&gt;False&lt;/text&gt;</span></span>
+<span id="cb19-155"><a href="#cb19-155" aria-label="155"></a><span class="in">  &lt;rect x="255" y="118" width="130" height="40" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="2"/&gt;</span></span>
+<span id="cb19-156"><a href="#cb19-156" aria-label="156"></a><span class="in">  &lt;text x="320" y="143" text-anchor="middle" font-size="13" font-weight="bold" fill="#b71c1c"&gt;処理B (else)&lt;/text&gt;</span></span>
+<span id="cb19-157"><a href="#cb19-157" aria-label="157"></a><span class="in">  &lt;line x1="100" y1="158" x2="100" y2="195" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-158"><a href="#cb19-158" aria-label="158"></a><span class="in">  &lt;line x1="320" y1="158" x2="320" y2="195" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-159"><a href="#cb19-159" aria-label="159"></a><span class="in">  &lt;line x1="100" y1="195" x2="202" y2="195" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
+<span id="cb19-160"><a href="#cb19-160" aria-label="160"></a><span class="in">  &lt;line x1="320" y1="195" x2="218" y2="195" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
+<span id="cb19-161"><a href="#cb19-161" aria-label="161"></a><span class="in">  &lt;circle cx="210" cy="195" r="4" fill="#333"/&gt;</span></span>
+<span id="cb19-162"><a href="#cb19-162" aria-label="162"></a><span class="in">  &lt;line x1="210" y1="195" x2="210" y2="230" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc2)"/&gt;</span></span>
+<span id="cb19-163"><a href="#cb19-163" aria-label="163"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb19-164"><a href="#cb19-164" aria-label="164"></a><span class="in">```</span></span>
+<span id="cb19-165"><a href="#cb19-165" aria-label="165"></a></span>
+<span id="cb19-166"><a href="#cb19-166" aria-label="166"></a><span class="in">```python</span></span>
+<span id="cb19-167"><a href="#cb19-167" aria-label="167"></a>score <span class="op">=</span> <span class="dv">45</span></span>
+<span id="cb19-168"><a href="#cb19-168" aria-label="168"></a></span>
+<span id="cb19-169"><a href="#cb19-169" aria-label="169"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb19-170"><a href="#cb19-170" aria-label="170"></a>    <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
+<span id="cb19-171"><a href="#cb19-171" aria-label="171"></a><span class="cf">else</span>:</span>
+<span id="cb19-172"><a href="#cb19-172" aria-label="172"></a>    <span class="bu">print</span>(<span class="st">"不合格"</span>)</span>
+<span id="cb19-173"><a href="#cb19-173" aria-label="173"></a><span class="in">```</span></span>
+<span id="cb19-174"><a href="#cb19-174" aria-label="174"></a></span>
+<span id="cb19-175"><a href="#cb19-175" aria-label="175"></a><span class="fu">##### else があるときのインデント</span></span>
+<span id="cb19-176"><a href="#cb19-176" aria-label="176"></a><span class="in">`else:`</span> を記述する際は、**`if` と同じインデント位置（行頭の深さ）に揃える**必要があります。</span>
+<span id="cb19-177"><a href="#cb19-177" aria-label="177"></a></span>
+<span id="cb19-178"><a href="#cb19-178" aria-label="178"></a><span class="ss">1. </span><span class="in">`if`</span> の条件が真のときに実行する処理が終わったら、インデントを1段戻して <span class="in">`else:`</span> を書きます。</span>
+<span id="cb19-179"><a href="#cb19-179" aria-label="179"></a><span class="ss">2. </span><span class="in">`else:`</span> の末尾にも必ずコロン <span class="in">`:`</span> を付けます。</span>
+<span id="cb19-180"><a href="#cb19-180" aria-label="180"></a><span class="ss">3. </span><span class="in">`else:`</span> の下にある「条件が成り立たなかったときの処理」は、再び**半角スペース4個分インデント（字下げ）**します。</span>
+<span id="cb19-181"><a href="#cb19-181" aria-label="181"></a></span>
+<span id="cb19-182"><a href="#cb19-182" aria-label="182"></a>IDLEなどのエディタでは、<span class="in">`if`</span> ブロックの処理のあとで Enter キーを押すと、自動的に次の行もインデントされた状態になります。そのため、**Backspace キー（Mac の場合は Delete キー）を1回押してインデントを1段戻してから** <span class="in">`else:`</span> を入力してください。</span>
+<span id="cb19-183"><a href="#cb19-183" aria-label="183"></a></span>
+<span id="cb19-184"><a href="#cb19-184" aria-label="184"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-185"><a href="#cb19-185" aria-label="185"></a><span class="fu">### 練習問題 02-03：偶数・奇数の判定</span></span>
+<span id="cb19-186"><a href="#cb19-186" aria-label="186"></a>キーボードから整数を入力して変数 <span class="in">`num`</span> に保存し、それが偶数か奇数かを <span class="in">`if-else`</span> 文を用いて判定し、「偶数です」または「奇数です」と表示するプログラムを作成してください。</span>
+<span id="cb19-187"><a href="#cb19-187" aria-label="187"></a>:::</span>
+<span id="cb19-188"><a href="#cb19-188" aria-label="188"></a></span>
+<span id="cb19-189"><a href="#cb19-189" aria-label="189"></a><span class="fu">#### 場合の数が3個以上のとき</span></span>
+<span id="cb19-190"><a href="#cb19-190" aria-label="190"></a>複数の条件を順番に判定していく場合は <span class="in">`elif`</span>（else if の略）を使います。上から順に条件が評価され、最初に成り立ったブロックだけが実行されます。</span>
+<span id="cb19-191"><a href="#cb19-191" aria-label="191"></a></span>
+<span id="cb19-192"><a href="#cb19-192" aria-label="192"></a><span class="in">```{=html}</span></span>
+<span id="cb19-193"><a href="#cb19-193" aria-label="193"></a><span class="in">&lt;svg viewBox="0 0 500 330" width="100%" height="330" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
+<span id="cb19-194"><a href="#cb19-194" aria-label="194"></a><span class="in">  &lt;defs&gt;</span></span>
+<span id="cb19-195"><a href="#cb19-195" aria-label="195"></a><span class="in">    &lt;marker id="arrow-fc3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb19-196"><a href="#cb19-196" aria-label="196"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
+<span id="cb19-197"><a href="#cb19-197" aria-label="197"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb19-198"><a href="#cb19-198" aria-label="198"></a><span class="in">  &lt;/defs&gt;</span></span>
+<span id="cb19-199"><a href="#cb19-199" aria-label="199"></a><span class="in">  &lt;line x1="150" y1="12" x2="150" y2="32" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
+<span id="cb19-200"><a href="#cb19-200" aria-label="200"></a><span class="in">  &lt;polygon points="150,35 220,70 150,105 80,70" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
+<span id="cb19-201"><a href="#cb19-201" aria-label="201"></a><span class="in">  &lt;text x="150" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式1&lt;/text&gt;</span></span>
+<span id="cb19-202"><a href="#cb19-202" aria-label="202"></a><span class="in">  &lt;line x1="220" y1="70" x2="290" y2="70" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
+<span id="cb19-203"><a href="#cb19-203" aria-label="203"></a><span class="in">  &lt;text x="240" y="62" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True&lt;/text&gt;</span></span>
+<span id="cb19-204"><a href="#cb19-204" aria-label="204"></a><span class="in">  &lt;rect x="295" y="50" width="130" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
+<span id="cb19-205"><a href="#cb19-205" aria-label="205"></a><span class="in">  &lt;text x="360" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理1 (if)&lt;/text&gt;</span></span>
+<span id="cb19-206"><a href="#cb19-206" aria-label="206"></a><span class="in">  &lt;line x1="150" y1="105" x2="150" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
+<span id="cb19-207"><a href="#cb19-207" aria-label="207"></a><span class="in">  &lt;text x="160" y="122" font-size="11" font-weight="bold" fill="#c62828"&gt;False&lt;/text&gt;</span></span>
+<span id="cb19-208"><a href="#cb19-208" aria-label="208"></a><span class="in">  &lt;polygon points="150,135 220,170 150,205 80,170" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
+<span id="cb19-209"><a href="#cb19-209" aria-label="209"></a><span class="in">  &lt;text x="150" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式2&lt;/text&gt;</span></span>
+<span id="cb19-210"><a href="#cb19-210" aria-label="210"></a><span class="in">  &lt;line x1="220" y1="170" x2="290" y2="170" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
+<span id="cb19-211"><a href="#cb19-211" aria-label="211"></a><span class="in">  &lt;text x="240" y="162" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True&lt;/text&gt;</span></span>
+<span id="cb19-212"><a href="#cb19-212" aria-label="212"></a><span class="in">  &lt;rect x="295" y="150" width="130" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
+<span id="cb19-213"><a href="#cb19-213" aria-label="213"></a><span class="in">  &lt;text x="360" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;処理2 (elif)&lt;/text&gt;</span></span>
+<span id="cb19-214"><a href="#cb19-214" aria-label="214"></a><span class="in">  &lt;line x1="150" y1="205" x2="150" y2="230" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
+<span id="cb19-215"><a href="#cb19-215" aria-label="215"></a><span class="in">  &lt;text x="160" y="222" font-size="11" font-weight="bold" fill="#c62828"&gt;False&lt;/text&gt;</span></span>
+<span id="cb19-216"><a href="#cb19-216" aria-label="216"></a><span class="in">  &lt;rect x="85" y="235" width="130" height="40" rx="4" fill="#ffebee" stroke="#c62828" stroke-width="2"/&gt;</span></span>
+<span id="cb19-217"><a href="#cb19-217" aria-label="217"></a><span class="in">  &lt;text x="150" y="260" text-anchor="middle" font-size="13" font-weight="bold" fill="#b71c1c"&gt;処理3 (else)&lt;/text&gt;</span></span>
+<span id="cb19-218"><a href="#cb19-218" aria-label="218"></a><span class="in">  &lt;line x1="425" y1="70" x2="455" y2="70" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-219"><a href="#cb19-219" aria-label="219"></a><span class="in">  &lt;line x1="425" y1="170" x2="455" y2="170" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-220"><a href="#cb19-220" aria-label="220"></a><span class="in">  &lt;line x1="215" y1="255" x2="455" y2="255" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-221"><a href="#cb19-221" aria-label="221"></a><span class="in">  &lt;line x1="455" y1="70" x2="455" y2="295" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-222"><a href="#cb19-222" aria-label="222"></a><span class="in">  &lt;line x1="455" y1="295" x2="158" y2="295" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
+<span id="cb19-223"><a href="#cb19-223" aria-label="223"></a><span class="in">  &lt;circle cx="150" cy="295" r="4" fill="#333"/&gt;</span></span>
+<span id="cb19-224"><a href="#cb19-224" aria-label="224"></a><span class="in">  &lt;line x1="150" y1="275" x2="150" y2="291" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-225"><a href="#cb19-225" aria-label="225"></a><span class="in">  &lt;line x1="150" y1="299" x2="150" y2="320" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/&gt;</span></span>
+<span id="cb19-226"><a href="#cb19-226" aria-label="226"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb19-227"><a href="#cb19-227" aria-label="227"></a><span class="in">```</span></span>
+<span id="cb19-228"><a href="#cb19-228" aria-label="228"></a></span>
+<span id="cb19-229"><a href="#cb19-229" aria-label="229"></a><span class="in">```python</span></span>
+<span id="cb19-230"><a href="#cb19-230" aria-label="230"></a>score <span class="op">=</span> <span class="dv">75</span></span>
+<span id="cb19-231"><a href="#cb19-231" aria-label="231"></a></span>
+<span id="cb19-232"><a href="#cb19-232" aria-label="232"></a><span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">80</span>:</span>
+<span id="cb19-233"><a href="#cb19-233" aria-label="233"></a>    <span class="bu">print</span>(<span class="st">"評価: 優"</span>)</span>
+<span id="cb19-234"><a href="#cb19-234" aria-label="234"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">70</span>:</span>
+<span id="cb19-235"><a href="#cb19-235" aria-label="235"></a>    <span class="bu">print</span>(<span class="st">"評価: 良"</span>)</span>
+<span id="cb19-236"><a href="#cb19-236" aria-label="236"></a><span class="cf">elif</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb19-237"><a href="#cb19-237" aria-label="237"></a>    <span class="bu">print</span>(<span class="st">"評価: 可"</span>)</span>
+<span id="cb19-238"><a href="#cb19-238" aria-label="238"></a><span class="cf">else</span>:</span>
+<span id="cb19-239"><a href="#cb19-239" aria-label="239"></a>    <span class="bu">print</span>(<span class="st">"評価: 不可"</span>)</span>
+<span id="cb19-240"><a href="#cb19-240" aria-label="240"></a><span class="in">```</span></span>
+<span id="cb19-241"><a href="#cb19-241" aria-label="241"></a></span>
+<span id="cb19-242"><a href="#cb19-242" aria-label="242"></a><span class="fu">##### elif があるときのインデント</span></span>
+<span id="cb19-243"><a href="#cb19-243" aria-label="243"></a><span class="in">`elif`</span> を使う場合も、基本のインデントルールは <span class="in">`else`</span> と同様です。</span>
+<span id="cb19-244"><a href="#cb19-244" aria-label="244"></a></span>
+<span id="cb19-245"><a href="#cb19-245" aria-label="245"></a><span class="ss">1. </span>**`if`、`elif`、`else` の行頭をすべて同じインデント位置（深さ）に揃えます。** <span class="in">`elif`</span> を前の条件ブロックの内側にインデントしてはいけません。</span>
+<span id="cb19-246"><a href="#cb19-246" aria-label="246"></a><span class="ss">2. </span>それぞれの条件が成り立ったときに実行する文は、各行の下で**半角スペース4個分インデント**します。</span>
+<span id="cb19-247"><a href="#cb19-247" aria-label="247"></a></span>
+<span id="cb19-248"><a href="#cb19-248" aria-label="248"></a><span class="fu">#### if・elif・else のインデント構造と注意点</span></span>
+<span id="cb19-249"><a href="#cb19-249" aria-label="249"></a></span>
+<span id="cb19-250"><a href="#cb19-250" aria-label="250"></a><span class="in">`if`</span>、<span class="in">`elif`</span>、<span class="in">`else`</span> を組み合わせる際のインデントの全体像をまとめると、以下のようになります。</span>
+<span id="cb19-251"><a href="#cb19-251" aria-label="251"></a></span>
+<span id="cb19-252"><a href="#cb19-252" aria-label="252"></a><span class="in">```{=html}</span></span>
+<span id="cb19-253"><a href="#cb19-253" aria-label="253"></a><span class="in">&lt;svg viewBox="0 0 620 290" width="100%" height="290" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
+<span id="cb19-254"><a href="#cb19-254" aria-label="254"></a><span class="in">  &lt;!-- タイトル --&gt;</span></span>
+<span id="cb19-255"><a href="#cb19-255" aria-label="255"></a><span class="in">  &lt;text x="20" y="28" font-size="14" font-weight="bold" fill="#333"&gt;if / elif / else のインデント構造&lt;/text&gt;</span></span>
+<span id="cb19-256"><a href="#cb19-256" aria-label="256"></a></span>
+<span id="cb19-257"><a href="#cb19-257" aria-label="257"></a><span class="in">  &lt;!-- コード表示枠 --&gt;</span></span>
+<span id="cb19-258"><a href="#cb19-258" aria-label="258"></a><span class="in">  &lt;rect x="20" y="42" width="310" height="230" rx="6" fill="#1e293b" /&gt;</span></span>
+<span id="cb19-259"><a href="#cb19-259" aria-label="259"></a></span>
+<span id="cb19-260"><a href="#cb19-260" aria-label="260"></a><span class="in">  &lt;!-- 1行目: if --&gt;</span></span>
+<span id="cb19-261"><a href="#cb19-261" aria-label="261"></a><span class="in">  &lt;text x="35" y="72" font-family="Consolas, Monaco, monospace" font-size="14" font-weight="bold" fill="#f472b6"&gt;if&lt;/text&gt;</span></span>
+<span id="cb19-262"><a href="#cb19-262" aria-label="262"></a><span class="in">  &lt;text x="58" y="72" font-family="Consolas, Monaco, monospace" font-size="14" fill="#f8fafc"&gt; 条件式1:&lt;/text&gt;</span></span>
+<span id="cb19-263"><a href="#cb19-263" aria-label="263"></a></span>
+<span id="cb19-264"><a href="#cb19-264" aria-label="264"></a><span class="in">  &lt;!-- 2行目: 処理1（インデント） --&gt;</span></span>
+<span id="cb19-265"><a href="#cb19-265" aria-label="265"></a><span class="in">  &lt;rect x="35" y="85" width="48" height="20" fill="#334155" rx="3" /&gt;</span></span>
+<span id="cb19-266"><a href="#cb19-266" aria-label="266"></a><span class="in">  &lt;text x="39" y="99" font-family="Consolas, Monaco, monospace" font-size="10" fill="#94a3b8"&gt;␣␣␣␣&lt;/text&gt;</span></span>
+<span id="cb19-267"><a href="#cb19-267" aria-label="267"></a><span class="in">  &lt;text x="90" y="100" font-family="Consolas, Monaco, monospace" font-size="14" fill="#4ade80"&gt;処理1&lt;/text&gt;</span></span>
+<span id="cb19-268"><a href="#cb19-268" aria-label="268"></a></span>
+<span id="cb19-269"><a href="#cb19-269" aria-label="269"></a><span class="in">  &lt;!-- 3行目: elif --&gt;</span></span>
+<span id="cb19-270"><a href="#cb19-270" aria-label="270"></a><span class="in">  &lt;text x="35" y="135" font-family="Consolas, Monaco, monospace" font-size="14" font-weight="bold" fill="#f472b6"&gt;elif&lt;/text&gt;</span></span>
+<span id="cb19-271"><a href="#cb19-271" aria-label="271"></a><span class="in">  &lt;text x="75" y="135" font-family="Consolas, Monaco, monospace" font-size="14" fill="#f8fafc"&gt; 条件式2:&lt;/text&gt;</span></span>
+<span id="cb19-272"><a href="#cb19-272" aria-label="272"></a></span>
+<span id="cb19-273"><a href="#cb19-273" aria-label="273"></a><span class="in">  &lt;!-- 4行目: 処理2（インデント） --&gt;</span></span>
+<span id="cb19-274"><a href="#cb19-274" aria-label="274"></a><span class="in">  &lt;rect x="35" y="148" width="48" height="20" fill="#334155" rx="3" /&gt;</span></span>
+<span id="cb19-275"><a href="#cb19-275" aria-label="275"></a><span class="in">  &lt;text x="39" y="162" font-family="Consolas, Monaco, monospace" font-size="10" fill="#94a3b8"&gt;␣␣␣␣&lt;/text&gt;</span></span>
+<span id="cb19-276"><a href="#cb19-276" aria-label="276"></a><span class="in">  &lt;text x="90" y="163" font-family="Consolas, Monaco, monospace" font-size="14" fill="#4ade80"&gt;処理2&lt;/text&gt;</span></span>
+<span id="cb19-277"><a href="#cb19-277" aria-label="277"></a></span>
+<span id="cb19-278"><a href="#cb19-278" aria-label="278"></a><span class="in">  &lt;!-- 5行目: else --&gt;</span></span>
+<span id="cb19-279"><a href="#cb19-279" aria-label="279"></a><span class="in">  &lt;text x="35" y="198" font-family="Consolas, Monaco, monospace" font-size="14" font-weight="bold" fill="#f472b6"&gt;else:&lt;/text&gt;</span></span>
+<span id="cb19-280"><a href="#cb19-280" aria-label="280"></a></span>
+<span id="cb19-281"><a href="#cb19-281" aria-label="281"></a><span class="in">  &lt;!-- 6行目: 処理3（インデント） --&gt;</span></span>
+<span id="cb19-282"><a href="#cb19-282" aria-label="282"></a><span class="in">  &lt;rect x="35" y="211" width="48" height="20" fill="#334155" rx="3" /&gt;</span></span>
+<span id="cb19-283"><a href="#cb19-283" aria-label="283"></a><span class="in">  &lt;text x="39" y="225" font-family="Consolas, Monaco, monospace" font-size="10" fill="#94a3b8"&gt;␣␣␣␣&lt;/text&gt;</span></span>
+<span id="cb19-284"><a href="#cb19-284" aria-label="284"></a><span class="in">  &lt;text x="90" y="226" font-family="Consolas, Monaco, monospace" font-size="14" fill="#4ade80"&gt;処理3&lt;/text&gt;</span></span>
+<span id="cb19-285"><a href="#cb19-285" aria-label="285"></a></span>
+<span id="cb19-286"><a href="#cb19-286" aria-label="286"></a><span class="in">  &lt;!-- 先頭を揃えるガイド線 (赤の破線) --&gt;</span></span>
+<span id="cb19-287"><a href="#cb19-287" aria-label="287"></a><span class="in">  &lt;line x1="28" y1="58" x2="28" y2="204" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,3" /&gt;</span></span>
+<span id="cb19-288"><a href="#cb19-288" aria-label="288"></a><span class="in">  &lt;circle cx="28" cy="68" r="3" fill="#ef4444" /&gt;</span></span>
+<span id="cb19-289"><a href="#cb19-289" aria-label="289"></a><span class="in">  &lt;circle cx="28" cy="131" r="3" fill="#ef4444" /&gt;</span></span>
+<span id="cb19-290"><a href="#cb19-290" aria-label="290"></a><span class="in">  &lt;circle cx="28" cy="194" r="3" fill="#ef4444" /&gt;</span></span>
+<span id="cb19-291"><a href="#cb19-291" aria-label="291"></a></span>
+<span id="cb19-292"><a href="#cb19-292" aria-label="292"></a><span class="in">  &lt;!-- 右側説明ボックス1: 先頭を揃える --&gt;</span></span>
+<span id="cb19-293"><a href="#cb19-293" aria-label="293"></a><span class="in">  &lt;rect x="350" y="52" width="250" height="90" rx="6" fill="#ffffff" stroke="#ef4444" stroke-width="1.5" /&gt;</span></span>
+<span id="cb19-294"><a href="#cb19-294" aria-label="294"></a><span class="in">  &lt;text x="365" y="75" font-size="13" font-weight="bold" fill="#dc2626"&gt;● 先頭の位置を揃える&lt;/text&gt;</span></span>
+<span id="cb19-295"><a href="#cb19-295" aria-label="295"></a><span class="in">  &lt;text x="365" y="97" font-size="12" fill="#334155"&gt;・if, elif, else は同じインデント位置&lt;/text&gt;</span></span>
+<span id="cb19-296"><a href="#cb19-296" aria-label="296"></a><span class="in">  &lt;text x="365" y="117" font-size="12" fill="#334155"&gt;・ブロックが終わったらインデントを戻す&lt;/text&gt;</span></span>
+<span id="cb19-297"><a href="#cb19-297" aria-label="297"></a><span class="in">  &lt;text x="365" y="133" font-size="11" fill="#64748b"&gt;（IDLEでは Backspace で戻す）&lt;/text&gt;</span></span>
+<span id="cb19-298"><a href="#cb19-298" aria-label="298"></a></span>
+<span id="cb19-299"><a href="#cb19-299" aria-label="299"></a><span class="in">  &lt;!-- 右側説明ボックス2: インデントする --&gt;</span></span>
+<span id="cb19-300"><a href="#cb19-300" aria-label="300"></a><span class="in">  &lt;rect x="350" y="162" width="250" height="90" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1.5" /&gt;</span></span>
+<span id="cb19-301"><a href="#cb19-301" aria-label="301"></a><span class="in">  &lt;text x="365" y="185" font-size="13" font-weight="bold" fill="#1d4ed8"&gt;● 実行文はインデントする&lt;/text&gt;</span></span>
+<span id="cb19-302"><a href="#cb19-302" aria-label="302"></a><span class="in">  &lt;text x="365" y="207" font-size="12" fill="#334155"&gt;・半角スペース4つ分（字下げ）&lt;/text&gt;</span></span>
+<span id="cb19-303"><a href="#cb19-303" aria-label="303"></a><span class="in">  &lt;text x="365" y="227" font-size="12" fill="#334155"&gt;・コロン (:) の次の行は必ずインデント&lt;/text&gt;</span></span>
+<span id="cb19-304"><a href="#cb19-304" aria-label="304"></a><span class="in">  &lt;text x="365" y="243" font-size="11" fill="#64748b"&gt;・ずれると IndentationError になる&lt;/text&gt;</span></span>
+<span id="cb19-305"><a href="#cb19-305" aria-label="305"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb19-306"><a href="#cb19-306" aria-label="306"></a><span class="in">```</span></span>
+<span id="cb19-307"><a href="#cb19-307" aria-label="307"></a></span>
+<span id="cb19-308"><a href="#cb19-308" aria-label="308"></a>::: {.callout-important}</span>
+<span id="cb19-309"><a href="#cb19-309" aria-label="309"></a><span class="fu">##### インデントでよくある間違い</span></span>
+<span id="cb19-310"><a href="#cb19-310" aria-label="310"></a></span>
+<span id="cb19-311"><a href="#cb19-311" aria-label="311"></a>Pythonでは、波括弧 <span class="in">`{ }`</span> ではなく「行頭の空白の数（インデント）」によってどこからどこまでがひとかたまりの処理（ブロック）なのかを判断します。そのため、インデントがずれるとエラーの原因になります。</span>
+<span id="cb19-312"><a href="#cb19-312" aria-label="312"></a></span>
+<span id="cb19-313"><a href="#cb19-313" aria-label="313"></a>特に初心者がつまずきやすいのは以下の2点です：</span>
+<span id="cb19-314"><a href="#cb19-314" aria-label="314"></a></span>
+<span id="cb19-315"><a href="#cb19-315" aria-label="315"></a><span class="ss">1. </span>**`else` や `elif` 自体をインデントしてしまう（構文エラー）**</span>
+<span id="cb19-316"><a href="#cb19-316" aria-label="316"></a>   <span class="in">`if`</span> の中の処理が終わったあと、インデントを戻さずに <span class="in">`else:`</span> や <span class="in">`elif:`</span> を書いてしまうとエラーになります。</span>
+<span id="cb19-317"><a href="#cb19-317" aria-label="317"></a>   <span class="in">```python</span></span>
+<span id="cb19-318"><a href="#cb19-318" aria-label="318"></a>   <span class="co"># ✕ 誤った例（else が if の処理の中にインデントされている）</span></span>
+<span id="cb19-319"><a href="#cb19-319" aria-label="319"></a>   <span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb19-320"><a href="#cb19-320" aria-label="320"></a>       <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
+<span id="cb19-321"><a href="#cb19-321" aria-label="321"></a>       <span class="cf">else</span>:          <span class="co"># SyntaxError になる！</span></span>
+<span id="cb19-322"><a href="#cb19-322" aria-label="322"></a>           <span class="bu">print</span>(<span class="st">"不合格"</span>)</span>
+<span id="cb19-323"><a href="#cb19-323" aria-label="323"></a>   <span class="in">```</span></span>
+<span id="cb19-324"><a href="#cb19-324" aria-label="324"></a>   **対処法**: <span class="in">`if`</span> と同じ列（行頭）までインデントを戻して記述します。</span>
+<span id="cb19-325"><a href="#cb19-325" aria-label="325"></a></span>
+<span id="cb19-326"><a href="#cb19-326" aria-label="326"></a><span class="ss">2. </span>**`else` や `elif` の直下の処理をインデントし忘れる（インデントエラー）**</span>
+<span id="cb19-327"><a href="#cb19-327" aria-label="327"></a>   コロン <span class="in">`:`</span> の次の行でインデントを行わないとエラーになります。</span>
+<span id="cb19-328"><a href="#cb19-328" aria-label="328"></a>   <span class="in">```python</span></span>
+<span id="cb19-329"><a href="#cb19-329" aria-label="329"></a>   <span class="co"># ✕ 誤った例（処理がインデントされていない）</span></span>
+<span id="cb19-330"><a href="#cb19-330" aria-label="330"></a>   <span class="cf">if</span> score <span class="op">&gt;=</span> <span class="dv">60</span>:</span>
+<span id="cb19-331"><a href="#cb19-331" aria-label="331"></a>       <span class="bu">print</span>(<span class="st">"合格"</span>)</span>
+<span id="cb19-332"><a href="#cb19-332" aria-label="332"></a>   <span class="cf">else</span>:</span>
+<span id="cb19-333"><a href="#cb19-333" aria-label="333"></a>   <span class="bu">print</span>(<span class="st">"不合格"</span>)    <span class="co"># IndentationError になる！</span></span>
+<span id="cb19-334"><a href="#cb19-334" aria-label="334"></a>   <span class="in">```</span></span>
+<span id="cb19-335"><a href="#cb19-335" aria-label="335"></a>   **対処法**: 条件が成り立ったときの処理は、必ず半角スペース4個分インデントします。</span>
+<span id="cb19-336"><a href="#cb19-336" aria-label="336"></a>:::</span>
+<span id="cb19-337"><a href="#cb19-337" aria-label="337"></a></span>
+<span id="cb19-338"><a href="#cb19-338" aria-label="338"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-339"><a href="#cb19-339" aria-label="339"></a><span class="fu">### 練習問題 02-04：気温に応じたメッセージの表示</span></span>
+<span id="cb19-340"><a href="#cb19-340" aria-label="340"></a>今日の最高気温を表す変数 <span class="in">`temperature`</span> の値に応じて、以下のメッセージを表示するプログラムを <span class="in">`if-elif-else`</span> 文を用いて作成してください：</span>
+<span id="cb19-341"><a href="#cb19-341" aria-label="341"></a></span>
+<span id="cb19-342"><a href="#cb19-342" aria-label="342"></a><span class="ss">- </span>40度以上：「酷暑日」</span>
+<span id="cb19-343"><a href="#cb19-343" aria-label="343"></a><span class="ss">- </span>35度以上40度未満：「猛暑日」</span>
+<span id="cb19-344"><a href="#cb19-344" aria-label="344"></a><span class="ss">- </span>30度以上35度未満：「真夏日」</span>
+<span id="cb19-345"><a href="#cb19-345" aria-label="345"></a><span class="ss">- </span>25度以上30度未満：「夏日」</span>
+<span id="cb19-346"><a href="#cb19-346" aria-label="346"></a><span class="ss">- </span>それ以外なら「普通の日」</span>
+<span id="cb19-347"><a href="#cb19-347" aria-label="347"></a>:::</span>
+<span id="cb19-348"><a href="#cb19-348" aria-label="348"></a></span>
+<span id="cb19-349"><a href="#cb19-349" aria-label="349"></a>---</span>
+<span id="cb19-350"><a href="#cb19-350" aria-label="350"></a></span>
+<span id="cb19-351"><a href="#cb19-351" aria-label="351"></a><span class="fu">## 繰り返し</span></span>
+<span id="cb19-352"><a href="#cb19-352" aria-label="352"></a></span>
+<span id="cb19-353"><a href="#cb19-353" aria-label="353"></a>同じような処理を何度も実行したい場合は**繰り返し（ループ）**を使います。</span>
+<span id="cb19-354"><a href="#cb19-354" aria-label="354"></a></span>
+<span id="cb19-355"><a href="#cb19-355" aria-label="355"></a><span class="fu">### データの並び</span></span>
+<span id="cb19-356"><a href="#cb19-356" aria-label="356"></a>Pythonの <span class="in">`for`</span> 文は、**「データの並び（シーケンス）」**から要素を1つずつ取り出しながら処理を繰り返します。まず、データの並びとは何か見てみましょう。</span>
+<span id="cb19-357"><a href="#cb19-357" aria-label="357"></a></span>
+<span id="cb19-358"><a href="#cb19-358" aria-label="358"></a><span class="ss">- </span>文字列は、文字が順番に並んだデータです。</span>
+<span id="cb19-359"><a href="#cb19-359" aria-label="359"></a><span class="ss">- </span>規則的に並んだ整数は、 <span class="in">`range()`</span> 関数を使って書けます。</span>
+<span id="cb19-360"><a href="#cb19-360" aria-label="360"></a><span class="ss">  - </span><span class="in">`range(n)`</span>: 0 から n-1 までの n 個の整数</span>
+<span id="cb19-361"><a href="#cb19-361" aria-label="361"></a><span class="ss">  - </span><span class="in">`range(start, stop)`</span>: start から stop - 1 までの整数</span>
+<span id="cb19-362"><a href="#cb19-362" aria-label="362"></a><span class="ss">  - </span><span class="in">`range(start, stop, step)`</span>: start から stop - 1 までstep 刻みの整数</span>
+<span id="cb19-363"><a href="#cb19-363" aria-label="363"></a></span>
+<span id="cb19-364"><a href="#cb19-364" aria-label="364"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-365"><a href="#cb19-365" aria-label="365"></a><span class="fu">### 練習問題 02-05：rangeを用いた整数の並び</span></span>
+<span id="cb19-366"><a href="#cb19-366" aria-label="366"></a>1から19までの奇数を並べたものを、<span class="in">`range()`</span> を用いて書いてください。</span>
+<span id="cb19-367"><a href="#cb19-367" aria-label="367"></a>:::</span>
+<span id="cb19-368"><a href="#cb19-368" aria-label="368"></a></span>
+<span id="cb19-369"><a href="#cb19-369" aria-label="369"></a><span class="fu">### for文の書き方</span></span>
+<span id="cb19-370"><a href="#cb19-370" aria-label="370"></a><span class="in">`for 変数 in データの並び:`</span> の形で書き、繰り返したい処理をインデントします。</span>
+<span id="cb19-371"><a href="#cb19-371" aria-label="371"></a></span>
+<span id="cb19-372"><a href="#cb19-372" aria-label="372"></a>文字列の中の文字を1文字ずつ取り出す例：</span>
+<span id="cb19-373"><a href="#cb19-373" aria-label="373"></a></span>
+<span id="cb19-374"><a href="#cb19-374" aria-label="374"></a><span class="in">```python</span></span>
+<span id="cb19-375"><a href="#cb19-375" aria-label="375"></a>word <span class="op">=</span> <span class="st">"Python"</span></span>
+<span id="cb19-376"><a href="#cb19-376" aria-label="376"></a><span class="cf">for</span> ch <span class="kw">in</span> word:</span>
+<span id="cb19-377"><a href="#cb19-377" aria-label="377"></a>    <span class="bu">print</span>(ch)</span>
+<span id="cb19-378"><a href="#cb19-378" aria-label="378"></a><span class="in">```</span></span>
+<span id="cb19-379"><a href="#cb19-379" aria-label="379"></a></span>
+<span id="cb19-380"><a href="#cb19-380" aria-label="380"></a>整数の並びを順に取り出す例：</span>
+<span id="cb19-381"><a href="#cb19-381" aria-label="381"></a></span>
+<span id="cb19-382"><a href="#cb19-382" aria-label="382"></a><span class="in">```python</span></span>
+<span id="cb19-383"><a href="#cb19-383" aria-label="383"></a><span class="co"># 0から4まで表示</span></span>
+<span id="cb19-384"><a href="#cb19-384" aria-label="384"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb19-385"><a href="#cb19-385" aria-label="385"></a>    <span class="bu">print</span>(i)</span>
+<span id="cb19-386"><a href="#cb19-386" aria-label="386"></a><span class="in">```</span></span>
+<span id="cb19-387"><a href="#cb19-387" aria-label="387"></a></span>
+<span id="cb19-388"><a href="#cb19-388" aria-label="388"></a>取り出した数を使って合計を計算する例：</span>
+<span id="cb19-389"><a href="#cb19-389" aria-label="389"></a></span>
+<span id="cb19-390"><a href="#cb19-390" aria-label="390"></a><span class="in">```python</span></span>
+<span id="cb19-391"><a href="#cb19-391" aria-label="391"></a>total <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb19-392"><a href="#cb19-392" aria-label="392"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>):</span>
+<span id="cb19-393"><a href="#cb19-393" aria-label="393"></a>    total <span class="op">=</span> total <span class="op">+</span> i</span>
+<span id="cb19-394"><a href="#cb19-394" aria-label="394"></a><span class="bu">print</span>(<span class="st">"1から10までの合計:"</span>, total)</span>
+<span id="cb19-395"><a href="#cb19-395" aria-label="395"></a><span class="in">```</span></span>
+<span id="cb19-396"><a href="#cb19-396" aria-label="396"></a></span>
+<span id="cb19-397"><a href="#cb19-397" aria-label="397"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-398"><a href="#cb19-398" aria-label="398"></a><span class="fu">### 練習問題 02-06：キーボードからの入力と合計</span></span>
+<span id="cb19-399"><a href="#cb19-399" aria-label="399"></a>キーボードから5個の数値を入力して、その合計を表示するプログラムを作成してください。</span>
+<span id="cb19-400"><a href="#cb19-400" aria-label="400"></a>:::</span>
+<span id="cb19-401"><a href="#cb19-401" aria-label="401"></a></span>
+<span id="cb19-402"><a href="#cb19-402" aria-label="402"></a><span class="fu">### while文の書き方</span></span>
+<span id="cb19-403"><a href="#cb19-403" aria-label="403"></a><span class="in">`while`</span> 文は、「指定した条件が成り立っている間（<span class="in">`True`</span> である間）」ずっと処理を繰り返します。データの並びとは関係ありません。</span>
+<span id="cb19-404"><a href="#cb19-404" aria-label="404"></a></span>
+<span id="cb19-405"><a href="#cb19-405" aria-label="405"></a><span class="in">```{=html}</span></span>
+<span id="cb19-406"><a href="#cb19-406" aria-label="406"></a><span class="in">&lt;svg viewBox="0 0 380 290" width="100%" height="290" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;"&gt;</span></span>
+<span id="cb19-407"><a href="#cb19-407" aria-label="407"></a><span class="in">  &lt;defs&gt;</span></span>
+<span id="cb19-408"><a href="#cb19-408" aria-label="408"></a><span class="in">    &lt;marker id="arrow-fc-while" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb19-409"><a href="#cb19-409" aria-label="409"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#333" /&gt;</span></span>
+<span id="cb19-410"><a href="#cb19-410" aria-label="410"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb19-411"><a href="#cb19-411" aria-label="411"></a><span class="in">  &lt;/defs&gt;</span></span>
+<span id="cb19-412"><a href="#cb19-412" aria-label="412"></a><span class="in">  &lt;!-- 入力から合流点へ --&gt;</span></span>
+<span id="cb19-413"><a href="#cb19-413" aria-label="413"></a><span class="in">  &lt;line x1="190" y1="12" x2="190" y2="35" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-414"><a href="#cb19-414" aria-label="414"></a><span class="in">  &lt;circle cx="190" cy="35" r="3.5" fill="#333"/&gt;</span></span>
+<span id="cb19-415"><a href="#cb19-415" aria-label="415"></a><span class="in">  &lt;line x1="190" y1="35" x2="190" y2="47" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb19-416"><a href="#cb19-416" aria-label="416"></a><span class="in">  </span></span>
+<span id="cb19-417"><a href="#cb19-417" aria-label="417"></a><span class="in">  &lt;!-- 条件式 --&gt;</span></span>
+<span id="cb19-418"><a href="#cb19-418" aria-label="418"></a><span class="in">  &lt;polygon points="190,50 265,85 190,120 115,85" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/&gt;</span></span>
+<span id="cb19-419"><a href="#cb19-419" aria-label="419"></a><span class="in">  &lt;text x="190" y="90" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100"&gt;条件式&lt;/text&gt;</span></span>
+<span id="cb19-420"><a href="#cb19-420" aria-label="420"></a><span class="in">  </span></span>
+<span id="cb19-421"><a href="#cb19-421" aria-label="421"></a><span class="in">  &lt;!-- True (成立): 繰り返す処理へ --&gt;</span></span>
+<span id="cb19-422"><a href="#cb19-422" aria-label="422"></a><span class="in">  &lt;line x1="190" y1="120" x2="190" y2="152" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb19-423"><a href="#cb19-423" aria-label="423"></a><span class="in">  &lt;text x="205" y="142" font-size="12" font-weight="bold" fill="#2e7d32"&gt;True (成立)&lt;/text&gt;</span></span>
+<span id="cb19-424"><a href="#cb19-424" aria-label="424"></a><span class="in">  </span></span>
+<span id="cb19-425"><a href="#cb19-425" aria-label="425"></a><span class="in">  &lt;rect x="120" y="155" width="140" height="40" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/&gt;</span></span>
+<span id="cb19-426"><a href="#cb19-426" aria-label="426"></a><span class="in">  &lt;text x="190" y="180" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20"&gt;繰り返す処理&lt;/text&gt;</span></span>
+<span id="cb19-427"><a href="#cb19-427" aria-label="427"></a><span class="in">  </span></span>
+<span id="cb19-428"><a href="#cb19-428" aria-label="428"></a><span class="in">  &lt;!-- ループの戻り線 --&gt;</span></span>
+<span id="cb19-429"><a href="#cb19-429" aria-label="429"></a><span class="in">  &lt;line x1="190" y1="195" x2="190" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-430"><a href="#cb19-430" aria-label="430"></a><span class="in">  &lt;line x1="190" y1="220" x2="55" y2="220" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-431"><a href="#cb19-431" aria-label="431"></a><span class="in">  &lt;line x1="55" y1="220" x2="55" y2="35" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-432"><a href="#cb19-432" aria-label="432"></a><span class="in">  &lt;line x1="55" y1="35" x2="184" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb19-433"><a href="#cb19-433" aria-label="433"></a><span class="in">  </span></span>
+<span id="cb19-434"><a href="#cb19-434" aria-label="434"></a><span class="in">  &lt;!-- False (不成立): ループ脱出 --&gt;</span></span>
+<span id="cb19-435"><a href="#cb19-435" aria-label="435"></a><span class="in">  &lt;line x1="265" y1="85" x2="325" y2="85" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-436"><a href="#cb19-436" aria-label="436"></a><span class="in">  &lt;text x="270" y="78" font-size="11" font-weight="bold" fill="#c62828"&gt;False (不成立)&lt;/text&gt;</span></span>
+<span id="cb19-437"><a href="#cb19-437" aria-label="437"></a><span class="in">  &lt;line x1="325" y1="85" x2="325" y2="245" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-438"><a href="#cb19-438" aria-label="438"></a><span class="in">  &lt;line x1="325" y1="245" x2="190" y2="245" stroke="#333" stroke-width="2"/&gt;</span></span>
+<span id="cb19-439"><a href="#cb19-439" aria-label="439"></a><span class="in">  &lt;line x1="190" y1="245" x2="190" y2="268" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc-while)"/&gt;</span></span>
+<span id="cb19-440"><a href="#cb19-440" aria-label="440"></a><span class="in">  &lt;text x="190" y="283" text-anchor="middle" font-size="11" fill="#666"&gt;（ループ終了・次の処理へ）&lt;/text&gt;</span></span>
+<span id="cb19-441"><a href="#cb19-441" aria-label="441"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb19-442"><a href="#cb19-442" aria-label="442"></a><span class="in">```</span></span>
+<span id="cb19-443"><a href="#cb19-443" aria-label="443"></a></span>
+<span id="cb19-444"><a href="#cb19-444" aria-label="444"></a><span class="in">```python</span></span>
+<span id="cb19-445"><a href="#cb19-445" aria-label="445"></a>count <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb19-446"><a href="#cb19-446" aria-label="446"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb19-447"><a href="#cb19-447" aria-label="447"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
+<span id="cb19-448"><a href="#cb19-448" aria-label="448"></a>    count <span class="op">=</span> count <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb19-449"><a href="#cb19-449" aria-label="449"></a><span class="bu">print</span>(<span class="st">"スタート！"</span>)</span>
+<span id="cb19-450"><a href="#cb19-450" aria-label="450"></a><span class="in">```</span></span>
+<span id="cb19-451"><a href="#cb19-451" aria-label="451"></a></span>
+<span id="cb19-452"><a href="#cb19-452" aria-label="452"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-453"><a href="#cb19-453" aria-label="453"></a><span class="fu">### 練習問題 02-07：while文によるカウントアップ</span></span>
+<span id="cb19-454"><a href="#cb19-454" aria-label="454"></a>変数 <span class="in">`n = 1`</span> から始め、<span class="in">`n`</span> が 100 以下の間、値を2倍にしながら表示するプログラムを <span class="in">`while`</span> 文を用いて作成してください。</span>
+<span id="cb19-455"><a href="#cb19-455" aria-label="455"></a>:::</span>
+<span id="cb19-456"><a href="#cb19-456" aria-label="456"></a></span>
+<span id="cb19-457"><a href="#cb19-457" aria-label="457"></a><span class="fu">### 無限ループと強制終了の方法</span></span>
+<span id="cb19-458"><a href="#cb19-458" aria-label="458"></a></span>
+<span id="cb19-459"><a href="#cb19-459" aria-label="459"></a><span class="in">`while`</span> 文の条件式が常に <span class="in">`True`</span> のままだと、処理が永久に終わりません。これを**無限ループ**と呼びます。</span>
+<span id="cb19-460"><a href="#cb19-460" aria-label="460"></a></span>
+<span id="cb19-461"><a href="#cb19-461" aria-label="461"></a>例えば、次のコードのようにカウンタ変数の更新（<span class="in">`count = count - 1`</span>）を書き忘れると、<span class="in">`count`</span> がずっと <span class="in">`5`</span> のまま変わらないため、条件式 <span class="in">`count &gt; 0`</span> が永遠に成立し続け、画面に「残り: 5」が出力され続けてしまいます。</span>
+<span id="cb19-462"><a href="#cb19-462" aria-label="462"></a></span>
+<span id="cb19-463"><a href="#cb19-463" aria-label="463"></a><span class="in">```python</span></span>
+<span id="cb19-464"><a href="#cb19-464" aria-label="464"></a><span class="co"># 無限ループの例（変数 count が更新されない）</span></span>
+<span id="cb19-465"><a href="#cb19-465" aria-label="465"></a>count <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb19-466"><a href="#cb19-466" aria-label="466"></a><span class="cf">while</span> count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb19-467"><a href="#cb19-467" aria-label="467"></a>    <span class="bu">print</span>(<span class="st">"残り:"</span>, count)</span>
+<span id="cb19-468"><a href="#cb19-468" aria-label="468"></a>    <span class="co"># count = count - 1 を書き忘れている！</span></span>
+<span id="cb19-469"><a href="#cb19-469" aria-label="469"></a><span class="in">```</span></span>
+<span id="cb19-470"><a href="#cb19-470" aria-label="470"></a></span>
+<span id="cb19-471"><a href="#cb19-471" aria-label="471"></a>::: {.callout-warning}</span>
+<span id="cb19-472"><a href="#cb19-472" aria-label="472"></a><span class="fu">#### 無限ループが起きたときの挙動と強制終了</span></span>
+<span id="cb19-473"><a href="#cb19-473" aria-label="473"></a></span>
+<span id="cb19-474"><a href="#cb19-474" aria-label="474"></a>もしプログラムが止まらなくなってしまった場合は、慌てずに以下の方法で強制終了（中断）させてください。</span>
+<span id="cb19-475"><a href="#cb19-475" aria-label="475"></a></span>
+<span id="cb19-476"><a href="#cb19-476" aria-label="476"></a><span class="ss">1. </span>**キーボードによる強制中断 (`Ctrl + C`)**:</span>
+<span id="cb19-477"><a href="#cb19-477" aria-label="477"></a><span class="ss">   - </span>Python Shell ウィンドウをクリックして選択した状態で、キーボードの **`Ctrl + C`** を押します。</span>
+<span id="cb19-478"><a href="#cb19-478" aria-label="478"></a><span class="ss">   - </span>※ **Mac を使っている場合でも、`Command` ではなく `Control + C`** です。</span>
+<span id="cb19-479"><a href="#cb19-479" aria-label="479"></a><span class="ss">   - </span>画面に <span class="in">`KeyboardInterrupt`</span> と表示されて実行が止まり、通常のプロンプト（<span class="in">`&gt;&gt;&gt;`</span>）に戻ります。</span>
+<span id="cb19-480"><a href="#cb19-480" aria-label="480"></a></span>
+<span id="cb19-481"><a href="#cb19-481" aria-label="481"></a><span class="ss">2. </span>**メニューからのシェル再起動 (`Restart Shell`)**:</span>
+<span id="cb19-482"><a href="#cb19-482" aria-label="482"></a><span class="ss">   - </span><span class="in">`print()`</span> で大量の文字が高速に出力され続けると、画面の描画処理が追いつかずに IDLE が応答不能（フリーズ）になり、キー入力を受け付けなくなることがあります。</span>
+<span id="cb19-483"><a href="#cb19-483" aria-label="483"></a><span class="ss">   - </span>その場合は、IDLE の上部メニューから **`Shell` → `Restart Shell`** を選択してください。Python の実行環境が初期化され、<span class="in">`&gt;&gt;&gt;`</span> に復帰します。</span>
+<span id="cb19-484"><a href="#cb19-484" aria-label="484"></a></span>
+<span id="cb19-485"><a href="#cb19-485" aria-label="485"></a><span class="ss">3. </span>**IDLE 自体の強制終了**:</span>
+<span id="cb19-486"><a href="#cb19-486" aria-label="486"></a><span class="ss">   - </span>ウィンドウ全体が白っぽくなったり、虹色のカーソル（回転ビーチボール）のまま完全に固まって操作できない場合は、OS の機能を使って IDLE を強制終了します（Mac: <span class="in">`Option + Command + Esc`</span>、Windows: <span class="in">`Ctrl + Shift + Esc`</span> でタスクマネージャーを開いて終了）。</span>
+<span id="cb19-487"><a href="#cb19-487" aria-label="487"></a>:::</span>
+<span id="cb19-488"><a href="#cb19-488" aria-label="488"></a></span>
+<span id="cb19-489"><a href="#cb19-489" aria-label="489"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-490"><a href="#cb19-490" aria-label="490"></a><span class="fu">### 練習問題 02-08：無限ループ</span></span>
+<span id="cb19-491"><a href="#cb19-491" aria-label="491"></a>無限ループになるプログラムを実行し、強制終了してみましょう。</span>
+<span id="cb19-492"><a href="#cb19-492" aria-label="492"></a>:::</span>
+<span id="cb19-493"><a href="#cb19-493" aria-label="493"></a></span>
+<span id="cb19-494"><a href="#cb19-494" aria-label="494"></a>---</span>
+<span id="cb19-495"><a href="#cb19-495" aria-label="495"></a></span>
+<span id="cb19-496"><a href="#cb19-496" aria-label="496"></a><span class="fu">## 繰り返しと場合分けの組み合わせ</span></span>
+<span id="cb19-497"><a href="#cb19-497" aria-label="497"></a></span>
+<span id="cb19-498"><a href="#cb19-498" aria-label="498"></a>実際のプログラミングでは、ループ（繰り返し）の中で <span class="in">`if`</span> 文（場合分け）を使って特定のデータだけを選別・処理することが非常に多くあります。</span>
+<span id="cb19-499"><a href="#cb19-499" aria-label="499"></a></span>
+<span id="cb19-500"><a href="#cb19-500" aria-label="500"></a><span class="in">```python</span></span>
+<span id="cb19-501"><a href="#cb19-501" aria-label="501"></a><span class="co"># 1から20までの数値のうち、3の倍数だけを表示する</span></span>
+<span id="cb19-502"><a href="#cb19-502" aria-label="502"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">21</span>):</span>
+<span id="cb19-503"><a href="#cb19-503" aria-label="503"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">3</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb19-504"><a href="#cb19-504" aria-label="504"></a>        <span class="bu">print</span>(i, <span class="st">"は3の倍数です"</span>)</span>
+<span id="cb19-505"><a href="#cb19-505" aria-label="505"></a><span class="in">```</span></span>
+<span id="cb19-506"><a href="#cb19-506" aria-label="506"></a></span>
+<span id="cb19-507"><a href="#cb19-507" aria-label="507"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-508"><a href="#cb19-508" aria-label="508"></a><span class="fu">### 練習問題 02-09：奇数の合計を計算する2種類の方法</span></span>
+<span id="cb19-509"><a href="#cb19-509" aria-label="509"></a>1から99までの奇数の合計を計算するプログラムを、次の2種類の方法で書いてください。</span>
+<span id="cb19-510"><a href="#cb19-510" aria-label="510"></a></span>
+<span id="cb19-511"><a href="#cb19-511" aria-label="511"></a><span class="ss">- </span>1から99までの奇数の並びを作り、それを合計する。</span>
+<span id="cb19-512"><a href="#cb19-512" aria-label="512"></a><span class="ss">- </span>1から99までの整数の並びを作り、<span class="in">`if`</span>文でそれが奇数の時だけ合計に加える。</span>
+<span id="cb19-513"><a href="#cb19-513" aria-label="513"></a>:::</span>
+<span id="cb19-514"><a href="#cb19-514" aria-label="514"></a></span>
+<span id="cb19-515"><a href="#cb19-515" aria-label="515"></a>また、ループの途中で中断する <span class="in">`break`</span> や、その回の処理を飛ばして次へ進む <span class="in">`continue`</span> を <span class="in">`if`</span> 文と組み合わせて使うこともできます。</span>
+<span id="cb19-516"><a href="#cb19-516" aria-label="516"></a></span>
+<span id="cb19-517"><a href="#cb19-517" aria-label="517"></a><span class="in">```python</span></span>
+<span id="cb19-518"><a href="#cb19-518" aria-label="518"></a><span class="co"># 4という値を探索（見つかったら即座に中断）</span></span>
+<span id="cb19-519"><a href="#cb19-519" aria-label="519"></a><span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
+<span id="cb19-520"><a href="#cb19-520" aria-label="520"></a>    <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb19-521"><a href="#cb19-521" aria-label="521"></a>        <span class="bu">print</span>(<span class="st">"目的のアイテムが見つかったので探索を終了します（ステップ"</span>, step, <span class="st">"）"</span>)</span>
+<span id="cb19-522"><a href="#cb19-522" aria-label="522"></a>        <span class="cf">break</span></span>
+<span id="cb19-523"><a href="#cb19-523" aria-label="523"></a>    <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
+<span id="cb19-524"><a href="#cb19-524" aria-label="524"></a><span class="in">```</span></span>
+<span id="cb19-525"><a href="#cb19-525" aria-label="525"></a></span>
+<span id="cb19-526"><a href="#cb19-526" aria-label="526"></a>関数定義の中では、ある条件が成り立った時にループを途中で中断し、関数の実行も終了させることがよくあります。そのような場合には <span class="in">`if`</span> と <span class="in">`return`</span> を組み合わせて使います。</span>
+<span id="cb19-527"><a href="#cb19-527" aria-label="527"></a></span>
+<span id="cb19-528"><a href="#cb19-528" aria-label="528"></a><span class="in">```python</span></span>
+<span id="cb19-529"><a href="#cb19-529" aria-label="529"></a><span class="kw">def</span> search4():</span>
+<span id="cb19-530"><a href="#cb19-530" aria-label="530"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
+<span id="cb19-531"><a href="#cb19-531" aria-label="531"></a>        <span class="cf">if</span> step <span class="op">==</span> <span class="dv">4</span>:</span>
+<span id="cb19-532"><a href="#cb19-532" aria-label="532"></a>            <span class="cf">return</span> <span class="st">"見つかりました"</span></span>
+<span id="cb19-533"><a href="#cb19-533" aria-label="533"></a>        <span class="bu">print</span>(<span class="st">"ステップ"</span>, step, <span class="st">"探索中..."</span>)</span>
+<span id="cb19-534"><a href="#cb19-534" aria-label="534"></a>    <span class="cf">return</span> <span class="st">"見つかりませんでした"</span></span>
+<span id="cb19-535"><a href="#cb19-535" aria-label="535"></a><span class="in">```</span></span>
+<span id="cb19-536"><a href="#cb19-536" aria-label="536"></a></span>
+<span id="cb19-537"><a href="#cb19-537" aria-label="537"></a>::: {.callout-note icon=false}</span>
+<span id="cb19-538"><a href="#cb19-538" aria-label="538"></a><span class="fu">### 練習問題 02-10：素数の判定</span></span>
+<span id="cb19-539"><a href="#cb19-539" aria-label="539"></a>引数として2以上の整数を受け取り、それが素数なら True を、素数でなければ False を返す関数を定義してください。</span>
+<span id="cb19-540"><a href="#cb19-540" aria-label="540"></a></span>
+<span id="cb19-541"><a href="#cb19-541" aria-label="541"></a><span class="ss">- </span>2以上でその数未満の数の並びについて、順に割り切るかどうかを試し、割り切れたら素数ではないので <span class="in">`return False`</span> で脱出します。</span>
+<span id="cb19-542"><a href="#cb19-542" aria-label="542"></a><span class="ss">- </span>どの数でも割り切れなければ素数なので <span class="in">`return True`</span> で True を返します。</span>
+<span id="cb19-543"><a href="#cb19-543" aria-label="543"></a></span>
+<span id="cb19-544"><a href="#cb19-544" aria-label="544"></a>:::</span>
+<span id="cb19-545"><a href="#cb19-545" aria-label="545"></a></span>
+<span id="cb19-546"><a href="#cb19-546" aria-label="546"></a>---</span>
+<span id="cb19-547"><a href="#cb19-547" aria-label="547"></a></span>
+<span id="cb19-548"><a href="#cb19-548" aria-label="548"></a><span class="fu">## まとめ</span></span>
+<span id="cb19-549"><a href="#cb19-549" aria-label="549"></a></span>
+<span id="cb19-550"><a href="#cb19-550" aria-label="550"></a><span class="ss">- </span>**真偽値と論理判定**: <span class="in">`True`</span>/<span class="in">`False`</span> の2値があり、比較演算子（<span class="in">`==`</span>, <span class="in">`!=`</span>, <span class="in">`&gt;`</span>, <span class="in">`&lt;`</span>, <span class="in">`&gt;=`</span>, <span class="in">`&lt;=`</span>）で生成される。</span>
+<span id="cb19-551"><a href="#cb19-551" aria-label="551"></a><span class="ss">- </span>**場合分け（if文）**: 条件が1個、2個（<span class="in">`else`</span>）、3個以上（<span class="in">`elif`</span>）の構文を使い分ける。</span>
+<span id="cb19-552"><a href="#cb19-552" aria-label="552"></a><span class="ss">- </span>**繰り返し（for文・while文）**:</span>
+<span id="cb19-553"><a href="#cb19-553" aria-label="553"></a><span class="ss">  - </span><span class="in">`for`</span> 文は文字列や <span class="in">`range`</span> などの「データの並び」を順に走査する。</span>
+<span id="cb19-554"><a href="#cb19-554" aria-label="554"></a><span class="ss">  - </span><span class="in">`while`</span> 文は「条件が満たされている間」ループを継続する。</span>
+<span id="cb19-555"><a href="#cb19-555" aria-label="555"></a><span class="ss">- </span>**組み合わせ**: 繰り返しの中で条件分岐を行うことで、データの選別や特定の条件での処理中断（<span class="in">`break`</span>）など柔軟なアルゴリズムが構築できる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
