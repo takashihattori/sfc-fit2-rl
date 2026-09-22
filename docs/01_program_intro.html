@@ -819,6 +819,7 @@ STORE [108], R1   ; 結果をメモリ番地108に書き戻す</code></pre>
 <p>Pythonでは、空白文字（スペース）の使い方に重要なルールがあります。</p>
 <ul>
 <li><strong>先頭の空白（インデント）には意味がある</strong>: 行の先頭にスペースを置くこと（字下げ・インデント）は、Pythonではプログラムの構造（ブロック）を表す文法的な意味を持ちます。理由なく行の先頭にスペースを入れると、<code>IndentationError</code> というエラーになります。</li>
+<li><strong>行頭以外の空白（半角スペース）</strong>: 文の途中（単語と単語の間や、<code>+</code>、<code>-</code>、<code>=</code> などの演算子の前後）に置く半角スペースは、コードを読みやすく区切るために使われます。演算子の前後に半角スペースを空けて記述しても、文法エラーにはならず正しく実行されます。コードの可読性を高めるために、適度に半角スペースを空けるのが一般的です。</li>
 <li><strong>全角空白の混入に注意</strong>: プログラムのコード中（文字列のクォーテーションの外側）に全角空白（日本語入力のスペース）が含まれていると、文法エラー（<code>SyntaxError</code>）の原因になります。</li>
 </ul>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
@@ -1833,133 +1834,135 @@ STORE [108], R1   ; 結果をメモリ番地108に書き戻す</code></pre>
 <span id="cb15-397"><a href="#cb15-397" aria-label="397"></a></span>
 <span id="cb15-398"><a href="#cb15-398" aria-label="398"></a><span class="ss">- </span>**先頭の空白（インデント）には意味がある**:</span>
 <span id="cb15-399"><a href="#cb15-399" aria-label="399"></a>  行の先頭にスペースを置くこと（字下げ・インデント）は、Pythonではプログラムの構造（ブロック）を表す文法的な意味を持ちます。理由なく行の先頭にスペースを入れると、<span class="in">`IndentationError`</span> というエラーになります。</span>
-<span id="cb15-400"><a href="#cb15-400" aria-label="400"></a><span class="ss">- </span>**全角空白の混入に注意**:</span>
-<span id="cb15-401"><a href="#cb15-401" aria-label="401"></a>  プログラムのコード中（文字列のクォーテーションの外側）に全角空白（日本語入力のスペース）が含まれていると、文法エラー（<span class="in">`SyntaxError`</span>）の原因になります。</span>
-<span id="cb15-402"><a href="#cb15-402" aria-label="402"></a></span>
-<span id="cb15-403"><a href="#cb15-403" aria-label="403"></a>::: {.callout-note icon=false}</span>
-<span id="cb15-404"><a href="#cb15-404" aria-label="404"></a><span class="fu">### 練習問題 01-04：日本語文字の空白（全角空白）を入れてみる</span></span>
-<span id="cb15-405"><a href="#cb15-405" aria-label="405"></a>先ほどの <span class="in">`hello.py`</span> の行頭や文の途中に、わざと日本語文字の空白（いわゆる全角空白）を入れてプログラムを実行し、どのようなエラーメッセージが表示されるか確認してください。</span>
-<span id="cb15-406"><a href="#cb15-406" aria-label="406"></a>:::</span>
-<span id="cb15-407"><a href="#cb15-407" aria-label="407"></a></span>
-<span id="cb15-408"><a href="#cb15-408" aria-label="408"></a><span class="fu">### コメント</span></span>
-<span id="cb15-409"><a href="#cb15-409" aria-label="409"></a><span class="in">`#`</span> 記号から行末までは**コメント**となり、コンピュータは実行時にこれを完全に無視します。</span>
-<span id="cb15-410"><a href="#cb15-410" aria-label="410"></a>コードの意図や注意点を人間のために書き残す際に使用します。</span>
-<span id="cb15-411"><a href="#cb15-411" aria-label="411"></a></span>
-<span id="cb15-412"><a href="#cb15-412" aria-label="412"></a><span class="in">```python</span></span>
-<span id="cb15-413"><a href="#cb15-413" aria-label="413"></a><span class="co"># ここはコメントです。実行には影響しません。</span></span>
-<span id="cb15-414"><a href="#cb15-414" aria-label="414"></a><span class="bu">print</span>(<span class="st">"コメントの動作確認"</span>)  <span class="co"># 行の途中からコメントにすることもできます</span></span>
-<span id="cb15-415"><a href="#cb15-415" aria-label="415"></a><span class="in">```</span></span>
-<span id="cb15-416"><a href="#cb15-416" aria-label="416"></a></span>
-<span id="cb15-417"><a href="#cb15-417" aria-label="417"></a><span class="fu">### 変数</span></span>
-<span id="cb15-418"><a href="#cb15-418" aria-label="418"></a>**変数**とは、計算結果やデータを一時的に保存しておくための「名前の付いた箱」のようなものです。</span>
-<span id="cb15-419"><a href="#cb15-419" aria-label="419"></a></span>
-<span id="cb15-420"><a href="#cb15-420" aria-label="420"></a>名前に使える文字はアルファベット・数字・アンダースコアです。ただし最初の文字は数字以外でなければなりません。日本語も使えますが、トラブルの原因になるので、あまりお勧めしません。</span>
+<span id="cb15-400"><a href="#cb15-400" aria-label="400"></a><span class="ss">- </span>**行頭以外の空白（半角スペース）**:</span>
+<span id="cb15-401"><a href="#cb15-401" aria-label="401"></a>  文の途中（単語と単語の間や、<span class="in">`+`</span>、<span class="in">`-`</span>、<span class="in">`=`</span> などの演算子の前後）に置く半角スペースは、コードを読みやすく区切るために使われます。演算子の前後に半角スペースを空けて記述しても、文法エラーにはならず正しく実行されます。コードの可読性を高めるために、適度に半角スペースを空けるのが一般的です。</span>
+<span id="cb15-402"><a href="#cb15-402" aria-label="402"></a><span class="ss">- </span>**全角空白の混入に注意**:</span>
+<span id="cb15-403"><a href="#cb15-403" aria-label="403"></a>  プログラムのコード中（文字列のクォーテーションの外側）に全角空白（日本語入力のスペース）が含まれていると、文法エラー（<span class="in">`SyntaxError`</span>）の原因になります。</span>
+<span id="cb15-404"><a href="#cb15-404" aria-label="404"></a></span>
+<span id="cb15-405"><a href="#cb15-405" aria-label="405"></a>::: {.callout-note icon=false}</span>
+<span id="cb15-406"><a href="#cb15-406" aria-label="406"></a><span class="fu">### 練習問題 01-04：日本語文字の空白（全角空白）を入れてみる</span></span>
+<span id="cb15-407"><a href="#cb15-407" aria-label="407"></a>先ほどの <span class="in">`hello.py`</span> の行頭や文の途中に、わざと日本語文字の空白（いわゆる全角空白）を入れてプログラムを実行し、どのようなエラーメッセージが表示されるか確認してください。</span>
+<span id="cb15-408"><a href="#cb15-408" aria-label="408"></a>:::</span>
+<span id="cb15-409"><a href="#cb15-409" aria-label="409"></a></span>
+<span id="cb15-410"><a href="#cb15-410" aria-label="410"></a><span class="fu">### コメント</span></span>
+<span id="cb15-411"><a href="#cb15-411" aria-label="411"></a><span class="in">`#`</span> 記号から行末までは**コメント**となり、コンピュータは実行時にこれを完全に無視します。</span>
+<span id="cb15-412"><a href="#cb15-412" aria-label="412"></a>コードの意図や注意点を人間のために書き残す際に使用します。</span>
+<span id="cb15-413"><a href="#cb15-413" aria-label="413"></a></span>
+<span id="cb15-414"><a href="#cb15-414" aria-label="414"></a><span class="in">```python</span></span>
+<span id="cb15-415"><a href="#cb15-415" aria-label="415"></a><span class="co"># ここはコメントです。実行には影響しません。</span></span>
+<span id="cb15-416"><a href="#cb15-416" aria-label="416"></a><span class="bu">print</span>(<span class="st">"コメントの動作確認"</span>)  <span class="co"># 行の途中からコメントにすることもできます</span></span>
+<span id="cb15-417"><a href="#cb15-417" aria-label="417"></a><span class="in">```</span></span>
+<span id="cb15-418"><a href="#cb15-418" aria-label="418"></a></span>
+<span id="cb15-419"><a href="#cb15-419" aria-label="419"></a><span class="fu">### 変数</span></span>
+<span id="cb15-420"><a href="#cb15-420" aria-label="420"></a>**変数**とは、計算結果やデータを一時的に保存しておくための「名前の付いた箱」のようなものです。</span>
 <span id="cb15-421"><a href="#cb15-421" aria-label="421"></a></span>
-<span id="cb15-422"><a href="#cb15-422" aria-label="422"></a><span class="fu">### 代入文</span></span>
-<span id="cb15-423"><a href="#cb15-423" aria-label="423"></a>変数にデータを入れる操作を**代入**と呼び、等号記号 <span class="in">`=`</span> を使って記述します。</span>
-<span id="cb15-424"><a href="#cb15-424" aria-label="424"></a>プログラミングにおける <span class="in">`=`</span> は、数学の「等しい」ではなく、**「右辺の計算結果を左辺の変数に入れる」**という意味です。</span>
-<span id="cb15-425"><a href="#cb15-425" aria-label="425"></a></span>
-<span id="cb15-426"><a href="#cb15-426" aria-label="426"></a><span class="in">```python</span></span>
-<span id="cb15-427"><a href="#cb15-427" aria-label="427"></a>x <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb15-428"><a href="#cb15-428" aria-label="428"></a><span class="bu">print</span>(x)</span>
-<span id="cb15-429"><a href="#cb15-429" aria-label="429"></a></span>
-<span id="cb15-430"><a href="#cb15-430" aria-label="430"></a>x <span class="op">=</span> <span class="dv">20</span>  <span class="co"># 変数の値を上書き（再代入）</span></span>
-<span id="cb15-431"><a href="#cb15-431" aria-label="431"></a><span class="bu">print</span>(x)</span>
-<span id="cb15-432"><a href="#cb15-432" aria-label="432"></a><span class="in">```</span></span>
-<span id="cb15-433"><a href="#cb15-433" aria-label="433"></a></span>
-<span id="cb15-434"><a href="#cb15-434" aria-label="434"></a>::: {.callout-note icon=false}</span>
-<span id="cb15-435"><a href="#cb15-435" aria-label="435"></a><span class="fu">### 練習問題 01-05：複数の代入文で変数値の変更を確認する</span></span>
-<span id="cb15-436"><a href="#cb15-436" aria-label="436"></a>変数 <span class="in">`count`</span> に初期値 <span class="in">`5`</span> を代入して表示し、次に <span class="in">`count = count + 3`</span> を実行して表示し、さらに <span class="in">`count = count * 2`</span> を実行して表示するプログラムを作成し、複数の代入文で変数の値が変更される様子を確認してください。</span>
-<span id="cb15-437"><a href="#cb15-437" aria-label="437"></a>:::</span>
-<span id="cb15-438"><a href="#cb15-438" aria-label="438"></a></span>
-<span id="cb15-439"><a href="#cb15-439" aria-label="439"></a><span class="fu">### 関数呼び出し</span></span>
-<span id="cb15-440"><a href="#cb15-440" aria-label="440"></a>**関数**とは、特定の処理をまとめて名付けたものです。関数名の後ろにカッコ <span class="in">`()`</span> を付け、必要に応じて引数（ひきすう）を渡すことで、その機能を呼び出します。</span>
-<span id="cb15-441"><a href="#cb15-441" aria-label="441"></a>すでに使っている <span class="in">`print()`</span> も代表的な組み込み関数です。また、文字列やデータの長さを調べる <span class="in">`len()`</span> 関数などもあります。</span>
-<span id="cb15-442"><a href="#cb15-442" aria-label="442"></a></span>
-<span id="cb15-443"><a href="#cb15-443" aria-label="443"></a><span class="in">```python</span></span>
-<span id="cb15-444"><a href="#cb15-444" aria-label="444"></a>name <span class="op">=</span> <span class="st">"Keio SFC"</span></span>
-<span id="cb15-445"><a href="#cb15-445" aria-label="445"></a>x <span class="op">=</span> <span class="bu">len</span>(name)  <span class="co"># 文字列の長さを変数xに代入</span></span>
-<span id="cb15-446"><a href="#cb15-446" aria-label="446"></a><span class="bu">print</span>(x)  </span>
-<span id="cb15-447"><a href="#cb15-447" aria-label="447"></a><span class="in">```</span></span>
-<span id="cb15-448"><a href="#cb15-448" aria-label="448"></a></span>
-<span id="cb15-449"><a href="#cb15-449" aria-label="449"></a>これは次のようにしても同じです。</span>
+<span id="cb15-422"><a href="#cb15-422" aria-label="422"></a>名前に使える文字はアルファベット・数字・アンダースコアです。ただし最初の文字は数字以外でなければなりません。日本語も使えますが、トラブルの原因になるので、あまりお勧めしません。</span>
+<span id="cb15-423"><a href="#cb15-423" aria-label="423"></a></span>
+<span id="cb15-424"><a href="#cb15-424" aria-label="424"></a><span class="fu">### 代入文</span></span>
+<span id="cb15-425"><a href="#cb15-425" aria-label="425"></a>変数にデータを入れる操作を**代入**と呼び、等号記号 <span class="in">`=`</span> を使って記述します。</span>
+<span id="cb15-426"><a href="#cb15-426" aria-label="426"></a>プログラミングにおける <span class="in">`=`</span> は、数学の「等しい」ではなく、**「右辺の計算結果を左辺の変数に入れる」**という意味です。</span>
+<span id="cb15-427"><a href="#cb15-427" aria-label="427"></a></span>
+<span id="cb15-428"><a href="#cb15-428" aria-label="428"></a><span class="in">```python</span></span>
+<span id="cb15-429"><a href="#cb15-429" aria-label="429"></a>x <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb15-430"><a href="#cb15-430" aria-label="430"></a><span class="bu">print</span>(x)</span>
+<span id="cb15-431"><a href="#cb15-431" aria-label="431"></a></span>
+<span id="cb15-432"><a href="#cb15-432" aria-label="432"></a>x <span class="op">=</span> <span class="dv">20</span>  <span class="co"># 変数の値を上書き（再代入）</span></span>
+<span id="cb15-433"><a href="#cb15-433" aria-label="433"></a><span class="bu">print</span>(x)</span>
+<span id="cb15-434"><a href="#cb15-434" aria-label="434"></a><span class="in">```</span></span>
+<span id="cb15-435"><a href="#cb15-435" aria-label="435"></a></span>
+<span id="cb15-436"><a href="#cb15-436" aria-label="436"></a>::: {.callout-note icon=false}</span>
+<span id="cb15-437"><a href="#cb15-437" aria-label="437"></a><span class="fu">### 練習問題 01-05：複数の代入文で変数値の変更を確認する</span></span>
+<span id="cb15-438"><a href="#cb15-438" aria-label="438"></a>変数 <span class="in">`count`</span> に初期値 <span class="in">`5`</span> を代入して表示し、次に <span class="in">`count = count + 3`</span> を実行して表示し、さらに <span class="in">`count = count * 2`</span> を実行して表示するプログラムを作成し、複数の代入文で変数の値が変更される様子を確認してください。</span>
+<span id="cb15-439"><a href="#cb15-439" aria-label="439"></a>:::</span>
+<span id="cb15-440"><a href="#cb15-440" aria-label="440"></a></span>
+<span id="cb15-441"><a href="#cb15-441" aria-label="441"></a><span class="fu">### 関数呼び出し</span></span>
+<span id="cb15-442"><a href="#cb15-442" aria-label="442"></a>**関数**とは、特定の処理をまとめて名付けたものです。関数名の後ろにカッコ <span class="in">`()`</span> を付け、必要に応じて引数（ひきすう）を渡すことで、その機能を呼び出します。</span>
+<span id="cb15-443"><a href="#cb15-443" aria-label="443"></a>すでに使っている <span class="in">`print()`</span> も代表的な組み込み関数です。また、文字列やデータの長さを調べる <span class="in">`len()`</span> 関数などもあります。</span>
+<span id="cb15-444"><a href="#cb15-444" aria-label="444"></a></span>
+<span id="cb15-445"><a href="#cb15-445" aria-label="445"></a><span class="in">```python</span></span>
+<span id="cb15-446"><a href="#cb15-446" aria-label="446"></a>name <span class="op">=</span> <span class="st">"Keio SFC"</span></span>
+<span id="cb15-447"><a href="#cb15-447" aria-label="447"></a>x <span class="op">=</span> <span class="bu">len</span>(name)  <span class="co"># 文字列の長さを変数xに代入</span></span>
+<span id="cb15-448"><a href="#cb15-448" aria-label="448"></a><span class="bu">print</span>(x)  </span>
+<span id="cb15-449"><a href="#cb15-449" aria-label="449"></a><span class="in">```</span></span>
 <span id="cb15-450"><a href="#cb15-450" aria-label="450"></a></span>
-<span id="cb15-451"><a href="#cb15-451" aria-label="451"></a><span class="in">```python</span></span>
-<span id="cb15-452"><a href="#cb15-452" aria-label="452"></a><span class="bu">print</span>(<span class="bu">len</span>(<span class="st">"Keio SFC"</span>))</span>
-<span id="cb15-453"><a href="#cb15-453" aria-label="453"></a><span class="in">```</span></span>
-<span id="cb15-454"><a href="#cb15-454" aria-label="454"></a><span class="in">`max()`</span> 関数は、引数の中で最大のものを探して返します。</span>
-<span id="cb15-455"><a href="#cb15-455" aria-label="455"></a></span>
-<span id="cb15-456"><a href="#cb15-456" aria-label="456"></a><span class="in">```python</span></span>
-<span id="cb15-457"><a href="#cb15-457" aria-label="457"></a><span class="bu">print</span>(<span class="bu">max</span>(<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">4</span>))</span>
-<span id="cb15-458"><a href="#cb15-458" aria-label="458"></a><span class="in">```</span></span>
-<span id="cb15-459"><a href="#cb15-459" aria-label="459"></a></span>
-<span id="cb15-460"><a href="#cb15-460" aria-label="460"></a>::: {.callout-note icon=false}</span>
-<span id="cb15-461"><a href="#cb15-461" aria-label="461"></a><span class="fu">### 練習問題 01-06：一番長い単語は何文字か</span></span>
-<span id="cb15-462"><a href="#cb15-462" aria-label="462"></a><span class="in">`len()`</span> 関数と <span class="in">`max()`</span> 関数を用いて、horse, elephant, hippopotamus, dolphinの中で一番長い単語は何文字なのか表示するプログラムを書いてください。</span>
-<span id="cb15-463"><a href="#cb15-463" aria-label="463"></a>:::</span>
-<span id="cb15-464"><a href="#cb15-464" aria-label="464"></a></span>
-<span id="cb15-465"><a href="#cb15-465" aria-label="465"></a><span class="fu">### 関数定義</span></span>
-<span id="cb15-466"><a href="#cb15-466" aria-label="466"></a>既存の関数を使うだけでなく、自分で新しい関数を定義することもできます。</span>
-<span id="cb15-467"><a href="#cb15-467" aria-label="467"></a>関数を定義するには <span class="in">`def`</span> キーワードを使い、以下のように記述します：</span>
-<span id="cb15-468"><a href="#cb15-468" aria-label="468"></a></span>
-<span id="cb15-469"><a href="#cb15-469" aria-label="469"></a><span class="in">```python</span></span>
-<span id="cb15-470"><a href="#cb15-470" aria-label="470"></a><span class="kw">def</span> greet(user_name):</span>
-<span id="cb15-471"><a href="#cb15-471" aria-label="471"></a>    <span class="bu">print</span>(<span class="st">"こんにちは、"</span> <span class="op">+</span> user_name <span class="op">+</span> <span class="st">"さん！"</span>)</span>
-<span id="cb15-472"><a href="#cb15-472" aria-label="472"></a></span>
-<span id="cb15-473"><a href="#cb15-473" aria-label="473"></a><span class="co"># 関数の呼び出し</span></span>
-<span id="cb15-474"><a href="#cb15-474" aria-label="474"></a>greet(<span class="st">"太郎"</span>)</span>
-<span id="cb15-475"><a href="#cb15-475" aria-label="475"></a>greet(<span class="st">"花子"</span>)</span>
-<span id="cb15-476"><a href="#cb15-476" aria-label="476"></a><span class="in">```</span></span>
-<span id="cb15-477"><a href="#cb15-477" aria-label="477"></a></span>
-<span id="cb15-478"><a href="#cb15-478" aria-label="478"></a>関数を呼び出す時にカッコの中に書いたデータ（"太郎"や"花子"）が、定義のカッコの中に書いた変数（ <span class="in">`user_name`</span> ）に代入されて実行されます。</span>
+<span id="cb15-451"><a href="#cb15-451" aria-label="451"></a>これは次のようにしても同じです。</span>
+<span id="cb15-452"><a href="#cb15-452" aria-label="452"></a></span>
+<span id="cb15-453"><a href="#cb15-453" aria-label="453"></a><span class="in">```python</span></span>
+<span id="cb15-454"><a href="#cb15-454" aria-label="454"></a><span class="bu">print</span>(<span class="bu">len</span>(<span class="st">"Keio SFC"</span>))</span>
+<span id="cb15-455"><a href="#cb15-455" aria-label="455"></a><span class="in">```</span></span>
+<span id="cb15-456"><a href="#cb15-456" aria-label="456"></a><span class="in">`max()`</span> 関数は、引数の中で最大のものを探して返します。</span>
+<span id="cb15-457"><a href="#cb15-457" aria-label="457"></a></span>
+<span id="cb15-458"><a href="#cb15-458" aria-label="458"></a><span class="in">```python</span></span>
+<span id="cb15-459"><a href="#cb15-459" aria-label="459"></a><span class="bu">print</span>(<span class="bu">max</span>(<span class="dv">3</span>,<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">4</span>))</span>
+<span id="cb15-460"><a href="#cb15-460" aria-label="460"></a><span class="in">```</span></span>
+<span id="cb15-461"><a href="#cb15-461" aria-label="461"></a></span>
+<span id="cb15-462"><a href="#cb15-462" aria-label="462"></a>::: {.callout-note icon=false}</span>
+<span id="cb15-463"><a href="#cb15-463" aria-label="463"></a><span class="fu">### 練習問題 01-06：一番長い単語は何文字か</span></span>
+<span id="cb15-464"><a href="#cb15-464" aria-label="464"></a><span class="in">`len()`</span> 関数と <span class="in">`max()`</span> 関数を用いて、horse, elephant, hippopotamus, dolphinの中で一番長い単語は何文字なのか表示するプログラムを書いてください。</span>
+<span id="cb15-465"><a href="#cb15-465" aria-label="465"></a>:::</span>
+<span id="cb15-466"><a href="#cb15-466" aria-label="466"></a></span>
+<span id="cb15-467"><a href="#cb15-467" aria-label="467"></a><span class="fu">### 関数定義</span></span>
+<span id="cb15-468"><a href="#cb15-468" aria-label="468"></a>既存の関数を使うだけでなく、自分で新しい関数を定義することもできます。</span>
+<span id="cb15-469"><a href="#cb15-469" aria-label="469"></a>関数を定義するには <span class="in">`def`</span> キーワードを使い、以下のように記述します：</span>
+<span id="cb15-470"><a href="#cb15-470" aria-label="470"></a></span>
+<span id="cb15-471"><a href="#cb15-471" aria-label="471"></a><span class="in">```python</span></span>
+<span id="cb15-472"><a href="#cb15-472" aria-label="472"></a><span class="kw">def</span> greet(user_name):</span>
+<span id="cb15-473"><a href="#cb15-473" aria-label="473"></a>    <span class="bu">print</span>(<span class="st">"こんにちは、"</span> <span class="op">+</span> user_name <span class="op">+</span> <span class="st">"さん！"</span>)</span>
+<span id="cb15-474"><a href="#cb15-474" aria-label="474"></a></span>
+<span id="cb15-475"><a href="#cb15-475" aria-label="475"></a><span class="co"># 関数の呼び出し</span></span>
+<span id="cb15-476"><a href="#cb15-476" aria-label="476"></a>greet(<span class="st">"太郎"</span>)</span>
+<span id="cb15-477"><a href="#cb15-477" aria-label="477"></a>greet(<span class="st">"花子"</span>)</span>
+<span id="cb15-478"><a href="#cb15-478" aria-label="478"></a><span class="in">```</span></span>
 <span id="cb15-479"><a href="#cb15-479" aria-label="479"></a></span>
-<span id="cb15-480"><a href="#cb15-480" aria-label="480"></a>計算結果を呼び出し側に返す場合は、 <span class="in">`return`</span> を使います。</span>
+<span id="cb15-480"><a href="#cb15-480" aria-label="480"></a>関数を呼び出す時にカッコの中に書いたデータ（"太郎"や"花子"）が、定義のカッコの中に書いた変数（ <span class="in">`user_name`</span> ）に代入されて実行されます。</span>
 <span id="cb15-481"><a href="#cb15-481" aria-label="481"></a></span>
-<span id="cb15-482"><a href="#cb15-482" aria-label="482"></a><span class="in">```python</span></span>
-<span id="cb15-483"><a href="#cb15-483" aria-label="483"></a><span class="kw">def</span> add_one(n):</span>
-<span id="cb15-484"><a href="#cb15-484" aria-label="484"></a>    <span class="cf">return</span> n<span class="op">+</span><span class="dv">1</span></span>
-<span id="cb15-485"><a href="#cb15-485" aria-label="485"></a></span>
-<span id="cb15-486"><a href="#cb15-486" aria-label="486"></a><span class="co"># 関数の呼び出し</span></span>
-<span id="cb15-487"><a href="#cb15-487" aria-label="487"></a><span class="bu">print</span>(add_one(<span class="dv">2</span>))</span>
-<span id="cb15-488"><a href="#cb15-488" aria-label="488"></a><span class="in">```</span></span>
-<span id="cb15-489"><a href="#cb15-489" aria-label="489"></a></span>
-<span id="cb15-490"><a href="#cb15-490" aria-label="490"></a>::: {.callout-note icon=false}</span>
-<span id="cb15-491"><a href="#cb15-491" aria-label="491"></a><span class="fu">### 練習問題 01-07：</span></span>
-<span id="cb15-492"><a href="#cb15-492" aria-label="492"></a><span class="co">[</span><span class="ot">ボディマス指数 - Wikipedia</span><span class="co">](https://ja.wikipedia.org/wiki/%E3%83%9C%E3%83%87%E3%82%A3%E3%83%9E%E3%82%B9%E6%8C%87%E6%95%B0)</span>の説明を読み、身長と体重を引数としてBMIを計算して返す関数を定義してください。</span>
-<span id="cb15-493"><a href="#cb15-493" aria-label="493"></a>:::</span>
-<span id="cb15-494"><a href="#cb15-494" aria-label="494"></a></span>
-<span id="cb15-495"><a href="#cb15-495" aria-label="495"></a><span class="fu">### モジュール</span></span>
+<span id="cb15-482"><a href="#cb15-482" aria-label="482"></a>計算結果を呼び出し側に返す場合は、 <span class="in">`return`</span> を使います。</span>
+<span id="cb15-483"><a href="#cb15-483" aria-label="483"></a></span>
+<span id="cb15-484"><a href="#cb15-484" aria-label="484"></a><span class="in">```python</span></span>
+<span id="cb15-485"><a href="#cb15-485" aria-label="485"></a><span class="kw">def</span> add_one(n):</span>
+<span id="cb15-486"><a href="#cb15-486" aria-label="486"></a>    <span class="cf">return</span> n<span class="op">+</span><span class="dv">1</span></span>
+<span id="cb15-487"><a href="#cb15-487" aria-label="487"></a></span>
+<span id="cb15-488"><a href="#cb15-488" aria-label="488"></a><span class="co"># 関数の呼び出し</span></span>
+<span id="cb15-489"><a href="#cb15-489" aria-label="489"></a><span class="bu">print</span>(add_one(<span class="dv">2</span>))</span>
+<span id="cb15-490"><a href="#cb15-490" aria-label="490"></a><span class="in">```</span></span>
+<span id="cb15-491"><a href="#cb15-491" aria-label="491"></a></span>
+<span id="cb15-492"><a href="#cb15-492" aria-label="492"></a>::: {.callout-note icon=false}</span>
+<span id="cb15-493"><a href="#cb15-493" aria-label="493"></a><span class="fu">### 練習問題 01-07：</span></span>
+<span id="cb15-494"><a href="#cb15-494" aria-label="494"></a><span class="co">[</span><span class="ot">ボディマス指数 - Wikipedia</span><span class="co">](https://ja.wikipedia.org/wiki/%E3%83%9C%E3%83%87%E3%82%A3%E3%83%9E%E3%82%B9%E6%8C%87%E6%95%B0)</span>の説明を読み、身長と体重を引数としてBMIを計算して返す関数を定義してください。</span>
+<span id="cb15-495"><a href="#cb15-495" aria-label="495"></a>:::</span>
 <span id="cb15-496"><a href="#cb15-496" aria-label="496"></a></span>
-<span id="cb15-497"><a href="#cb15-497" aria-label="497"></a><span class="fu">#### モジュールとは</span></span>
-<span id="cb15-498"><a href="#cb15-498" aria-label="498"></a>Pythonには、特定の目的のために作成された便利な関数や定数のまとまりである**「モジュール（Module）」**や、複数のモジュールを束ねたパッケージ・ライブラリが豊富に用意されています。すべてを自分でゼロから作成しなくても、標準モジュールや世界中で公開されているライブラリを活用することで、高度な処理を簡単に組み立てることができます。</span>
-<span id="cb15-499"><a href="#cb15-499" aria-label="499"></a></span>
-<span id="cb15-500"><a href="#cb15-500" aria-label="500"></a><span class="fu">#### import文の使い方</span></span>
-<span id="cb15-501"><a href="#cb15-501" aria-label="501"></a>モジュールを利用するには、<span class="in">`import`</span> 文を使ってプログラム内に読み込みます。モジュール内の関数や定数を使うときは、<span class="in">`モジュール名.関数名()`</span> や <span class="in">`モジュール名.変数名`</span> のようにドット <span class="in">`.`</span> で繋いで呼び出します。</span>
-<span id="cb15-502"><a href="#cb15-502" aria-label="502"></a></span>
-<span id="cb15-503"><a href="#cb15-503" aria-label="503"></a><span class="in">```python</span></span>
-<span id="cb15-504"><a href="#cb15-504" aria-label="504"></a><span class="im">import</span> math</span>
-<span id="cb15-505"><a href="#cb15-505" aria-label="505"></a></span>
-<span id="cb15-506"><a href="#cb15-506" aria-label="506"></a><span class="co"># 平方根の計算</span></span>
-<span id="cb15-507"><a href="#cb15-507" aria-label="507"></a><span class="bu">print</span>(math.sqrt(<span class="dv">16</span>))  <span class="co"># 4.0</span></span>
-<span id="cb15-508"><a href="#cb15-508" aria-label="508"></a></span>
-<span id="cb15-509"><a href="#cb15-509" aria-label="509"></a><span class="co"># 円周率</span></span>
-<span id="cb15-510"><a href="#cb15-510" aria-label="510"></a><span class="bu">print</span>(math.pi)        <span class="co"># 3.141592653589793</span></span>
-<span id="cb15-511"><a href="#cb15-511" aria-label="511"></a><span class="in">```</span></span>
-<span id="cb15-512"><a href="#cb15-512" aria-label="512"></a></span>
-<span id="cb15-513"><a href="#cb15-513" aria-label="513"></a>::: {.callout-note icon=false}</span>
-<span id="cb15-514"><a href="#cb15-514" aria-label="514"></a><span class="fu">### 練習問題 01-08：</span></span>
-<span id="cb15-515"><a href="#cb15-515" aria-label="515"></a>円の半径を引数とし、円の面積を計算して返す関数を定義してください。</span>
-<span id="cb15-516"><a href="#cb15-516" aria-label="516"></a>:::</span>
-<span id="cb15-517"><a href="#cb15-517" aria-label="517"></a></span>
-<span id="cb15-518"><a href="#cb15-518" aria-label="518"></a>---</span>
+<span id="cb15-497"><a href="#cb15-497" aria-label="497"></a><span class="fu">### モジュール</span></span>
+<span id="cb15-498"><a href="#cb15-498" aria-label="498"></a></span>
+<span id="cb15-499"><a href="#cb15-499" aria-label="499"></a><span class="fu">#### モジュールとは</span></span>
+<span id="cb15-500"><a href="#cb15-500" aria-label="500"></a>Pythonには、特定の目的のために作成された便利な関数や定数のまとまりである**「モジュール（Module）」**や、複数のモジュールを束ねたパッケージ・ライブラリが豊富に用意されています。すべてを自分でゼロから作成しなくても、標準モジュールや世界中で公開されているライブラリを活用することで、高度な処理を簡単に組み立てることができます。</span>
+<span id="cb15-501"><a href="#cb15-501" aria-label="501"></a></span>
+<span id="cb15-502"><a href="#cb15-502" aria-label="502"></a><span class="fu">#### import文の使い方</span></span>
+<span id="cb15-503"><a href="#cb15-503" aria-label="503"></a>モジュールを利用するには、<span class="in">`import`</span> 文を使ってプログラム内に読み込みます。モジュール内の関数や定数を使うときは、<span class="in">`モジュール名.関数名()`</span> や <span class="in">`モジュール名.変数名`</span> のようにドット <span class="in">`.`</span> で繋いで呼び出します。</span>
+<span id="cb15-504"><a href="#cb15-504" aria-label="504"></a></span>
+<span id="cb15-505"><a href="#cb15-505" aria-label="505"></a><span class="in">```python</span></span>
+<span id="cb15-506"><a href="#cb15-506" aria-label="506"></a><span class="im">import</span> math</span>
+<span id="cb15-507"><a href="#cb15-507" aria-label="507"></a></span>
+<span id="cb15-508"><a href="#cb15-508" aria-label="508"></a><span class="co"># 平方根の計算</span></span>
+<span id="cb15-509"><a href="#cb15-509" aria-label="509"></a><span class="bu">print</span>(math.sqrt(<span class="dv">16</span>))  <span class="co"># 4.0</span></span>
+<span id="cb15-510"><a href="#cb15-510" aria-label="510"></a></span>
+<span id="cb15-511"><a href="#cb15-511" aria-label="511"></a><span class="co"># 円周率</span></span>
+<span id="cb15-512"><a href="#cb15-512" aria-label="512"></a><span class="bu">print</span>(math.pi)        <span class="co"># 3.141592653589793</span></span>
+<span id="cb15-513"><a href="#cb15-513" aria-label="513"></a><span class="in">```</span></span>
+<span id="cb15-514"><a href="#cb15-514" aria-label="514"></a></span>
+<span id="cb15-515"><a href="#cb15-515" aria-label="515"></a>::: {.callout-note icon=false}</span>
+<span id="cb15-516"><a href="#cb15-516" aria-label="516"></a><span class="fu">### 練習問題 01-08：</span></span>
+<span id="cb15-517"><a href="#cb15-517" aria-label="517"></a>円の半径を引数とし、円の面積を計算して返す関数を定義してください。</span>
+<span id="cb15-518"><a href="#cb15-518" aria-label="518"></a>:::</span>
 <span id="cb15-519"><a href="#cb15-519" aria-label="519"></a></span>
-<span id="cb15-520"><a href="#cb15-520" aria-label="520"></a><span class="fu">## まとめ</span></span>
+<span id="cb15-520"><a href="#cb15-520" aria-label="520"></a>---</span>
 <span id="cb15-521"><a href="#cb15-521" aria-label="521"></a></span>
-<span id="cb15-522"><a href="#cb15-522" aria-label="522"></a><span class="ss">- </span>高校「情報I」で学んだ順次・分岐・反復は、あらゆる高水準プログラムの基礎をなす。</span>
-<span id="cb15-523"><a href="#cb15-523" aria-label="523"></a><span class="ss">- </span>コンピュータの5大機能のうち、CPUが演算と制御を担い、主記憶から命令を1個ずつ読み込んで実行する。</span>
-<span id="cb15-524"><a href="#cb15-524" aria-label="524"></a><span class="ss">- </span>CPUが直接読めるのは機械語（0と1の並び）だけであり、人間が扱いやすいように高水準言語（Pythonなど）が生まれた。</span>
-<span id="cb15-525"><a href="#cb15-525" aria-label="525"></a><span class="ss">- </span>公式標準インストーラを用いてPCローカル環境にPythonを導入し、標準付属の統合開発環境「IDLE」を用いた対話型シェル実行およびスクリプトファイル作成・実行の基本操作を習得した。</span>
-<span id="cb15-526"><a href="#cb15-526" aria-label="526"></a><span class="ss">- </span>Python言語の基本文法として、<span class="in">`print()`</span>、代入文と変数、空白の意味、関数定義、モジュールのインポートを学んだ。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb15-522"><a href="#cb15-522" aria-label="522"></a><span class="fu">## まとめ</span></span>
+<span id="cb15-523"><a href="#cb15-523" aria-label="523"></a></span>
+<span id="cb15-524"><a href="#cb15-524" aria-label="524"></a><span class="ss">- </span>高校「情報I」で学んだ順次・分岐・反復は、あらゆる高水準プログラムの基礎をなす。</span>
+<span id="cb15-525"><a href="#cb15-525" aria-label="525"></a><span class="ss">- </span>コンピュータの5大機能のうち、CPUが演算と制御を担い、主記憶から命令を1個ずつ読み込んで実行する。</span>
+<span id="cb15-526"><a href="#cb15-526" aria-label="526"></a><span class="ss">- </span>CPUが直接読めるのは機械語（0と1の並び）だけであり、人間が扱いやすいように高水準言語（Pythonなど）が生まれた。</span>
+<span id="cb15-527"><a href="#cb15-527" aria-label="527"></a><span class="ss">- </span>公式標準インストーラを用いてPCローカル環境にPythonを導入し、標準付属の統合開発環境「IDLE」を用いた対話型シェル実行およびスクリプトファイル作成・実行の基本操作を習得した。</span>
+<span id="cb15-528"><a href="#cb15-528" aria-label="528"></a><span class="ss">- </span>Python言語の基本文法として、<span class="in">`print()`</span>、代入文と変数、空白の意味、関数定義、モジュールのインポートを学んだ。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
