@@ -613,7 +613,7 @@ window.Quarto = {
 <p>プログラムがいつまでも終了せずに動き続ける状態を<strong>無限ループ（無限実行）</strong>と呼びます。正しいアルゴリズムであるための最重要の前提条件の一つが、どのような正当な入力に対しても<strong>必ず有限の時間・ステップ数で終了すること（停止性）</strong>です。</p>
 <section id="絶対に停止しないループ" class="level3" data-number="4.2.1">
 <h3 data-number="4.2.1" class="anchored" data-anchor-id="絶対に停止しないループ"><span class="header-section-number">4.2.1</span> 絶対に停止しないループ</h3>
-<p>終了条件が全く書かれていない、あるいは脱出条件（<code>break</code> など）が決して成立しない場合、プログラムは永遠に停止しません。 たとえば、「条件式が常に <code>True</code> であり、内部で脱出判定を行わないループ」は、外部から強制終了（Ctrl+C 等）されない限り無限に実行され続けます。</p>
+<p>終了条件が全く書かれていない、あるいは脱出条件（<code>break</code> など）が決して成立しない場合、プログラムは永遠に停止しません。 たとえば、「条件式が常に <code>True</code> であり、内部で脱出判定を行わないループ」は、外部から強制終了（Ctrl+C 等）されない限り無限に実行され続けます。（<a href="02_python_basics1.html#sec-infinite-loop" class="quarto-xref"><span>2.3.4</span></a>節参照）</p>
 </section>
 <section id="変数の値によって停止したりしなかったりするループ" class="level3" data-number="4.2.2">
 <h3 data-number="4.2.2" class="anchored" data-anchor-id="変数の値によって停止したりしなかったりするループ"><span class="header-section-number">4.2.2</span> 変数の値によって停止したりしなかったりするループ</h3>
@@ -653,13 +653,13 @@ window.Quarto = {
 </section>
 <section id="アルゴリズムの計算量" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="アルゴリズムの計算量"><span class="header-section-number">4.3</span> アルゴリズムの計算量</h2>
-<p>同じ目的を果たすアルゴリズムであっても、扱うデータ量（要素数 <span class="math inline">\(N\)</span>）が増加したときに、必要な計算時間やメモリ領域がどのように増大するかは大きく異なります。このスケーラビリティ（拡張性）を測る指標が<strong>計算量（Computational Complexity）</strong>です。</p>
+<p>同じ目的を果たすアルゴリズムであっても、扱うデータ量（要素数 <span class="math inline">\(n\)</span>）が増加したときに、必要な計算時間やメモリ領域がどのように増大するかは大きく異なります。このスケーラビリティ（拡張性）を測る指標が<strong>計算量（Computational Complexity）</strong>です。</p>
 <section id="時間計算量と空間計算量" class="level3" data-number="4.3.1">
 <h3 data-number="4.3.1" class="anchored" data-anchor-id="時間計算量と空間計算量"><span class="header-section-number">4.3.1</span> 時間計算量と空間計算量</h3>
 <p>計算量には大きく分けて2つの評価軸が存在します：</p>
 <ul>
-<li><strong>時間計算量（Time Complexity）</strong>: 入力データサイズ <span class="math inline">\(N\)</span> に対し、アルゴリズム完了までに必要な演算ステップ数（処理時間）の増大度合い。</li>
-<li><strong>空間計算量（Space Complexity）</strong>: 入力データサイズ <span class="math inline">\(N\)</span> に対し、実行中に必要となるメモリ領域（記憶容量）の増大度合い。</li>
+<li><strong>時間計算量（Time Complexity）</strong>: 入力データサイズ <span class="math inline">\(n\)</span> に対し、アルゴリズム完了までに必要な演算ステップ数（処理時間）の増大度合い。</li>
+<li><strong>空間計算量（Space Complexity）</strong>: 入力データサイズ <span class="math inline">\(n\)</span> に対し、実行中に必要となるメモリ領域（記憶容量）の増大度合い。</li>
 </ul>
 <p>多くの場合、時間計算量と空間計算量には<strong>トレードオフの関係</strong>があります。計算の結果を後でまた利用できる場合、計算結果をメモリ上に表として保持しておけば（空間を消費）、次の計算を早く終えることができます（時間を短縮）。</p>
 <p>単に計算量と言った場合、普通は時間計算量を指します。</p>
@@ -677,12 +677,12 @@ window.Quarto = {
 <h3 data-number="4.3.3" class="anchored" data-anchor-id="オーダーとビッグオー記法o-記法"><span class="header-section-number">4.3.3</span> オーダーとビッグオー記法（<span class="math inline">\(O\)</span> 記法）</h3>
 <section id="オーダーとは何か" class="level4" data-number="4.3.3.1">
 <h4 data-number="4.3.3.1" class="anchored" data-anchor-id="オーダーとは何か"><span class="header-section-number">4.3.3.1</span> 「オーダー」とは何か</h4>
-<p>アルゴリズムの性能を評価するとき、コンピュータの性能や実行環境によって左右される「実行にかかる絶対的な秒数」ではなく、<strong>「入力データ量 <span class="math inline">\(N\)</span> が増えたときに、処理ステップ数や必要なメモリがどのくらいの桁・規模感（スケール）で増大していくか」</strong>という本質的な増加度合いに注目します。この増大の規模感のことを<strong>オーダー（Order / Order of magnitude）</strong>と呼びます。</p>
-<p>日常会話や科学・工学の世界でも、「費用が数億円のオーダー」「誤差がミリ秒のオーダー」のように、細かい端数ではなく「おおよその桁数・スケール」を表す言葉としてオーダーが使われます。アルゴリズムの世界でも同様で、例えば入力データ数 <span class="math inline">\(N\)</span> が 10 倍になったとき、 - 処理ステップ数も同じく約 10 倍（1桁）増えるのか - その二乗である約 100 倍（2桁）に跳ね上がるのか - あるいはデータが増えてもステップ数はほとんど変わらないのか という「増え方の規模（桁違いの性質）」こそが、アルゴリズムの効率を決定づける本質です。</p>
+<p>アルゴリズムの性能を評価するとき、コンピュータの性能や実行環境によって左右される「実行にかかる絶対的な秒数」ではなく、<strong>「入力データ量 <span class="math inline">\(n\)</span> が増えたときに、処理ステップ数や必要なメモリがどのくらいの桁・規模感（スケール）で増大していくか」</strong>という本質的な増加度合いに注目します。この増大の規模感のことを<strong>オーダー（Order / Order of magnitude）</strong>と呼びます。</p>
+<p>日常会話や科学・工学の世界でも、「費用が数億円のオーダー」「誤差がミリ秒のオーダー」のように、細かい端数ではなく「おおよその桁数・スケール」を表す言葉としてオーダーが使われます。アルゴリズムの世界でも同様で、例えば入力データ数 <span class="math inline">\(n\)</span> が 10 倍になったとき、 - 処理ステップ数も同じく約 10 倍（1桁）増えるのか - その二乗である約 100 倍（2桁）に跳ね上がるのか - あるいはデータが増えてもステップ数はほとんど変わらないのか という「増え方の規模（桁違いの性質）」こそが、アルゴリズムの効率を決定づける本質です。</p>
 </section>
 <section id="オーダーを表現するビッグオー記法" class="level4" data-number="4.3.3.2">
 <h4 data-number="4.3.3.2" class="anchored" data-anchor-id="オーダーを表現するビッグオー記法"><span class="header-section-number">4.3.3.2</span> オーダーを表現する「ビッグオー記法」</h4>
-<p>この計算量のオーダーを、細かな定数係数や低次の端数を省いて数学的かつ簡潔に表現するために用いられるのが<strong>ビッグオー記法（Big-O notation、<span class="math inline">\(O\)</span> 記法）</strong>です。オーダー（Order）の頭文字である大文字の <span class="math inline">\(O\)</span> を取り、括弧の中に入力サイズ <span class="math inline">\(N\)</span> に対する増大の傾向を記述して <span class="math inline">\(O(N)\)</span> や <span class="math inline">\(O(N^2)\)</span> のように表記します。</p>
+<p>この計算量のオーダーを、細かな定数係数や低次の端数を省いて数学的かつ簡潔に表現するために用いられるのが<strong>ビッグオー記法（Big-O notation、<span class="math inline">\(O\)</span> 記法）</strong>です。オーダー（Order）の頭文字である大文字の <span class="math inline">\(O\)</span> を取り、括弧の中に入力サイズ <span class="math inline">\(n\)</span> に対する増大の傾向を記述して <span class="math inline">\(O(n)\)</span> や <span class="math inline">\(O(n^2)\)</span> のように表記します。</p>
 <p>代表的な計算量のオーダーには以下のようなものがあります。</p>
 <table class="caption-top table">
 <colgroup>
@@ -704,27 +704,27 @@ window.Quarto = {
 <td style="text-align: left;">データ数に関係なく一定のステップ数で完了（例: リストのインデックス参照）</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(O(\log N)\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(O(\log n)\)</span></td>
 <td style="text-align: left;">対数時間</td>
 <td style="text-align: left;">データが倍増してもステップ数は1増える程度（例: 二分探索）</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(O(N)\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(O(n)\)</span></td>
 <td style="text-align: left;">線形時間</td>
 <td style="text-align: left;">データ数に比例してステップ数が増える（例: リストの線形探索）</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(O(N \log N)\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(O(n \log n)\)</span></td>
 <td style="text-align: left;">準線形時間</td>
 <td style="text-align: left;">効率的な整列アルゴリズム（例: クイックソートの平均、マージソート）</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(O(N^2)\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(O(n^2)\)</span></td>
 <td style="text-align: left;">二乗時間</td>
 <td style="text-align: left;">二重ループ処理（例: 総当たり比較、選択ソート）</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(O(2^N)\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(O(2^n)\)</span></td>
 <td style="text-align: left;">指数時間</td>
 <td style="text-align: left;">組み合わせ爆発。実用的なデータ規模では計算不能になる</td>
 </tr>
@@ -734,49 +734,49 @@ window.Quarto = {
   <!-- Axes -->
   <line x1="60" y1="270" x2="520" y2="270" stroke="#444" stroke-width="2"></line>
   <line x1="60" y1="270" x2="60" y2="20" stroke="#444" stroke-width="2"></line>
-  <text x="520" y="295" text-anchor="end" font-size="12" fill="#555">データ量 N →</text>
+  <text x="520" y="295" text-anchor="end" font-size="12" fill="#555">データ量 n →</text>
   <text x="30" y="30" font-size="12" fill="#555" transform="rotate(-90 30,30)">計算時間 / メモリ →</text>
   
   <!-- O(1) -->
   <line x1="60" y1="250" x2="500" y2="250" stroke="#4caf50" stroke-width="2.5"></line>
   <text x="505" y="254" font-size="12" font-weight="bold" fill="#2e7d32">O(1)</text>
   
-  <!-- O(log N) -->
+  <!-- O(log n) -->
   <path d="M 60 250 Q 200 230, 500 205" fill="none" stroke="#00acc1" stroke-width="2.5"></path>
-  <text x="505" y="209" font-size="12" font-weight="bold" fill="#00838f">O(log N)</text>
+  <text x="505" y="209" font-size="12" font-weight="bold" fill="#00838f">O(log n)</text>
   
-  <!-- O(N) -->
+  <!-- O(n) -->
   <line x1="60" y1="250" x2="480" y2="130" stroke="#1e88e5" stroke-width="2.5"></line>
-  <text x="485" y="130" font-size="12" font-weight="bold" fill="#1565c0">O(N)</text>
+  <text x="485" y="130" font-size="12" font-weight="bold" fill="#1565c0">O(n)</text>
   
-  <!-- O(N log N) -->
+  <!-- O(n log n) -->
   <path d="M 60 250 Q 250 200, 420 60" fill="none" stroke="#fb8c00" stroke-width="2.5"></path>
-  <text x="425" y="60" font-size="12" font-weight="bold" fill="#ef6c00">O(N log N)</text>
+  <text x="425" y="60" font-size="12" font-weight="bold" fill="#ef6c00">O(n log n)</text>
   
-  <!-- O(N^2) -->
+  <!-- O(n^2) -->
   <path d="M 60 250 Q 200 230, 290 40" fill="none" stroke="#e53935" stroke-width="2.5"></path>
-  <text x="295" y="40" font-size="12" font-weight="bold" fill="#c62828">O(N²)</text>
+  <text x="295" y="40" font-size="12" font-weight="bold" fill="#c62828">O(n²)</text>
   
-  <!-- O(2^N) -->
+  <!-- O(2^n) -->
   <path d="M 60 250 Q 130 240, 160 30" fill="none" stroke="#8e24aa" stroke-width="2.5"></path>
-  <text x="165" y="30" font-size="12" font-weight="bold" fill="#6a1b9a">O(2ᴺ)</text>
+  <text x="165" y="30" font-size="12" font-weight="bold" fill="#6a1b9a">O(2ⁿ)</text>
 </svg>
 </section>
 </section>
 <section id="係数や次数の低い項を無視してよい理由" class="level3" data-number="4.3.4">
 <h3 data-number="4.3.4" class="anchored" data-anchor-id="係数や次数の低い項を無視してよい理由"><span class="header-section-number">4.3.4</span> 係数や次数の低い項を無視してよい理由</h3>
-<p>ビッグオー記法では、厳密な計算ステップ数が例えば <span class="math inline">\(f(N) = 3N^2 + 50N + 100\)</span> であったとしても、定数係数（<span class="math inline">\(3\)</span> や <span class="math inline">\(50\)</span>）や次数の低い項（<span class="math inline">\(50N\)</span> や <span class="math inline">\(100\)</span>）を無視して、単に <span class="math inline">\(O(N^2)\)</span> と表記します。なぜこのように大雑把に扱ってよいのでしょうか。理由は大きく2つあります。</p>
+<p>ビッグオー記法では、厳密な計算ステップ数が例えば <span class="math inline">\(f(n) = 3n^2 + 50n + 100\)</span> であったとしても、定数係数（<span class="math inline">\(3\)</span> や <span class="math inline">\(50\)</span>）や次数の低い項（<span class="math inline">\(50n\)</span> や <span class="math inline">\(100\)</span>）を無視して、単に <span class="math inline">\(O(n^2)\)</span> と表記します。なぜこのように大雑把に扱ってよいのでしょうか。理由は大きく2つあります。</p>
 <section id="n-が巨大になると最高次の項が全体を支配する支配項の原理" class="level4" data-number="4.3.4.1">
-<h4 data-number="4.3.4.1" class="anchored" data-anchor-id="n-が巨大になると最高次の項が全体を支配する支配項の原理"><span class="header-section-number">4.3.4.1</span> <span class="math inline">\(N\)</span> が巨大になると最高次の項が全体を支配する（支配項の原理）</h4>
-<p>オーダーが問題にするのは、「データ量 <span class="math inline">\(N\)</span> が非常に大きくなったとき（極限 <span class="math inline">\(N \to \infty\)</span>）に、処理時間やメモリがどのように増大するか」という傾向です。</p>
-<p>例えば、計算ステップ数が <span class="math inline">\(f(N) = N^2 + 1000N\)</span> のアルゴリズムを考えてみましょう。<span class="math inline">\(N\)</span> が小さい間は <span class="math inline">\(1000N\)</span> の影響が大きいですが、<span class="math inline">\(N\)</span> が大きくなるにつれて <span class="math inline">\(N^2\)</span> の項が圧倒的に支配的になります。</p>
+<h4 data-number="4.3.4.1" class="anchored" data-anchor-id="n-が巨大になると最高次の項が全体を支配する支配項の原理"><span class="header-section-number">4.3.4.1</span> <span class="math inline">\(n\)</span> が巨大になると最高次の項が全体を支配する（支配項の原理）</h4>
+<p>オーダーが問題にするのは、「データ量 <span class="math inline">\(n\)</span> が非常に大きくなったとき（極限 <span class="math inline">\(n \to \infty\)</span>）に、処理時間やメモリがどのように増大するか」という傾向です。</p>
+<p>例えば、計算ステップ数が <span class="math inline">\(f(n) = n^2 + 1000n\)</span> のアルゴリズムを考えてみましょう。<span class="math inline">\(n\)</span> が小さい間は <span class="math inline">\(1000n\)</span> の影響が大きいですが、<span class="math inline">\(n\)</span> が大きくなるにつれて <span class="math inline">\(n^2\)</span> の項が圧倒的に支配的になります。</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th style="text-align: left;">データ量 <span class="math inline">\(N\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(N^2\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(1000N\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(N^2\)</span> が全体に占める割合</th>
+<th style="text-align: left;">データ量 <span class="math inline">\(n\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(n^2\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(1000n\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(n^2\)</span> が全体に占める割合</th>
 </tr>
 </thead>
 <tbody>
@@ -806,19 +806,19 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<p>データ数 <span class="math inline">\(N\)</span> が100万件になると、全体の計算量の中で <span class="math inline">\(1000N\)</span> が占める割合はわずか 0.1% に過ぎず、計算ステップ数のほぼすべてを最高次の項 <span class="math inline">\(N^2\)</span> が決定づけます。そのため、<span class="math inline">\(N\)</span> の増大に対するスケーラビリティを評価する上では、最高次以外の項を無視しても本質を見誤ることはありません。</p>
+<p>データ数 <span class="math inline">\(n\)</span> が100万件になると、全体の計算量の中で <span class="math inline">\(1000n\)</span> が占める割合はわずか 0.1% に過ぎず、計算ステップ数のほぼすべてを最高次の項 <span class="math inline">\(n^2\)</span> が決定づけます。そのため、<span class="math inline">\(n\)</span> の増大に対するスケーラビリティを評価する上では、最高次以外の項を無視しても本質を見誤ることはありません。</p>
 </section>
 <section id="係数はハードウェアや言語の差で簡単に逆転するオーダーの壁" class="level4" data-number="4.3.4.2">
 <h4 data-number="4.3.4.2" class="anchored" data-anchor-id="係数はハードウェアや言語の差で簡単に逆転するオーダーの壁"><span class="header-section-number">4.3.4.2</span> 係数はハードウェアや言語の差で簡単に逆転する（オーダーの壁）</h4>
-<p>ステップ数が <span class="math inline">\(2N\)</span> のプログラムと <span class="math inline">\(10N\)</span> のプログラムを比較すると、一見すると前者が5倍高速に見えます。しかし、どちらも「データ量が10倍になれば処理時間も10倍になる（線形に増える）」という本質的な挙動は共通しています。</p>
+<p>ステップ数が <span class="math inline">\(2n\)</span> のプログラムと <span class="math inline">\(10n\)</span> のプログラムを比較すると、一見すると前者が5倍高速に見えます。しかし、どちらも「データ量が10倍になれば処理時間も10倍になる（線形に増える）」という本質的な挙動は共通しています。</p>
 <p>さらに、この「2倍」や「5倍」といった定数倍の差は、次のような実行環境の違いによって容易に逆転してしまいます：</p>
 <ul>
 <li>実行するコンピュータのCPUクロックやメモリ速度</li>
 <li>プログラミング言語の違い（高速なC言語か、インタプリタのPythonか）</li>
 <li>コンパイラによる最適化やキャッシュメモリの効率</li>
 </ul>
-<p>一方で、<strong>オーダーの違い（例えば <span class="math inline">\(O(N)\)</span> と <span class="math inline">\(O(N^2)\)</span>）は、どんなに強力なスーパーコンピュータを使っても、ハードウェアの工夫だけでは絶対に埋めることができません</strong>。<span class="math inline">\(N = 100\)</span> 万のとき、<span class="math inline">\(N\)</span> は100万回ですが、<span class="math inline">\(N^2\)</span> は1兆回です。この差は100万倍であり、ハードウェアの性能差（せいぜい数倍〜数十倍）を遥かに超えてしまいます。</p>
-<p>したがって、アルゴリズム自体の本質的な優劣を議論する際には、実行環境に左右される定数係数は切り落とし、<span class="math inline">\(O(N)\)</span> や <span class="math inline">\(O(N^2)\)</span> のように「最も本質的な増加傾向」だけに注目するのです。</p>
+<p>一方で、<strong>オーダーの違い（例えば <span class="math inline">\(O(n)\)</span> と <span class="math inline">\(O(n^2)\)</span>）は、どんなに強力なスーパーコンピュータを使っても、ハードウェアの工夫だけでは絶対に埋めることができません</strong>。<span class="math inline">\(n = 100\)</span> 万のとき、<span class="math inline">\(n\)</span> は100万回ですが、<span class="math inline">\(n^2\)</span> は1兆回です。この差は100万倍であり、ハードウェアの性能差（せいぜい数倍〜数十倍）を遥かに超えてしまいます。</p>
+<p>したがって、アルゴリズム自体の本質的な優劣を議論する際には、実行環境に左右される定数係数は切り落とし、<span class="math inline">\(O(n)\)</span> や <span class="math inline">\(O(n^2)\)</span> のように「最も本質的な増加傾向」だけに注目するのです。</p>
 </section>
 </section>
 <section id="線形探索と二分探索の比較vibe-codingでの実践" class="level3" data-number="4.3.5">
@@ -888,15 +888,15 @@ window.Quarto = {
 <h3 data-number="4.3.6" class="anchored" data-anchor-id="ソートアルゴリズムの比較選択ソートとクイックソートvibe-codingでの実践"><span class="header-section-number">4.3.6</span> ソートアルゴリズムの比較：選択ソートとクイックソート（Vibe Codingでの実践）</h3>
 <p>探索と並んでアルゴリズムの基本となるのが、並び順がバラバラなデータを小さい順（昇順）や大きい順（降順）に並べ替える<strong>ソート（整列）</strong>です。ソートの手法によっても、計算量に大きな開きがあります。</p>
 <section id="選択ソート素朴なソートon2" class="level4" data-number="4.3.6.1">
-<h4 data-number="4.3.6.1" class="anchored" data-anchor-id="選択ソート素朴なソートon2"><span class="header-section-number">4.3.6.1</span> 選択ソート（素朴なソート：<span class="math inline">\(O(N^2)\)</span>）</h4>
+<h4 data-number="4.3.6.1" class="anchored" data-anchor-id="選択ソート素朴なソートon2"><span class="header-section-number">4.3.6.1</span> 選択ソート（素朴なソート：<span class="math inline">\(O(n^2)\)</span>）</h4>
 <p>直感的に思いつきやすい素朴な手法として、<strong>選択ソート（Selection Sort）</strong>があります。 「リスト全体から最小値を探して先頭と交換し、次に残りの未整列範囲から最小値を探して2番目と交換する……」という処理を繰り返します。</p>
 <ul>
-<li><strong>計算量</strong>: 最小値を探すためのループと、それを繰り返し実行するループの二重ループ処理が必要です。データ数が <span class="math inline">\(N\)</span> 件のときの比較回数は約 <span class="math inline">\(\frac{N(N-1)}{2} \approx \frac{1}{2}N^2\)</span> 回となり、時間計算量は <strong><span class="math inline">\(O(N^2)\)</span></strong>（二乗時間）となります。</li>
+<li><strong>計算量</strong>: 最小値を探すためのループと、それを繰り返し実行するループの二重ループ処理が必要です。データ数が <span class="math inline">\(n\)</span> 件のときの比較回数は約 <span class="math inline">\(\frac{n(n-1)}{2} \approx \frac{1}{2}n^2\)</span> 回となり、時間計算量は <strong><span class="math inline">\(O(n^2)\)</span></strong>（二乗時間）となります。</li>
 <li>データ数が10倍になると所要時間は約100倍、データ数が1,000倍になると所要時間は約100万倍に膨れ上がります。</li>
 </ul>
 </section>
 <section id="クイックソート分割統治法による高速ソート平均-on-log-n" class="level4" data-number="4.3.6.2">
-<h4 data-number="4.3.6.2" class="anchored" data-anchor-id="クイックソート分割統治法による高速ソート平均-on-log-n"><span class="header-section-number">4.3.6.2</span> クイックソート（分割統治法による高速ソート：平均 <span class="math inline">\(O(N \log N)\)</span>）</h4>
+<h4 data-number="4.3.6.2" class="anchored" data-anchor-id="クイックソート分割統治法による高速ソート平均-on-log-n"><span class="header-section-number">4.3.6.2</span> クイックソート（分割統治法による高速ソート：平均 <span class="math inline">\(O(n \log n)\)</span>）</h4>
 <p>これに対して、現代のプログラミング言語の標準ライブラリなどでも広く応用されている代表的な高速アルゴリズムが<strong>クイックソート（Quick Sort）</strong>です。問題を小さな部分問題に分割して解く「<strong>分割統治法（Divide and Conquer）</strong>」を採用しています。</p>
 <p><strong>アルゴリズムの手順：</strong></p>
 <ol type="1">
@@ -967,8 +967,8 @@ window.Quarto = {
 <ul>
 <li><strong>計算量</strong>:
 <ul>
-<li><strong>平均時間計算量 <span class="math inline">\(O(N \log N)\)</span></strong>: ピボットによってデータが毎回ほぼ均等に二分割される場合、分割の深さは <span class="math inline">\(\log_2 N\)</span> 段階となり、各階層で <span class="math inline">\(O(N)\)</span> の走査を行うため全体で <span class="math inline">\(O(N \log N)\)</span> となります。</li>
-<li><strong>最悪時間計算量 <span class="math inline">\(O(N^2)\)</span></strong>: 常に最小値や最大値をピボットに選んでしまうなど、分割が「1個」と「<span class="math inline">\(N-1\)</span>個」に極端に偏り続けた場合、分割の深さが <span class="math inline">\(N\)</span> 段階に達して <span class="math inline">\(O(N^2)\)</span> に悪化します。</li>
+<li><strong>平均時間計算量 <span class="math inline">\(O(n \log n)\)</span></strong>: ピボットによってデータが毎回ほぼ均等に二分割される場合、分割の深さは <span class="math inline">\(\log_2 n\)</span> 段階となり、各階層で <span class="math inline">\(O(n)\)</span> の走査を行うため全体で <span class="math inline">\(O(n \log n)\)</span> となります。</li>
+<li><strong>最悪時間計算量 <span class="math inline">\(O(n^2)\)</span></strong>: 常に最小値や最大値をピボットに選んでしまうなど、分割が「1個」と「<span class="math inline">\(n-1\)</span>個」に極端に偏り続けた場合、分割の深さが <span class="math inline">\(n\)</span> 段階に達して <span class="math inline">\(O(n^2)\)</span> に悪化します。</li>
 </ul></li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -982,12 +982,12 @@ window.Quarto = {
 </div>
 <div class="callout-body-container callout-body">
 <p>選択ソートとクイックソートに実際に同じランダムデータをソートさせ、処理時間の桁違いの差を体感してみましょう。</p>
-<p>※データ件数 <span class="math inline">\(N=10,000\)</span> 程度で実験します（<span class="math inline">\(N=1,000,000\)</span> にすると、選択ソートは完了までに数時間以上かかってしまいます）。</p>
+<p>※データ件数 <span class="math inline">\(n=10,000\)</span> 程度で実験します（<span class="math inline">\(n=1,000,000\)</span> にすると、選択ソートは完了までに数時間以上かかってしまいます）。</p>
 <p><strong>エージェントに作成を依頼するプログラムの仕様：</strong></p>
 <ol type="1">
 <li><strong>データ準備</strong>: <code>random</code> モジュールを使用し、1〜100,000の範囲のランダムな整数を10,000個含んだリストを生成する。</li>
-<li><strong>選択ソートの実装</strong>: 二重ループによる選択ソート（<span class="math inline">\(O(N^2)\)</span>）でリストを整列し、開始から終了までの所要時間（秒）を <code>time</code> モジュールで計測する。</li>
-<li><strong>クイックソートの実装</strong>: ピボットを用いて再帰的に分割統治するクイックソート（<span class="math inline">\(O(N \log N)\)</span>）で同じ初期リストを整列し、所要時間（秒）を計測する。</li>
+<li><strong>選択ソートの実装</strong>: 二重ループによる選択ソート（<span class="math inline">\(O(n^2)\)</span>）でリストを整列し、開始から終了までの所要時間（秒）を <code>time</code> モジュールで計測する。</li>
+<li><strong>クイックソートの実装</strong>: ピボットを用いて再帰的に分割統治するクイックソート（<span class="math inline">\(O(n \log n)\)</span>）で同じ初期リストを整列し、所要時間（秒）を計測する。</li>
 <li><strong>結果の表示</strong>: 両方のアルゴリズムにかかった実行時間（秒）と、クイックソートが何倍高速であったかを画面に出力する。</li>
 </ol>
 <p><strong>エージェントへのプロンプト例：</strong> &gt; 「Pythonで、要素数10,000個のランダムな整数リストをソートするスクリプトを作成してください。選択ソートとクイックソートの両方を自作関数として実装し、それぞれの処理時間を time モジュールで計測して比較表示してください。」</p>
@@ -1023,7 +1023,7 @@ window.Quarto = {
 <li><strong>weekly quotaの節約</strong>: 検索やアイデア出しには通常のchat型AIを活用し、エージェントへの指示は具体的に集約して依頼する。</li>
 <li><strong>vibe codingの限界と対策</strong>: ハルシネーションや大規模開発での機能破壊（デグレード）を防ぐため、自動テストや静的解析を組み合わせた「ハーネスエンジニアリング」によってAIの出力を厳格に検証する。</li>
 <li><strong>停止性</strong>: 入力に対して有限ステップで必ず終了すること。絶対に停止しない例、変数値による例、論理的証明例を意識して設計する。</li>
-<li><strong>計算量</strong>: 時間と空間、平均と最悪の観点からアルゴリズムのスケーラビリティを評価する。探索（線形探索 <span class="math inline">\(O(N)\)</span> vs 二分探索 <span class="math inline">\(O(\log N)\)</span>）やソート（選択ソート <span class="math inline">\(O(N^2)\)</span> vs クイックソート <span class="math inline">\(O(N \log N)\)</span>）を通じて、オーダーの違いが性能に与える劇的な影響を理解する。</li>
+<li><strong>計算量</strong>: 時間と空間、平均と最悪の観点からアルゴリズムのスケーラビリティを評価する。探索（線形探索 <span class="math inline">\(O(n)\)</span> vs 二分探索 <span class="math inline">\(O(\log n)\)</span>）やソート（選択ソート <span class="math inline">\(O(n^2)\)</span> vs クイックソート <span class="math inline">\(O(n \log n)\)</span>）を通じて、オーダーの違いが性能に与える劇的な影響を理解する。</li>
 </ul>
 
 
@@ -1706,7 +1706,7 @@ window.Quarto = {
 <span id="cb3-209"><a href="#cb3-209" aria-label="209"></a></span>
 <span id="cb3-210"><a href="#cb3-210" aria-label="210"></a><span class="fu">### 絶対に停止しないループ</span></span>
 <span id="cb3-211"><a href="#cb3-211" aria-label="211"></a>終了条件が全く書かれていない、あるいは脱出条件（<span class="in">`break`</span> など）が決して成立しない場合、プログラムは永遠に停止しません。</span>
-<span id="cb3-212"><a href="#cb3-212" aria-label="212"></a>たとえば、「条件式が常に <span class="in">`True`</span> であり、内部で脱出判定を行わないループ」は、外部から強制終了（Ctrl+C 等）されない限り無限に実行され続けます。</span>
+<span id="cb3-212"><a href="#cb3-212" aria-label="212"></a>たとえば、「条件式が常に <span class="in">`True`</span> であり、内部で脱出判定を行わないループ」は、外部から強制終了（Ctrl+C 等）されない限り無限に実行され続けます。（<span class="co">[</span><span class="ot">-@sec-infinite-loop</span><span class="co">]</span>節参照）</span>
 <span id="cb3-213"><a href="#cb3-213" aria-label="213"></a></span>
 <span id="cb3-214"><a href="#cb3-214" aria-label="214"></a><span class="fu">### 変数の値によって停止したりしなかったりするループ</span></span>
 <span id="cb3-215"><a href="#cb3-215" aria-label="215"></a>ループの終了条件が変数の値に依存している場合、初期値や計算過程によって停止するかどうかが分かれることがあります。</span>
@@ -1730,13 +1730,13 @@ window.Quarto = {
 <span id="cb3-233"><a href="#cb3-233" aria-label="233"></a></span>
 <span id="cb3-234"><a href="#cb3-234" aria-label="234"></a><span class="fu">## アルゴリズムの計算量</span></span>
 <span id="cb3-235"><a href="#cb3-235" aria-label="235"></a></span>
-<span id="cb3-236"><a href="#cb3-236" aria-label="236"></a>同じ目的を果たすアルゴリズムであっても、扱うデータ量（要素数 $N$）が増加したときに、必要な計算時間やメモリ領域がどのように増大するかは大きく異なります。このスケーラビリティ（拡張性）を測る指標が**計算量（Computational Complexity）**です。</span>
+<span id="cb3-236"><a href="#cb3-236" aria-label="236"></a>同じ目的を果たすアルゴリズムであっても、扱うデータ量（要素数 $n$）が増加したときに、必要な計算時間やメモリ領域がどのように増大するかは大きく異なります。このスケーラビリティ（拡張性）を測る指標が**計算量（Computational Complexity）**です。</span>
 <span id="cb3-237"><a href="#cb3-237" aria-label="237"></a></span>
 <span id="cb3-238"><a href="#cb3-238" aria-label="238"></a><span class="fu">### 時間計算量と空間計算量</span></span>
 <span id="cb3-239"><a href="#cb3-239" aria-label="239"></a>計算量には大きく分けて2つの評価軸が存在します：</span>
 <span id="cb3-240"><a href="#cb3-240" aria-label="240"></a></span>
-<span id="cb3-241"><a href="#cb3-241" aria-label="241"></a><span class="ss">- </span>**時間計算量（Time Complexity）**: 入力データサイズ $N$ に対し、アルゴリズム完了までに必要な演算ステップ数（処理時間）の増大度合い。</span>
-<span id="cb3-242"><a href="#cb3-242" aria-label="242"></a><span class="ss">- </span>**空間計算量（Space Complexity）**: 入力データサイズ $N$ に対し、実行中に必要となるメモリ領域（記憶容量）の増大度合い。</span>
+<span id="cb3-241"><a href="#cb3-241" aria-label="241"></a><span class="ss">- </span>**時間計算量（Time Complexity）**: 入力データサイズ $n$ に対し、アルゴリズム完了までに必要な演算ステップ数（処理時間）の増大度合い。</span>
+<span id="cb3-242"><a href="#cb3-242" aria-label="242"></a><span class="ss">- </span>**空間計算量（Space Complexity）**: 入力データサイズ $n$ に対し、実行中に必要となるメモリ領域（記憶容量）の増大度合い。</span>
 <span id="cb3-243"><a href="#cb3-243" aria-label="243"></a></span>
 <span id="cb3-244"><a href="#cb3-244" aria-label="244"></a>多くの場合、時間計算量と空間計算量には**トレードオフの関係**があります。計算の結果を後でまた利用できる場合、計算結果をメモリ上に表として保持しておけば（空間を消費）、次の計算を早く終えることができます（時間を短縮）。</span>
 <span id="cb3-245"><a href="#cb3-245" aria-label="245"></a></span>
@@ -1753,82 +1753,82 @@ window.Quarto = {
 <span id="cb3-256"><a href="#cb3-256" aria-label="256"></a><span class="fu">### オーダーとビッグオー記法（$O$ 記法）</span></span>
 <span id="cb3-257"><a href="#cb3-257" aria-label="257"></a></span>
 <span id="cb3-258"><a href="#cb3-258" aria-label="258"></a><span class="fu">#### 「オーダー」とは何か</span></span>
-<span id="cb3-259"><a href="#cb3-259" aria-label="259"></a>アルゴリズムの性能を評価するとき、コンピュータの性能や実行環境によって左右される「実行にかかる絶対的な秒数」ではなく、**「入力データ量 $N$ が増えたときに、処理ステップ数や必要なメモリがどのくらいの桁・規模感（スケール）で増大していくか」**という本質的な増加度合いに注目します。この増大の規模感のことを**オーダー（Order / Order of magnitude）**と呼びます。</span>
+<span id="cb3-259"><a href="#cb3-259" aria-label="259"></a>アルゴリズムの性能を評価するとき、コンピュータの性能や実行環境によって左右される「実行にかかる絶対的な秒数」ではなく、**「入力データ量 $n$ が増えたときに、処理ステップ数や必要なメモリがどのくらいの桁・規模感（スケール）で増大していくか」**という本質的な増加度合いに注目します。この増大の規模感のことを**オーダー（Order / Order of magnitude）**と呼びます。</span>
 <span id="cb3-260"><a href="#cb3-260" aria-label="260"></a></span>
-<span id="cb3-261"><a href="#cb3-261" aria-label="261"></a>日常会話や科学・工学の世界でも、「費用が数億円のオーダー」「誤差がミリ秒のオーダー」のように、細かい端数ではなく「おおよその桁数・スケール」を表す言葉としてオーダーが使われます。アルゴリズムの世界でも同様で、例えば入力データ数 $N$ が 10 倍になったとき、</span>
+<span id="cb3-261"><a href="#cb3-261" aria-label="261"></a>日常会話や科学・工学の世界でも、「費用が数億円のオーダー」「誤差がミリ秒のオーダー」のように、細かい端数ではなく「おおよその桁数・スケール」を表す言葉としてオーダーが使われます。アルゴリズムの世界でも同様で、例えば入力データ数 $n$ が 10 倍になったとき、</span>
 <span id="cb3-262"><a href="#cb3-262" aria-label="262"></a><span class="ss">- </span>処理ステップ数も同じく約 10 倍（1桁）増えるのか</span>
 <span id="cb3-263"><a href="#cb3-263" aria-label="263"></a><span class="ss">- </span>その二乗である約 100 倍（2桁）に跳ね上がるのか</span>
 <span id="cb3-264"><a href="#cb3-264" aria-label="264"></a><span class="ss">- </span>あるいはデータが増えてもステップ数はほとんど変わらないのか</span>
 <span id="cb3-265"><a href="#cb3-265" aria-label="265"></a>という「増え方の規模（桁違いの性質）」こそが、アルゴリズムの効率を決定づける本質です。</span>
 <span id="cb3-266"><a href="#cb3-266" aria-label="266"></a></span>
 <span id="cb3-267"><a href="#cb3-267" aria-label="267"></a><span class="fu">#### オーダーを表現する「ビッグオー記法」</span></span>
-<span id="cb3-268"><a href="#cb3-268" aria-label="268"></a>この計算量のオーダーを、細かな定数係数や低次の端数を省いて数学的かつ簡潔に表現するために用いられるのが**ビッグオー記法（Big-O notation、$O$ 記法）**です。オーダー（Order）の頭文字である大文字の $O$ を取り、括弧の中に入力サイズ $N$ に対する増大の傾向を記述して $O(N)$ や $O(N^2)$ のように表記します。</span>
+<span id="cb3-268"><a href="#cb3-268" aria-label="268"></a>この計算量のオーダーを、細かな定数係数や低次の端数を省いて数学的かつ簡潔に表現するために用いられるのが**ビッグオー記法（Big-O notation、$O$ 記法）**です。オーダー（Order）の頭文字である大文字の $O$ を取り、括弧の中に入力サイズ $n$ に対する増大の傾向を記述して $O(n)$ や $O(n^2)$ のように表記します。</span>
 <span id="cb3-269"><a href="#cb3-269" aria-label="269"></a></span>
 <span id="cb3-270"><a href="#cb3-270" aria-label="270"></a>代表的な計算量のオーダーには以下のようなものがあります。</span>
 <span id="cb3-271"><a href="#cb3-271" aria-label="271"></a></span>
 <span id="cb3-272"><a href="#cb3-272" aria-label="272"></a><span class="pp">|</span> 計算量（オーダー） <span class="pp">|</span> 呼称 <span class="pp">|</span> 特徴・代表例 <span class="pp">|</span></span>
 <span id="cb3-273"><a href="#cb3-273" aria-label="273"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
 <span id="cb3-274"><a href="#cb3-274" aria-label="274"></a><span class="pp">|</span> $O(1)$ <span class="pp">|</span> 定数時間 <span class="pp">|</span> データ数に関係なく一定のステップ数で完了（例: リストのインデックス参照） <span class="pp">|</span></span>
-<span id="cb3-275"><a href="#cb3-275" aria-label="275"></a><span class="pp">|</span> $O(\log N)$ <span class="pp">|</span> 対数時間 <span class="pp">|</span> データが倍増してもステップ数は1増える程度（例: 二分探索） <span class="pp">|</span></span>
-<span id="cb3-276"><a href="#cb3-276" aria-label="276"></a><span class="pp">|</span> $O(N)$ <span class="pp">|</span> 線形時間 <span class="pp">|</span> データ数に比例してステップ数が増える（例: リストの線形探索） <span class="pp">|</span></span>
-<span id="cb3-277"><a href="#cb3-277" aria-label="277"></a><span class="pp">|</span> $O(N \log N)$ <span class="pp">|</span> 準線形時間 <span class="pp">|</span> 効率的な整列アルゴリズム（例: クイックソートの平均、マージソート） <span class="pp">|</span></span>
-<span id="cb3-278"><a href="#cb3-278" aria-label="278"></a><span class="pp">|</span> $O(N^2)$ <span class="pp">|</span> 二乗時間 <span class="pp">|</span> 二重ループ処理（例: 総当たり比較、選択ソート） <span class="pp">|</span></span>
-<span id="cb3-279"><a href="#cb3-279" aria-label="279"></a><span class="pp">|</span> $O(2^N)$ <span class="pp">|</span> 指数時間 <span class="pp">|</span> 組み合わせ爆発。実用的なデータ規模では計算不能になる <span class="pp">|</span></span>
+<span id="cb3-275"><a href="#cb3-275" aria-label="275"></a><span class="pp">|</span> $O(\log n)$ <span class="pp">|</span> 対数時間 <span class="pp">|</span> データが倍増してもステップ数は1増える程度（例: 二分探索） <span class="pp">|</span></span>
+<span id="cb3-276"><a href="#cb3-276" aria-label="276"></a><span class="pp">|</span> $O(n)$ <span class="pp">|</span> 線形時間 <span class="pp">|</span> データ数に比例してステップ数が増える（例: リストの線形探索） <span class="pp">|</span></span>
+<span id="cb3-277"><a href="#cb3-277" aria-label="277"></a><span class="pp">|</span> $O(n \log n)$ <span class="pp">|</span> 準線形時間 <span class="pp">|</span> 効率的な整列アルゴリズム（例: クイックソートの平均、マージソート） <span class="pp">|</span></span>
+<span id="cb3-278"><a href="#cb3-278" aria-label="278"></a><span class="pp">|</span> $O(n^2)$ <span class="pp">|</span> 二乗時間 <span class="pp">|</span> 二重ループ処理（例: 総当たり比較、選択ソート） <span class="pp">|</span></span>
+<span id="cb3-279"><a href="#cb3-279" aria-label="279"></a><span class="pp">|</span> $O(2^n)$ <span class="pp">|</span> 指数時間 <span class="pp">|</span> 組み合わせ爆発。実用的なデータ規模では計算不能になる <span class="pp">|</span></span>
 <span id="cb3-280"><a href="#cb3-280" aria-label="280"></a></span>
 <span id="cb3-281"><a href="#cb3-281" aria-label="281"></a><span class="in">```{=html}</span></span>
 <span id="cb3-282"><a href="#cb3-282" aria-label="282"></a><span class="in">&lt;svg viewBox="0 0 560 320" width="100%" height="320" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;"&gt;</span></span>
 <span id="cb3-283"><a href="#cb3-283" aria-label="283"></a><span class="in">  &lt;!-- Axes --&gt;</span></span>
 <span id="cb3-284"><a href="#cb3-284" aria-label="284"></a><span class="in">  &lt;line x1="60" y1="270" x2="520" y2="270" stroke="#444" stroke-width="2"/&gt;</span></span>
 <span id="cb3-285"><a href="#cb3-285" aria-label="285"></a><span class="in">  &lt;line x1="60" y1="270" x2="60" y2="20" stroke="#444" stroke-width="2"/&gt;</span></span>
-<span id="cb3-286"><a href="#cb3-286" aria-label="286"></a><span class="in">  &lt;text x="520" y="295" text-anchor="end" font-size="12" fill="#555"&gt;データ量 N →&lt;/text&gt;</span></span>
+<span id="cb3-286"><a href="#cb3-286" aria-label="286"></a><span class="in">  &lt;text x="520" y="295" text-anchor="end" font-size="12" fill="#555"&gt;データ量 n →&lt;/text&gt;</span></span>
 <span id="cb3-287"><a href="#cb3-287" aria-label="287"></a><span class="in">  &lt;text x="30" y="30" font-size="12" fill="#555" transform="rotate(-90 30,30)"&gt;計算時間 / メモリ →&lt;/text&gt;</span></span>
 <span id="cb3-288"><a href="#cb3-288" aria-label="288"></a><span class="in">  </span></span>
 <span id="cb3-289"><a href="#cb3-289" aria-label="289"></a><span class="in">  &lt;!-- O(1) --&gt;</span></span>
 <span id="cb3-290"><a href="#cb3-290" aria-label="290"></a><span class="in">  &lt;line x1="60" y1="250" x2="500" y2="250" stroke="#4caf50" stroke-width="2.5"/&gt;</span></span>
 <span id="cb3-291"><a href="#cb3-291" aria-label="291"></a><span class="in">  &lt;text x="505" y="254" font-size="12" font-weight="bold" fill="#2e7d32"&gt;O(1)&lt;/text&gt;</span></span>
 <span id="cb3-292"><a href="#cb3-292" aria-label="292"></a><span class="in">  </span></span>
-<span id="cb3-293"><a href="#cb3-293" aria-label="293"></a><span class="in">  &lt;!-- O(log N) --&gt;</span></span>
+<span id="cb3-293"><a href="#cb3-293" aria-label="293"></a><span class="in">  &lt;!-- O(log n) --&gt;</span></span>
 <span id="cb3-294"><a href="#cb3-294" aria-label="294"></a><span class="in">  &lt;path d="M 60 250 Q 200 230, 500 205" fill="none" stroke="#00acc1" stroke-width="2.5"/&gt;</span></span>
-<span id="cb3-295"><a href="#cb3-295" aria-label="295"></a><span class="in">  &lt;text x="505" y="209" font-size="12" font-weight="bold" fill="#00838f"&gt;O(log N)&lt;/text&gt;</span></span>
+<span id="cb3-295"><a href="#cb3-295" aria-label="295"></a><span class="in">  &lt;text x="505" y="209" font-size="12" font-weight="bold" fill="#00838f"&gt;O(log n)&lt;/text&gt;</span></span>
 <span id="cb3-296"><a href="#cb3-296" aria-label="296"></a><span class="in">  </span></span>
-<span id="cb3-297"><a href="#cb3-297" aria-label="297"></a><span class="in">  &lt;!-- O(N) --&gt;</span></span>
+<span id="cb3-297"><a href="#cb3-297" aria-label="297"></a><span class="in">  &lt;!-- O(n) --&gt;</span></span>
 <span id="cb3-298"><a href="#cb3-298" aria-label="298"></a><span class="in">  &lt;line x1="60" y1="250" x2="480" y2="130" stroke="#1e88e5" stroke-width="2.5"/&gt;</span></span>
-<span id="cb3-299"><a href="#cb3-299" aria-label="299"></a><span class="in">  &lt;text x="485" y="130" font-size="12" font-weight="bold" fill="#1565c0"&gt;O(N)&lt;/text&gt;</span></span>
+<span id="cb3-299"><a href="#cb3-299" aria-label="299"></a><span class="in">  &lt;text x="485" y="130" font-size="12" font-weight="bold" fill="#1565c0"&gt;O(n)&lt;/text&gt;</span></span>
 <span id="cb3-300"><a href="#cb3-300" aria-label="300"></a><span class="in">  </span></span>
-<span id="cb3-301"><a href="#cb3-301" aria-label="301"></a><span class="in">  &lt;!-- O(N log N) --&gt;</span></span>
+<span id="cb3-301"><a href="#cb3-301" aria-label="301"></a><span class="in">  &lt;!-- O(n log n) --&gt;</span></span>
 <span id="cb3-302"><a href="#cb3-302" aria-label="302"></a><span class="in">  &lt;path d="M 60 250 Q 250 200, 420 60" fill="none" stroke="#fb8c00" stroke-width="2.5"/&gt;</span></span>
-<span id="cb3-303"><a href="#cb3-303" aria-label="303"></a><span class="in">  &lt;text x="425" y="60" font-size="12" font-weight="bold" fill="#ef6c00"&gt;O(N log N)&lt;/text&gt;</span></span>
+<span id="cb3-303"><a href="#cb3-303" aria-label="303"></a><span class="in">  &lt;text x="425" y="60" font-size="12" font-weight="bold" fill="#ef6c00"&gt;O(n log n)&lt;/text&gt;</span></span>
 <span id="cb3-304"><a href="#cb3-304" aria-label="304"></a><span class="in">  </span></span>
-<span id="cb3-305"><a href="#cb3-305" aria-label="305"></a><span class="in">  &lt;!-- O(N^2) --&gt;</span></span>
+<span id="cb3-305"><a href="#cb3-305" aria-label="305"></a><span class="in">  &lt;!-- O(n^2) --&gt;</span></span>
 <span id="cb3-306"><a href="#cb3-306" aria-label="306"></a><span class="in">  &lt;path d="M 60 250 Q 200 230, 290 40" fill="none" stroke="#e53935" stroke-width="2.5"/&gt;</span></span>
-<span id="cb3-307"><a href="#cb3-307" aria-label="307"></a><span class="in">  &lt;text x="295" y="40" font-size="12" font-weight="bold" fill="#c62828"&gt;O(N²)&lt;/text&gt;</span></span>
+<span id="cb3-307"><a href="#cb3-307" aria-label="307"></a><span class="in">  &lt;text x="295" y="40" font-size="12" font-weight="bold" fill="#c62828"&gt;O(n²)&lt;/text&gt;</span></span>
 <span id="cb3-308"><a href="#cb3-308" aria-label="308"></a><span class="in">  </span></span>
-<span id="cb3-309"><a href="#cb3-309" aria-label="309"></a><span class="in">  &lt;!-- O(2^N) --&gt;</span></span>
+<span id="cb3-309"><a href="#cb3-309" aria-label="309"></a><span class="in">  &lt;!-- O(2^n) --&gt;</span></span>
 <span id="cb3-310"><a href="#cb3-310" aria-label="310"></a><span class="in">  &lt;path d="M 60 250 Q 130 240, 160 30" fill="none" stroke="#8e24aa" stroke-width="2.5"/&gt;</span></span>
-<span id="cb3-311"><a href="#cb3-311" aria-label="311"></a><span class="in">  &lt;text x="165" y="30" font-size="12" font-weight="bold" fill="#6a1b9a"&gt;O(2ᴺ)&lt;/text&gt;</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-label="311"></a><span class="in">  &lt;text x="165" y="30" font-size="12" font-weight="bold" fill="#6a1b9a"&gt;O(2ⁿ)&lt;/text&gt;</span></span>
 <span id="cb3-312"><a href="#cb3-312" aria-label="312"></a><span class="in">&lt;/svg&gt;</span></span>
 <span id="cb3-313"><a href="#cb3-313" aria-label="313"></a><span class="in">```</span></span>
 <span id="cb3-314"><a href="#cb3-314" aria-label="314"></a></span>
 <span id="cb3-315"><a href="#cb3-315" aria-label="315"></a><span class="fu">### 係数や次数の低い項を無視してよい理由</span></span>
 <span id="cb3-316"><a href="#cb3-316" aria-label="316"></a></span>
-<span id="cb3-317"><a href="#cb3-317" aria-label="317"></a>ビッグオー記法では、厳密な計算ステップ数が例えば $f(N) = 3N^2 + 50N + 100$ であったとしても、定数係数（$3$ や $50$）や次数の低い項（$50N$ や $100$）を無視して、単に $O(N^2)$ と表記します。なぜこのように大雑把に扱ってよいのでしょうか。理由は大きく2つあります。</span>
+<span id="cb3-317"><a href="#cb3-317" aria-label="317"></a>ビッグオー記法では、厳密な計算ステップ数が例えば $f(n) = 3n^2 + 50n + 100$ であったとしても、定数係数（$3$ や $50$）や次数の低い項（$50n$ や $100$）を無視して、単に $O(n^2)$ と表記します。なぜこのように大雑把に扱ってよいのでしょうか。理由は大きく2つあります。</span>
 <span id="cb3-318"><a href="#cb3-318" aria-label="318"></a></span>
-<span id="cb3-319"><a href="#cb3-319" aria-label="319"></a><span class="fu">#### $N$ が巨大になると最高次の項が全体を支配する（支配項の原理）</span></span>
-<span id="cb3-320"><a href="#cb3-320" aria-label="320"></a>オーダーが問題にするのは、「データ量 $N$ が非常に大きくなったとき（極限 $N \to \infty$）に、処理時間やメモリがどのように増大するか」という傾向です。</span>
+<span id="cb3-319"><a href="#cb3-319" aria-label="319"></a><span class="fu">#### $n$ が巨大になると最高次の項が全体を支配する（支配項の原理）</span></span>
+<span id="cb3-320"><a href="#cb3-320" aria-label="320"></a>オーダーが問題にするのは、「データ量 $n$ が非常に大きくなったとき（極限 $n \to \infty$）に、処理時間やメモリがどのように増大するか」という傾向です。</span>
 <span id="cb3-321"><a href="#cb3-321" aria-label="321"></a></span>
-<span id="cb3-322"><a href="#cb3-322" aria-label="322"></a>例えば、計算ステップ数が $f(N) = N^2 + 1000N$ のアルゴリズムを考えてみましょう。$N$ が小さい間は $1000N$ の影響が大きいですが、$N$ が大きくなるにつれて $N^2$ の項が圧倒的に支配的になります。</span>
+<span id="cb3-322"><a href="#cb3-322" aria-label="322"></a>例えば、計算ステップ数が $f(n) = n^2 + 1000n$ のアルゴリズムを考えてみましょう。$n$ が小さい間は $1000n$ の影響が大きいですが、$n$ が大きくなるにつれて $n^2$ の項が圧倒的に支配的になります。</span>
 <span id="cb3-323"><a href="#cb3-323" aria-label="323"></a></span>
-<span id="cb3-324"><a href="#cb3-324" aria-label="324"></a><span class="pp">|</span> データ量 $N$ <span class="pp">|</span> $N^2$ <span class="pp">|</span> $1000N$ <span class="pp">|</span> $N^2$ が全体に占める割合 <span class="pp">|</span></span>
+<span id="cb3-324"><a href="#cb3-324" aria-label="324"></a><span class="pp">|</span> データ量 $n$ <span class="pp">|</span> $n^2$ <span class="pp">|</span> $1000n$ <span class="pp">|</span> $n^2$ が全体に占める割合 <span class="pp">|</span></span>
 <span id="cb3-325"><a href="#cb3-325" aria-label="325"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
 <span id="cb3-326"><a href="#cb3-326" aria-label="326"></a><span class="pp">|</span> 10 <span class="pp">|</span> 100 <span class="pp">|</span> 10,000 <span class="pp">|</span> 約 1.0% <span class="pp">|</span></span>
 <span id="cb3-327"><a href="#cb3-327" aria-label="327"></a><span class="pp">|</span> 1,000 <span class="pp">|</span> 1,000,000 <span class="pp">|</span> 1,000,000 <span class="pp">|</span> 50.0% <span class="pp">|</span></span>
 <span id="cb3-328"><a href="#cb3-328" aria-label="328"></a><span class="pp">|</span> 100,000 <span class="pp">|</span> 100億 ($10^{10}$) <span class="pp">|</span> 1億 ($10^8$) <span class="pp">|</span> 約 99.0% <span class="pp">|</span></span>
 <span id="cb3-329"><a href="#cb3-329" aria-label="329"></a><span class="pp">|</span> 1,000,000 <span class="pp">|</span> 1兆 ($10^{12}$) <span class="pp">|</span> 10億 ($10^9$) <span class="pp">|</span> **約 99.9%** <span class="pp">|</span></span>
 <span id="cb3-330"><a href="#cb3-330" aria-label="330"></a></span>
-<span id="cb3-331"><a href="#cb3-331" aria-label="331"></a>データ数 $N$ が100万件になると、全体の計算量の中で $1000N$ が占める割合はわずか 0.1% に過ぎず、計算ステップ数のほぼすべてを最高次の項 $N^2$ が決定づけます。そのため、$N$ の増大に対するスケーラビリティを評価する上では、最高次以外の項を無視しても本質を見誤ることはありません。</span>
+<span id="cb3-331"><a href="#cb3-331" aria-label="331"></a>データ数 $n$ が100万件になると、全体の計算量の中で $1000n$ が占める割合はわずか 0.1% に過ぎず、計算ステップ数のほぼすべてを最高次の項 $n^2$ が決定づけます。そのため、$n$ の増大に対するスケーラビリティを評価する上では、最高次以外の項を無視しても本質を見誤ることはありません。</span>
 <span id="cb3-332"><a href="#cb3-332" aria-label="332"></a></span>
 <span id="cb3-333"><a href="#cb3-333" aria-label="333"></a><span class="fu">#### 係数はハードウェアや言語の差で簡単に逆転する（オーダーの壁）</span></span>
-<span id="cb3-334"><a href="#cb3-334" aria-label="334"></a>ステップ数が $2N$ のプログラムと $10N$ のプログラムを比較すると、一見すると前者が5倍高速に見えます。しかし、どちらも「データ量が10倍になれば処理時間も10倍になる（線形に増える）」という本質的な挙動は共通しています。</span>
+<span id="cb3-334"><a href="#cb3-334" aria-label="334"></a>ステップ数が $2n$ のプログラムと $10n$ のプログラムを比較すると、一見すると前者が5倍高速に見えます。しかし、どちらも「データ量が10倍になれば処理時間も10倍になる（線形に増える）」という本質的な挙動は共通しています。</span>
 <span id="cb3-335"><a href="#cb3-335" aria-label="335"></a></span>
 <span id="cb3-336"><a href="#cb3-336" aria-label="336"></a>さらに、この「2倍」や「5倍」といった定数倍の差は、次のような実行環境の違いによって容易に逆転してしまいます：</span>
 <span id="cb3-337"><a href="#cb3-337" aria-label="337"></a></span>
@@ -1836,9 +1836,9 @@ window.Quarto = {
 <span id="cb3-339"><a href="#cb3-339" aria-label="339"></a><span class="ss">- </span>プログラミング言語の違い（高速なC言語か、インタプリタのPythonか）</span>
 <span id="cb3-340"><a href="#cb3-340" aria-label="340"></a><span class="ss">- </span>コンパイラによる最適化やキャッシュメモリの効率</span>
 <span id="cb3-341"><a href="#cb3-341" aria-label="341"></a></span>
-<span id="cb3-342"><a href="#cb3-342" aria-label="342"></a>一方で、**オーダーの違い（例えば $O(N)$ と $O(N^2)$）は、どんなに強力なスーパーコンピュータを使っても、ハードウェアの工夫だけでは絶対に埋めることができません**。$N = 100$ 万のとき、$N$ は100万回ですが、$N^2$ は1兆回です。この差は100万倍であり、ハードウェアの性能差（せいぜい数倍〜数十倍）を遥かに超えてしまいます。</span>
+<span id="cb3-342"><a href="#cb3-342" aria-label="342"></a>一方で、**オーダーの違い（例えば $O(n)$ と $O(n^2)$）は、どんなに強力なスーパーコンピュータを使っても、ハードウェアの工夫だけでは絶対に埋めることができません**。$n = 100$ 万のとき、$n$ は100万回ですが、$n^2$ は1兆回です。この差は100万倍であり、ハードウェアの性能差（せいぜい数倍〜数十倍）を遥かに超えてしまいます。</span>
 <span id="cb3-343"><a href="#cb3-343" aria-label="343"></a></span>
-<span id="cb3-344"><a href="#cb3-344" aria-label="344"></a>したがって、アルゴリズム自体の本質的な優劣を議論する際には、実行環境に左右される定数係数は切り落とし、$O(N)$ や $O(N^2)$ のように「最も本質的な増加傾向」だけに注目するのです。</span>
+<span id="cb3-344"><a href="#cb3-344" aria-label="344"></a>したがって、アルゴリズム自体の本質的な優劣を議論する際には、実行環境に左右される定数係数は切り落とし、$O(n)$ や $O(n^2)$ のように「最も本質的な増加傾向」だけに注目するのです。</span>
 <span id="cb3-345"><a href="#cb3-345" aria-label="345"></a></span>
 <span id="cb3-346"><a href="#cb3-346" aria-label="346"></a><span class="fu">### 線形探索と二分探索の比較（Vibe Codingでの実践）</span></span>
 <span id="cb3-347"><a href="#cb3-347" aria-label="347"></a>計算量の圧倒的な違いを体感するために、線形探索と二分探索を比較するプログラムを coding agent とともに作成します。</span>
@@ -1876,14 +1876,14 @@ window.Quarto = {
 <span id="cb3-379"><a href="#cb3-379" aria-label="379"></a></span>
 <span id="cb3-380"><a href="#cb3-380" aria-label="380"></a>探索と並んでアルゴリズムの基本となるのが、並び順がバラバラなデータを小さい順（昇順）や大きい順（降順）に並べ替える**ソート（整列）**です。ソートの手法によっても、計算量に大きな開きがあります。</span>
 <span id="cb3-381"><a href="#cb3-381" aria-label="381"></a></span>
-<span id="cb3-382"><a href="#cb3-382" aria-label="382"></a><span class="fu">#### 選択ソート（素朴なソート：$O(N^2)$）</span></span>
+<span id="cb3-382"><a href="#cb3-382" aria-label="382"></a><span class="fu">#### 選択ソート（素朴なソート：$O(n^2)$）</span></span>
 <span id="cb3-383"><a href="#cb3-383" aria-label="383"></a>直感的に思いつきやすい素朴な手法として、**選択ソート（Selection Sort）**があります。</span>
 <span id="cb3-384"><a href="#cb3-384" aria-label="384"></a>「リスト全体から最小値を探して先頭と交換し、次に残りの未整列範囲から最小値を探して2番目と交換する……」という処理を繰り返します。</span>
 <span id="cb3-385"><a href="#cb3-385" aria-label="385"></a></span>
-<span id="cb3-386"><a href="#cb3-386" aria-label="386"></a><span class="ss">- </span>**計算量**: 最小値を探すためのループと、それを繰り返し実行するループの二重ループ処理が必要です。データ数が $N$ 件のときの比較回数は約 $\frac{N(N-1)}{2} \approx \frac{1}{2}N^2$ 回となり、時間計算量は **$O(N^2)$**（二乗時間）となります。</span>
+<span id="cb3-386"><a href="#cb3-386" aria-label="386"></a><span class="ss">- </span>**計算量**: 最小値を探すためのループと、それを繰り返し実行するループの二重ループ処理が必要です。データ数が $n$ 件のときの比較回数は約 $\frac{n(n-1)}{2} \approx \frac{1}{2}n^2$ 回となり、時間計算量は **$O(n^2)$**（二乗時間）となります。</span>
 <span id="cb3-387"><a href="#cb3-387" aria-label="387"></a><span class="ss">- </span>データ数が10倍になると所要時間は約100倍、データ数が1,000倍になると所要時間は約100万倍に膨れ上がります。</span>
 <span id="cb3-388"><a href="#cb3-388" aria-label="388"></a></span>
-<span id="cb3-389"><a href="#cb3-389" aria-label="389"></a><span class="fu">#### クイックソート（分割統治法による高速ソート：平均 $O(N \log N)$）</span></span>
+<span id="cb3-389"><a href="#cb3-389" aria-label="389"></a><span class="fu">#### クイックソート（分割統治法による高速ソート：平均 $O(n \log n)$）</span></span>
 <span id="cb3-390"><a href="#cb3-390" aria-label="390"></a>これに対して、現代のプログラミング言語の標準ライブラリなどでも広く応用されている代表的な高速アルゴリズムが**クイックソート（Quick Sort）**です。問題を小さな部分問題に分割して解く「**分割統治法（Divide and Conquer）**」を採用しています。</span>
 <span id="cb3-391"><a href="#cb3-391" aria-label="391"></a></span>
 <span id="cb3-392"><a href="#cb3-392" aria-label="392"></a>**アルゴリズムの手順：**</span>
@@ -1956,20 +1956,20 @@ window.Quarto = {
 <span id="cb3-459"><a href="#cb3-459" aria-label="459"></a><span class="in">```</span></span>
 <span id="cb3-460"><a href="#cb3-460" aria-label="460"></a></span>
 <span id="cb3-461"><a href="#cb3-461" aria-label="461"></a><span class="ss">- </span>**計算量**:</span>
-<span id="cb3-462"><a href="#cb3-462" aria-label="462"></a><span class="ss">  - </span>**平均時間計算量 $O(N \log N)$**: ピボットによってデータが毎回ほぼ均等に二分割される場合、分割の深さは $\log_2 N$ 段階となり、各階層で $O(N)$ の走査を行うため全体で $O(N \log N)$ となります。</span>
-<span id="cb3-463"><a href="#cb3-463" aria-label="463"></a><span class="ss">  - </span>**最悪時間計算量 $O(N^2)$**: 常に最小値や最大値をピボットに選んでしまうなど、分割が「1個」と「$N-1$個」に極端に偏り続けた場合、分割の深さが $N$ 段階に達して $O(N^2)$ に悪化します。</span>
+<span id="cb3-462"><a href="#cb3-462" aria-label="462"></a><span class="ss">  - </span>**平均時間計算量 $O(n \log n)$**: ピボットによってデータが毎回ほぼ均等に二分割される場合、分割の深さは $\log_2 n$ 段階となり、各階層で $O(n)$ の走査を行うため全体で $O(n \log n)$ となります。</span>
+<span id="cb3-463"><a href="#cb3-463" aria-label="463"></a><span class="ss">  - </span>**最悪時間計算量 $O(n^2)$**: 常に最小値や最大値をピボットに選んでしまうなど、分割が「1個」と「$n-1$個」に極端に偏り続けた場合、分割の深さが $n$ 段階に達して $O(n^2)$ に悪化します。</span>
 <span id="cb3-464"><a href="#cb3-464" aria-label="464"></a></span>
 <span id="cb3-465"><a href="#cb3-465" aria-label="465"></a>::: {.callout-tip}</span>
 <span id="cb3-466"><a href="#cb3-466" aria-label="466"></a><span class="fu">### Vibe Coding 実践：ソート速度の比較実験</span></span>
 <span id="cb3-467"><a href="#cb3-467" aria-label="467"></a>選択ソートとクイックソートに実際に同じランダムデータをソートさせ、処理時間の桁違いの差を体感してみましょう。</span>
 <span id="cb3-468"><a href="#cb3-468" aria-label="468"></a></span>
-<span id="cb3-469"><a href="#cb3-469" aria-label="469"></a>※データ件数 $N=10,000$ 程度で実験します（$N=1,000,000$ にすると、選択ソートは完了までに数時間以上かかってしまいます）。</span>
+<span id="cb3-469"><a href="#cb3-469" aria-label="469"></a>※データ件数 $n=10,000$ 程度で実験します（$n=1,000,000$ にすると、選択ソートは完了までに数時間以上かかってしまいます）。</span>
 <span id="cb3-470"><a href="#cb3-470" aria-label="470"></a></span>
 <span id="cb3-471"><a href="#cb3-471" aria-label="471"></a>**エージェントに作成を依頼するプログラムの仕様：**</span>
 <span id="cb3-472"><a href="#cb3-472" aria-label="472"></a></span>
 <span id="cb3-473"><a href="#cb3-473" aria-label="473"></a><span class="ss">1. </span>**データ準備**: <span class="in">`random`</span> モジュールを使用し、1〜100,000の範囲のランダムな整数を10,000個含んだリストを生成する。</span>
-<span id="cb3-474"><a href="#cb3-474" aria-label="474"></a><span class="ss">2. </span>**選択ソートの実装**: 二重ループによる選択ソート（$O(N^2)$）でリストを整列し、開始から終了までの所要時間（秒）を <span class="in">`time`</span> モジュールで計測する。</span>
-<span id="cb3-475"><a href="#cb3-475" aria-label="475"></a><span class="ss">3. </span>**クイックソートの実装**: ピボットを用いて再帰的に分割統治するクイックソート（$O(N \log N)$）で同じ初期リストを整列し、所要時間（秒）を計測する。</span>
+<span id="cb3-474"><a href="#cb3-474" aria-label="474"></a><span class="ss">2. </span>**選択ソートの実装**: 二重ループによる選択ソート（$O(n^2)$）でリストを整列し、開始から終了までの所要時間（秒）を <span class="in">`time`</span> モジュールで計測する。</span>
+<span id="cb3-475"><a href="#cb3-475" aria-label="475"></a><span class="ss">3. </span>**クイックソートの実装**: ピボットを用いて再帰的に分割統治するクイックソート（$O(n \log n)$）で同じ初期リストを整列し、所要時間（秒）を計測する。</span>
 <span id="cb3-476"><a href="#cb3-476" aria-label="476"></a><span class="ss">4. </span>**結果の表示**: 両方のアルゴリズムにかかった実行時間（秒）と、クイックソートが何倍高速であったかを画面に出力する。</span>
 <span id="cb3-477"><a href="#cb3-477" aria-label="477"></a></span>
 <span id="cb3-478"><a href="#cb3-478" aria-label="478"></a>**エージェントへのプロンプト例：**</span>
@@ -1999,7 +1999,7 @@ window.Quarto = {
 <span id="cb3-502"><a href="#cb3-502" aria-label="502"></a><span class="ss">- </span>**weekly quotaの節約**: 検索やアイデア出しには通常のchat型AIを活用し、エージェントへの指示は具体的に集約して依頼する。</span>
 <span id="cb3-503"><a href="#cb3-503" aria-label="503"></a><span class="ss">- </span>**vibe codingの限界と対策**: ハルシネーションや大規模開発での機能破壊（デグレード）を防ぐため、自動テストや静的解析を組み合わせた「ハーネスエンジニアリング」によってAIの出力を厳格に検証する。</span>
 <span id="cb3-504"><a href="#cb3-504" aria-label="504"></a><span class="ss">- </span>**停止性**: 入力に対して有限ステップで必ず終了すること。絶対に停止しない例、変数値による例、論理的証明例を意識して設計する。</span>
-<span id="cb3-505"><a href="#cb3-505" aria-label="505"></a><span class="ss">- </span>**計算量**: 時間と空間、平均と最悪の観点からアルゴリズムのスケーラビリティを評価する。探索（線形探索 $O(N)$ vs 二分探索 $O(\log N)$）やソート（選択ソート $O(N^2)$ vs クイックソート $O(N \log N)$）を通じて、オーダーの違いが性能に与える劇的な影響を理解する。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb3-505"><a href="#cb3-505" aria-label="505"></a><span class="ss">- </span>**計算量**: 時間と空間、平均と最悪の観点からアルゴリズムのスケーラビリティを評価する。探索（線形探索 $O(n)$ vs 二分探索 $O(\log n)$）やソート（選択ソート $O(n^2)$ vs クイックソート $O(n \log n)$）を通じて、オーダーの違いが性能に与える劇的な影響を理解する。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

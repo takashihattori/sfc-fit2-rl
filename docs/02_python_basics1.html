@@ -309,7 +309,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#データの並び" id="toc-データの並び" class="nav-link" data-scroll-target="#データの並び"><span class="header-section-number">2.3.1</span> データの並び</a></li>
   <li><a href="#for文の書き方" id="toc-for文の書き方" class="nav-link" data-scroll-target="#for文の書き方"><span class="header-section-number">2.3.2</span> for文の書き方</a></li>
   <li><a href="#while文の書き方" id="toc-while文の書き方" class="nav-link" data-scroll-target="#while文の書き方"><span class="header-section-number">2.3.3</span> while文の書き方</a></li>
-  <li><a href="#無限ループと強制終了の方法" id="toc-無限ループと強制終了の方法" class="nav-link" data-scroll-target="#無限ループと強制終了の方法"><span class="header-section-number">2.3.4</span> 無限ループと強制終了の方法</a></li>
+  <li><a href="#sec-infinite-loop" id="toc-sec-infinite-loop" class="nav-link" data-scroll-target="#sec-infinite-loop"><span class="header-section-number">2.3.4</span> 無限ループと強制終了の方法</a></li>
   </ul></li>
   <li><a href="#繰り返しと場合分けの組み合わせ" id="toc-繰り返しと場合分けの組み合わせ" class="nav-link" data-scroll-target="#繰り返しと場合分けの組み合わせ"><span class="header-section-number">2.4</span> 繰り返しと場合分けの組み合わせ</a></li>
   <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">2.5</span> まとめ</a></li>
@@ -357,7 +357,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>input()</code> 関数で受け取った値は、たとえキーボードから数字を入力したとしても、すべて<strong>文字列型（str）</strong>として扱われます（データ型については次回に説明します）。</p>
+<p><code>input()</code> 関数で受け取った値は、たとえキーボードから数字を入力したとしても、すべて<strong>文字列型（str）</strong>として扱われます（データ型については第<a href="03_python_basics2.html" class="quarto-xref"><span>3</span></a>章で説明します）。</p>
 <p>数値を入力して計算に利用したい場合は、<code>int()</code> 関数を使って整数に変換するか、<code>float()</code> 関数を使って浮動小数点数（実数）に型変換（キャスト）する必要があります。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-label="1"></a>age_str <span class="op">=</span> <span class="bu">input</span>(<span class="st">"年齢を入力してください: "</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-label="2"></a>age <span class="op">=</span> <span class="bu">int</span>(age_str)  <span class="co"># 文字列から整数に変換</span></span>
@@ -847,8 +847,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="無限ループと強制終了の方法" class="level3" data-number="2.3.4">
-<h3 data-number="2.3.4" class="anchored" data-anchor-id="無限ループと強制終了の方法"><span class="header-section-number">2.3.4</span> 無限ループと強制終了の方法</h3>
+<section id="sec-infinite-loop" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="sec-infinite-loop"><span class="header-section-number">2.3.4</span> 無限ループと強制終了の方法</h3>
 <p><code>while</code> 文の条件式が常に <code>True</code> のままだと、処理が永久に終わりません。これを<strong>無限ループ</strong>と呼びます。</p>
 <p>例えば、次のコードのようにカウンタ変数の更新（<code>count = count - 1</code>）を書き忘れると、<code>count</code> がずっと <code>5</code> のまま変わらないため、条件式 <code>count &gt; 0</code> が永遠に成立し続け、画面に「残り: 5」が出力され続けてしまいます。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-label="1"></a><span class="co"># 無限ループの例（変数 count が更新されない）</span></span>
@@ -1460,7 +1460,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-17"><a href="#cb19-17" aria-label="17"></a></span>
 <span id="cb19-18"><a href="#cb19-18" aria-label="18"></a>::: {.callout-important}</span>
 <span id="cb19-19"><a href="#cb19-19" aria-label="19"></a><span class="fu">#### `input()` で受け取った値はすべて「文字列型（str）」になる</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-label="20"></a><span class="in">`input()`</span> 関数で受け取った値は、たとえキーボードから数字を入力したとしても、すべて**文字列型（str）**として扱われます（データ型については次回に説明します）。</span>
+<span id="cb19-20"><a href="#cb19-20" aria-label="20"></a><span class="in">`input()`</span> 関数で受け取った値は、たとえキーボードから数字を入力したとしても、すべて**文字列型（str）**として扱われます（データ型については第<span class="co">[</span><span class="ot">-@sec-data-type</span><span class="co">]</span>章で説明します）。</span>
 <span id="cb19-21"><a href="#cb19-21" aria-label="21"></a></span>
 <span id="cb19-22"><a href="#cb19-22" aria-label="22"></a>数値を入力して計算に利用したい場合は、<span class="in">`int()`</span> 関数を使って整数に変換するか、<span class="in">`float()`</span> 関数を使って浮動小数点数（実数）に型変換（キャスト）する必要があります。</span>
 <span id="cb19-23"><a href="#cb19-23" aria-label="23"></a></span>
@@ -1897,7 +1897,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-454"><a href="#cb19-454" aria-label="454"></a>変数 <span class="in">`n = 1`</span> から始め、<span class="in">`n`</span> が 100 以下の間、値を2倍にしながら表示するプログラムを <span class="in">`while`</span> 文を用いて作成してください。</span>
 <span id="cb19-455"><a href="#cb19-455" aria-label="455"></a>:::</span>
 <span id="cb19-456"><a href="#cb19-456" aria-label="456"></a></span>
-<span id="cb19-457"><a href="#cb19-457" aria-label="457"></a><span class="fu">### 無限ループと強制終了の方法</span></span>
+<span id="cb19-457"><a href="#cb19-457" aria-label="457"></a><span class="fu">### 無限ループと強制終了の方法 {#sec-infinite-loop}</span></span>
 <span id="cb19-458"><a href="#cb19-458" aria-label="458"></a></span>
 <span id="cb19-459"><a href="#cb19-459" aria-label="459"></a><span class="in">`while`</span> 文の条件式が常に <span class="in">`True`</span> のままだと、処理が永久に終わりません。これを**無限ループ**と呼びます。</span>
 <span id="cb19-460"><a href="#cb19-460" aria-label="460"></a></span>

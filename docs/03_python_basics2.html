@@ -293,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#データ型とは" id="toc-データ型とは" class="nav-link active" data-scroll-target="#データ型とは"><span class="header-section-number">3.1</span> データ型とは</a></li>
+  <li><a href="#sec-what-is-type" id="toc-sec-what-is-type" class="nav-link active" data-scroll-target="#sec-what-is-type"><span class="header-section-number">3.1</span> データ型とは</a></li>
   <li><a href="#list型" id="toc-list型" class="nav-link" data-scroll-target="#list型"><span class="header-section-number">3.2</span> list型</a>
   <ul class="collapse">
   <li><a href="#定数の書き方" id="toc-定数の書き方" class="nav-link" data-scroll-target="#定数の書き方"><span class="header-section-number">3.2.1</span> 定数の書き方</a></li>
@@ -325,7 +325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_program_intro.html">第1部：プログラミングとアルゴリズムの基礎</a></li><li class="breadcrumb-item"><a href="./03_python_basics2.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">データ型</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">データ型</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> コード</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-data-type" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">データ型</span></span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> コード</button></div></div>
 </div>
 
 
@@ -342,8 +342,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="データ型とは" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="データ型とは"><span class="header-section-number">3.1</span> データ型とは</h2>
+<section id="sec-what-is-type" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-what-is-type"><span class="header-section-number">3.1</span> データ型とは</h2>
 <p>プログラムで扱うデータを分類したものを<strong>データ型（型 / Type）</strong>と呼びます。</p>
 <ul>
 <li>データには性質の違うものがあります。例えば、整数は四則演算ができますが、文字列は掛けたり割ったりできません。性質が違うものは区別して扱う必要があります。</li>
@@ -675,7 +675,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="オブジェクトとは" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="オブジェクトとは"><span class="header-section-number">3.4</span> オブジェクトとは</h2>
 <p>ここまで <code>list</code> や <code>dictionary</code>、数値、文字列など様々なデータを扱ってきました。 Pythonでは、これらプログラムで扱われるすべてのデータが<strong>「オブジェクト（Object）」</strong>です。</p>
-<p>先ほど <code>type([1, 2, 3])</code> や <code>type({"a": 1})</code> を調べたとき、<code>&lt;class 'list'&gt;</code> や <code>&lt;class 'dict'&gt;</code> と表示されたのを覚えているでしょうか。 この <code>class</code>（クラス）とはオブジェクトを作るための「設計図」のことであり、具体的なリストや辞書は、その設計図から生み出された1つひとつのオブジェクト（実体）であることを表しています。</p>
+<p>先ほど<a href="#sec-what-is-type" class="quarto-xref"><span>3.1</span></a>節で <code>type([1, 2, 3])</code> や <code>type({"a": 1})</code> を調べたとき、<code>&lt;class 'list'&gt;</code> や <code>&lt;class 'dict'&gt;</code> と表示されたのを覚えているでしょうか。 この <code>class</code>（クラス）とはオブジェクトを作るための「設計図」のことであり、具体的なリストや辞書は、その設計図から生み出された1つひとつのオブジェクト（実体）であることを表しています。</p>
 <p>オブジェクトとは、直訳すると「モノ（物体・対象）」です。 プログラミングにおけるオブジェクトは、<strong>「データ（値・状態・属性）」</strong>と、そのデータに対する<strong>「操作（振る舞い・手続き / メソッド）」</strong>が1つのカプセルにまとまったものです。</p>
 <section id="list-や-dictionary-のメソッドの実例" class="level3" data-number="3.4.1">
 <h3 data-number="3.4.1" class="anchored" data-anchor-id="list-や-dictionary-のメソッドの実例"><span class="header-section-number">3.4.1</span> list や dictionary のメソッドの実例</h3>
@@ -1346,9 +1346,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">ソースコード</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu"># データ型</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-label="1"></a><span class="fu"># データ型 {#sec-data-type}</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-label="2"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-label="3"></a><span class="fu">## データ型とは</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-label="3"></a><span class="fu">## データ型とは {#sec-what-is-type}</span></span>
 <span id="cb19-4"><a href="#cb19-4" aria-label="4"></a></span>
 <span id="cb19-5"><a href="#cb19-5" aria-label="5"></a>プログラムで扱うデータを分類したものを**データ型（型 / Type）**と呼びます。</span>
 <span id="cb19-6"><a href="#cb19-6" aria-label="6"></a></span>
@@ -1642,7 +1642,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-294"><a href="#cb19-294" aria-label="294"></a>ここまで <span class="in">`list`</span> や <span class="in">`dictionary`</span>、数値、文字列など様々なデータを扱ってきました。</span>
 <span id="cb19-295"><a href="#cb19-295" aria-label="295"></a>Pythonでは、これらプログラムで扱われるすべてのデータが**「オブジェクト（Object）」**です。</span>
 <span id="cb19-296"><a href="#cb19-296" aria-label="296"></a></span>
-<span id="cb19-297"><a href="#cb19-297" aria-label="297"></a>先ほど <span class="in">`type([1, 2, 3])`</span> や <span class="in">`type({"a": 1})`</span> を調べたとき、<span class="in">`&lt;class 'list'&gt;`</span> や <span class="in">`&lt;class 'dict'&gt;`</span> と表示されたのを覚えているでしょうか。</span>
+<span id="cb19-297"><a href="#cb19-297" aria-label="297"></a>先ほど<span class="co">[</span><span class="ot">-@sec-what-is-type</span><span class="co">]</span>節で <span class="in">`type([1, 2, 3])`</span> や <span class="in">`type({"a": 1})`</span> を調べたとき、<span class="in">`&lt;class 'list'&gt;`</span> や <span class="in">`&lt;class 'dict'&gt;`</span> と表示されたのを覚えているでしょうか。</span>
 <span id="cb19-298"><a href="#cb19-298" aria-label="298"></a>この <span class="in">`class`</span>（クラス）とはオブジェクトを作るための「設計図」のことであり、具体的なリストや辞書は、その設計図から生み出された1つひとつのオブジェクト（実体）であることを表しています。</span>
 <span id="cb19-299"><a href="#cb19-299" aria-label="299"></a></span>
 <span id="cb19-300"><a href="#cb19-300" aria-label="300"></a>オブジェクトとは、直訳すると「モノ（物体・対象）」です。</span>
