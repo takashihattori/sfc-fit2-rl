@@ -294,14 +294,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#はじめに" id="toc-はじめに" class="nav-link active" data-scroll-target="#はじめに">はじめに</a>
   <ul class="collapse">
-  <li><a href="#本テキストの構成" id="toc-本テキストの構成" class="nav-link" data-scroll-target="#本テキストの構成">本テキストの構成</a>
+  <li><a href="#構成" id="toc-構成" class="nav-link" data-scroll-target="#構成">構成</a>
   <ul class="collapse">
   <li><a href="#第1部プログラミングとアルゴリズムの基礎" id="toc-第1部プログラミングとアルゴリズムの基礎" class="nav-link" data-scroll-target="#第1部プログラミングとアルゴリズムの基礎">第1部：プログラミングとアルゴリズムの基礎</a></li>
   <li><a href="#第2部機械学習と強化学習の概念" id="toc-第2部機械学習と強化学習の概念" class="nav-link" data-scroll-target="#第2部機械学習と強化学習の概念">第2部：機械学習と強化学習の概念</a></li>
   <li><a href="#第3部gymnasiumによる強化学習の実践" id="toc-第3部gymnasiumによる強化学習の実践" class="nav-link" data-scroll-target="#第3部gymnasiumによる強化学習の実践">第3部：Gymnasiumによる強化学習の実践</a></li>
   <li><a href="#第4部自作ゲーム環境の作成と強化学習" id="toc-第4部自作ゲーム環境の作成と強化学習" class="nav-link" data-scroll-target="#第4部自作ゲーム環境の作成と強化学習">第4部：自作ゲーム環境の作成と強化学習</a></li>
   </ul></li>
-  <li><a href="#前提知識と学習の進め方" id="toc-前提知識と学習の進め方" class="nav-link" data-scroll-target="#前提知識と学習の進め方">前提知識と学習の進め方</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -312,7 +311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <div class="quarto-title-block"><div><h1 class="title">情報基礎２</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> コード</button></div></div>
-<p class="subtitle lead">PythonとGymnasiumで学ぶ強化学習の基礎</p>
+<p class="subtitle lead">人工知能を育てよう</p>
 </div>
 
 
@@ -331,10 +330,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="はじめに" class="level1 unnumbered">
 <h1 class="unnumbered">はじめに</h1>
-<p>本書は、大学初年次向けに開講される情報技術科目において、プログラミング言語Pythonの基礎から強化学習（Reinforcement Learning）の基礎・実践、そして自作ゲーム環境の作成と強化学習エージェントの育成までを一貫して学ぶためのWebテキストです。</p>
-<section id="本テキストの構成" class="level2">
-<h2 class="anchored" data-anchor-id="本テキストの構成">本テキストの構成</h2>
-<p>本書は以下の4つのパートから構成されています。</p>
+<p>プログラミングはコンピュータを動かすための必須の技術ですが、ここ数年の生成AIの急速な進歩により、自然言語で指示するだけでプログラムを作れるようになりました。しかし、プログラミングを勉強する必要がなくなったわけではありません。AIの出力にはハルシネーションが含まれている可能性があり、内容をチェックする何らかの手段を人間が準備する必要があるからです。</p>
+<p>この科目では、まずプログラミング言語Pythonの基本的な文法について学びます。高校の教科「情報」で学んだ内容と重なりますが、高校ではPython以外の言語を使用している場合もあるため、Pythonについての前提知識は必要ないようにしています。次に、コーディングエージェントを使った vibe coding を行います。自然言語によってプログラムを作る手法です。</p>
+<p>プログラミングの基礎概念を習得した上で、次は人工知能について学びます。人工知能にはいろいろな種類がありますが、ここでは強化学習を取り上げます。gimnasium という実験環境を使った実験を通して、状態・行動・報酬の設定や、状態価値関数といった基本的概念を理解します。最後に、自作のゲームを作り、そのAIプレーヤーを育てることが目標です。</p>
+<section id="構成" class="level2">
+<h2 class="anchored" data-anchor-id="構成">構成</h2>
+<p>本教材は以下の4つのパートから構成されています。</p>
 <section id="第1部プログラミングとアルゴリズムの基礎" class="level3">
 <h3 class="anchored" data-anchor-id="第1部プログラミングとアルゴリズムの基礎">第1部：プログラミングとアルゴリズムの基礎</h3>
 <ul>
@@ -368,15 +369,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>第13章 自作ゲームのAI育成</strong>: 独自環境に対する強化学習エージェントの適用と訓練</li>
 <li><strong>第14章 まとめ</strong>: 訓練結果の考察と深層強化学習（DQN等）へのステップアップ</li>
 </ul>
-</section>
-</section>
-<section id="前提知識と学習の進め方" class="level2">
-<h2 class="anchored" data-anchor-id="前提知識と学習の進め方">前提知識と学習の進め方</h2>
-<p>プログラミング経験が全くない初学者でも無理なく理解できるよう、基礎的な概念から段階的にステップアップしていきます。コードブロックに記載されたプログラムは、手元のPython環境やJupyter Notebook等で実際に実行しながら読み進めてください。</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>この教材は Antigravity を利用して作成されました。</p>
+</div>
+</div>
+</div>
 
 
 <!-- -->
 
+</section>
 </section>
 </section>
 
@@ -843,36 +850,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">ソースコード</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="fu"># はじめに {.unnumbered}</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a>本書は、大学初年次向けに開講される情報技術科目において、プログラミング言語Pythonの基礎から強化学習（Reinforcement Learning）の基礎・実践、そして自作ゲーム環境の作成と強化学習エージェントの育成までを一貫して学ぶためのWebテキストです。</span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a>プログラミングはコンピュータを動かすための必須の技術ですが、ここ数年の生成AIの急速な進歩により、自然言語で指示するだけでプログラムを作れるようになりました。しかし、プログラミングを勉強する必要がなくなったわけではありません。AIの出力にはハルシネーションが含まれている可能性があり、内容をチェックする何らかの手段を人間が準備する必要があるからです。</span>
 <span id="cb1-4"><a href="#cb1-4" aria-label="4"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a><span class="fu">## 本テキストの構成</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a>この科目では、まずプログラミング言語Pythonの基本的な文法について学びます。高校の教科「情報」で学んだ内容と重なりますが、高校ではPython以外の言語を使用している場合もあるため、Pythonについての前提知識は必要ないようにしています。次に、コーディングエージェントを使った vibe coding を行います。自然言語によってプログラムを作る手法です。</span>
 <span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a>本書は以下の4つのパートから構成されています。</span>
+<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a>プログラミングの基礎概念を習得した上で、次は人工知能について学びます。人工知能にはいろいろな種類がありますが、ここでは強化学習を取り上げます。gimnasium という実験環境を使った実験を通して、状態・行動・報酬の設定や、状態価値関数といった基本的概念を理解します。最後に、自作のゲームを作り、そのAIプレーヤーを育てることが目標です。</span>
 <span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a><span class="fu">### 第1部：プログラミングとアルゴリズムの基礎</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a><span class="ss">- </span>**第1章 プログラムとは**: コンピュータが動く仕組みとPython環境のセットアップ</span>
-<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a><span class="ss">- </span>**第2章 場合分けと繰り返し**: 真偽値、比較演算子、条件分岐とループ処理、フローチャート</span>
-<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a><span class="ss">- </span>**第3章 データ型**: データ型とは、リストや辞書（dict）などのデータ構造と操作</span>
-<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a><span class="ss">- </span>**第4章 アルゴリズムの性質**: coding agentの利用、アルゴリズムの停止性と計算量</span>
-<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a><span class="fu">### 第2部：機械学習と強化学習の概念</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a><span class="ss">- </span>**第5章 機械学習**: AIと機械学習の関係、3大分類、機械学習の技術、強化学習の特徴、gitによるバージョン管理</span>
-<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a><span class="ss">- </span>**第6章 多腕バンディット問題**: 「探索と活用のトレードオフ」をシミュレーションで理解する</span>
-<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a><span class="ss">- </span>**第7章 強化学習の基礎**: 状態・行動・報酬・方策・価値関数・マルコフ決定過程(MDP)の基本</span>
-<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a><span class="fu">### 第3部：Gymnasiumによる強化学習の実践</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a><span class="ss">- </span>**第8章 強化学習の例(1) - Cliff Walking**: Gymnasium入門と状態価値関数</span>
-<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="ss">- </span>**第9章 強化学習の例(2) - Blackjack**: 行動価値関数とモンテカルロ法による方策評価</span>
-<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="ss">- </span>**第10章 強化学習の例(3) - Frozen Lake**: TD学習とQ-learningアルゴリズムの実装</span>
-<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a><span class="ss">- </span>**第11章 強化学習の例(4) - Cart Pole**: 連続空間の離散化手法とエージェントの制御</span>
-<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a><span class="fu">### 第4部：自作ゲーム環境の作成と強化学習</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a><span class="ss">- </span>**第12章 自作ゲームの作成**: Gymnasiumの<span class="in">`Env`</span>を継承したオリジナル環境の構築</span>
-<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a><span class="ss">- </span>**第13章 自作ゲームのAI育成**: 独自環境に対する強化学習エージェントの適用と訓練</span>
-<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a><span class="ss">- </span>**第14章 まとめ**: 訓練結果の考察と深層強化学習（DQN等）へのステップアップ</span>
-<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a><span class="fu">## 前提知識と学習の進め方</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a>プログラミング経験が全くない初学者でも無理なく理解できるよう、基礎的な概念から段階的にステップアップしていきます。コードブロックに記載されたプログラムは、手元のPython環境やJupyter Notebook等で実際に実行しながら読み進めてください。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a><span class="fu">## 構成</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a>本教材は以下の4つのパートから構成されています。</span>
+<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a><span class="fu">### 第1部：プログラミングとアルゴリズムの基礎</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a><span class="ss">- </span>**第1章 プログラムとは**: コンピュータが動く仕組みとPython環境のセットアップ</span>
+<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a><span class="ss">- </span>**第2章 場合分けと繰り返し**: 真偽値、比較演算子、条件分岐とループ処理、フローチャート</span>
+<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a><span class="ss">- </span>**第3章 データ型**: データ型とは、リストや辞書（dict）などのデータ構造と操作</span>
+<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a><span class="ss">- </span>**第4章 アルゴリズムの性質**: coding agentの利用、アルゴリズムの停止性と計算量</span>
+<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a><span class="fu">### 第2部：機械学習と強化学習の概念</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a><span class="ss">- </span>**第5章 機械学習**: AIと機械学習の関係、3大分類、機械学習の技術、強化学習の特徴、gitによるバージョン管理</span>
+<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a><span class="ss">- </span>**第6章 多腕バンディット問題**: 「探索と活用のトレードオフ」をシミュレーションで理解する</span>
+<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="ss">- </span>**第7章 強化学習の基礎**: 状態・行動・報酬・方策・価値関数・マルコフ決定過程(MDP)の基本</span>
+<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a><span class="fu">### 第3部：Gymnasiumによる強化学習の実践</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a><span class="ss">- </span>**第8章 強化学習の例(1) - Cliff Walking**: Gymnasium入門と状態価値関数</span>
+<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a><span class="ss">- </span>**第9章 強化学習の例(2) - Blackjack**: 行動価値関数とモンテカルロ法による方策評価</span>
+<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a><span class="ss">- </span>**第10章 強化学習の例(3) - Frozen Lake**: TD学習とQ-learningアルゴリズムの実装</span>
+<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a><span class="ss">- </span>**第11章 強化学習の例(4) - Cart Pole**: 連続空間の離散化手法とエージェントの制御</span>
+<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a><span class="fu">### 第4部：自作ゲーム環境の作成と強化学習</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a><span class="ss">- </span>**第12章 自作ゲームの作成**: Gymnasiumの<span class="in">`Env`</span>を継承したオリジナル環境の構築</span>
+<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a><span class="ss">- </span>**第13章 自作ゲームのAI育成**: 独自環境に対する強化学習エージェントの適用と訓練</span>
+<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a><span class="ss">- </span>**第14章 まとめ**: 訓練結果の考察と深層強化学習（DQN等）へのステップアップ</span>
+<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a>::: {.callout-note appearance="simple"}</span>
+<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a>###</span>
+<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a>この教材は Antigravity を利用して作成されました。</span>
+<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a>:::</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
