@@ -182,11 +182,18 @@ IDLEには以下の機能があらかじめ備わっています：
 
 #### 公式サイトからダウンロード
 1. ブラウザで Python 公式サイト（[https://www.python.org/](https://www.python.org/)）にアクセスします。
-2. ナビゲーションメニューの「**Downloads**」から、使用しているOS（WindowsまたはmacOS）向けの最新安定版インストーラをダウンロードします。
+2. ナビゲーションメニューの「**Downloads**」から、使用しているOS（WindowsまたはmacOS）向けのインストーラをダウンロードします。
+
+::: {.callout-warning}
+### Windows版ダウンロード時の注意（.exe ファイルを選択）
+Windowsでアクセスした場合、公式ページに **「Download Python install manager」** ボタンが表示されることがあります。このボタンをクリックすると **`.msix` ファイル** がダウンロードされ、インストール画面や手順が異なり混乱の原因となります。
+
+必ずそのボタンの下にある **「Or get the standalone installer for Python 3.x.x」**（例: "Or get the standalone installer for Python 3.14.7" など）のリンクをクリックし、**`.exe` ファイル**（スタンドアロンインストーラ）をダウンロードしてください。
+:::
 
 #### インストールの実行
 - **Windows の場合**:
-  - ダウンロードしたインストーラ（`.exe` ファイル）を起動します。
+  - ダウンロードしたスタンドアロンインストーラ（`.exe` ファイル）を起動します。
   - 画面下部にある **「Add python.exe to PATH」**（PATHにPythonを追加する）にチェックを入れます（将来コマンドラインツール等を利用する際にも役立ちます）。
   - 「**Install Now**」をクリックしてインストールを進めます。
 - **macOS の場合**:

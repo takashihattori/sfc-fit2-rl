@@ -221,7 +221,6 @@ IDLEなどのエディタでは、`if` ブロックの処理のあとで Enter �
   <text x="150" y="260" text-anchor="middle" font-size="13" font-weight="bold" fill="#b71c1c">処理3 (else)</text>
   <line x1="425" y1="70" x2="455" y2="70" stroke="#333" stroke-width="2"/>
   <line x1="425" y1="170" x2="455" y2="170" stroke="#333" stroke-width="2"/>
-  <line x1="215" y1="255" x2="455" y2="255" stroke="#333" stroke-width="2"/>
   <line x1="455" y1="70" x2="455" y2="295" stroke="#333" stroke-width="2"/>
   <line x1="455" y1="295" x2="158" y2="295" stroke="#333" stroke-width="2" marker-end="url(#arrow-fc3)"/>
   <circle cx="150" cy="295" r="4" fill="#333"/>
