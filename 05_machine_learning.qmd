@@ -1,10 +1,5 @@
 # 機械学習
 
-## 本章のねらい
-現代社会のあらゆる分野を変革しつつある「人工知能（AI）」と「機械学習（Machine Learning）」の全体像を把握します。従来のルールベースのコンピュータシステムと機械学習の違い、機械学習の3大分類（教師あり・教師なし・強化学習）、および決定木・SVM・ニューラルネットワーク・深層学習などの代表的技術を理解します。特に強化学習が他の手法とどう異なるのかを明確に位置付けた上で、次回以降のAntigravityを用いた開発を安全に進めるための基盤ツールである「バージョン管理システム（git）」の活用法を学びます。
-
----
-
 ## 人工知能と機械学習の関係
 
 ### 人工知能とは
@@ -40,7 +35,7 @@
 - **従来のコンピュータシステム（ルールベース）**:
   人間が問題のルール（手順・条件分岐）を隅々まで理解し、それをソースコードとして記述します。コンピュータはそのルールにデータを当てはめて「答え」を出力します。
 - **機械学習による問題解決**:
-  ルールを人間が手で書くことが困難な複雑な問題（例: 写真に写っているのが猫かどうか判定する）に対し、大量の「データ」と「正解（または結果）」をコンピュータに入力します。コンピュータがデータ間の相関関係や特徴を自動的に解析し、**問題解決のための「ルール（学習済みモデル）」そのものを自ら生成**します。
+  ルールを人間が手で書くことが困難な複雑な問題（例: 写真に写っているのが猫かどうか判定する）に対し、大量の「データ」をコンピュータに入力します。コンピュータがデータ間の相関関係や特徴を自動的に解析し、**問題解決のための「ルール（学習済みモデル）」そのものを自ら生成**します。
 
 ```{=html}
 <svg viewBox="0 0 680 260" width="100%" height="260" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
@@ -66,12 +61,9 @@
 
   <!-- Machine Learning -->
   <text x="30" y="145" font-size="15" font-weight="bold" fill="#0d47a1">【機械学習によるアプローチ】</text>
-  <rect x="30" y="160" width="90" height="35" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
-  <text x="75" y="182" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">データ</text>
-  <text x="130" y="183" font-size="16" font-weight="bold" fill="#666">+</text>
-  <rect x="150" y="160" width="120" height="35" rx="4" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
-  <text x="210" y="182" text-anchor="middle" font-size="12" font-weight="bold" fill="#1b5e20">答え (正解ラベル等)</text>
-  <line x1="280" y1="177" x2="330" y2="177" stroke="#444" stroke-width="2" marker-end="url(#arrow-ml)"/>
+  <rect x="30" y="160" width="180" height="35" rx="4" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="120" y="182" text-anchor="middle" font-size="13" font-weight="bold" fill="#0d47a1">データ</text>
+  <line x1="220" y1="177" x2="330" y2="177" stroke="#444" stroke-width="2" marker-end="url(#arrow-ml)"/>
   <rect x="340" y="155" width="130" height="45" rx="6" fill="#e8eaf6" stroke="#3f51b5" stroke-width="2"/>
   <text x="405" y="182" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a237e">コンピュータ(学習)</text>
   <line x1="480" y1="177" x2="530" y2="177" stroke="#444" stroke-width="2" marker-end="url(#arrow-ml)"/>
@@ -91,23 +83,209 @@
 | **強化学習**<br>(Reinforcement Learning) | 試行錯誤しながら累積報酬を最大化する行動ルールを学ぶ | 行動の結果得られる「報酬」 | ゲームプレイAI、ロボット制御、自動運転 |
 
 ### 機械学習に使われる技術
-機械学習には、目的に応じて様々なアルゴリズムや数学的モデルが使われます：
+機械学習には、目的に応じて様々なアルゴリズムや数学的モデルが使われます。ここでは代表的な手法とそれぞれの簡単な例を紹介します：
 
 - **決定木（Decision Tree）**:
-  「質問と分岐」を木構造上に繰り返して分類や予測を行う直感的なモデル。解釈性が高く、なぜその結論に至ったかを人間が追いやすい利点があります。
+  - **概要**: 「質問と分岐」を木構造（ツリー状）に繰り返して分類や予測を行う直感的なモデル。判断の根拠がフローチャートのように可視化されるため、なぜその結論に至ったかを人間が理解しやすい（解釈性が高い）利点があります。
+  - **例（銀行の融資審査）**: 過去の融資に関するデータを基に「年収は基準以上か？」「勤続年数は3年以上か？」といった無事に返済できるための条件を求め、その分岐をたどることで「融資可能 / 不可能」を判定します。
 - **サポートベクターマシン（SVM: Support Vector Machine）**:
-  異なるクラスの境界線（超平面）と最も近いデータ点との距離（マージン）を最大化するように分類器を決定する頑健な手法。
+  - **概要**: 異なるクラスを分ける「境界線（境界面）」を引く際、各グループの最も境界に近いデータ点との距離（マージン）が最大になるように決定する頑健な手法。境界近くのデータがうまく分離できるように境界を決めるので、未知のデータに対しても判定がブレにくい特徴があります。
+
+    ```{=html}
+    <svg viewBox="0 0 620 280" width="100%" height="280" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;">
+      <defs>
+        <marker id="arrow-svm" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 2 L 8 5 L 0 8 z" fill="#d32f2f" />
+        </marker>
+        <marker id="arrow-annot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 2 L 8 5 L 0 8 z" fill="#555" />
+        </marker>
+      </defs>
+
+      <!-- Plot Area -->
+      <rect x="25" y="25" width="310" height="230" rx="6" fill="#ffffff" stroke="#cfd8dc" stroke-width="1.5"/>
+      <line x1="25" y1="230" x2="335" y2="230" stroke="#b0bec5" stroke-width="1"/>
+      <line x1="50" y1="25" x2="50" y2="255" stroke="#b0bec5" stroke-width="1"/>
+      <text x="325" y="245" font-size="11" fill="#78909c" text-anchor="end">特徴量 1</text>
+      <text x="40" y="38" font-size="11" fill="#78909c">特徴量 2</text>
+
+      <!-- Margin Region Highlight -->
+      <polygon points="86,173 286,23 334,87 134,237" fill="#e8f5e9" opacity="0.5"/>
+
+      <!-- Margin lines (Dashed) -->
+      <line x1="86" y1="173" x2="286" y2="23" stroke="#66bb6a" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <line x1="134" y1="237" x2="334" y2="87" stroke="#66bb6a" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+      <!-- Optimal Hyperplane / Decision Boundary (Solid) -->
+      <line x1="110" y1="205" x2="310" y2="55" stroke="#1e88e5" stroke-width="2.5"/>
+
+      <!-- Margin Double Arrow -->
+      <line x1="186" y1="98" x2="234" y2="162" stroke="#d32f2f" stroke-width="2" marker-start="url(#arrow-svm)" marker-end="url(#arrow-svm)"/>
+      <rect x="182" y="120" width="60" height="18" rx="3" fill="#ffffff" opacity="0.9"/>
+      <text x="212" y="133" text-anchor="middle" font-size="10" font-weight="bold" fill="#d32f2f">マージン</text>
+
+      <!-- Data Points: Class A (Blue circles) -->
+      <circle cx="95" cy="85" r="5.5" fill="#1976d2"/>
+      <circle cx="130" cy="60" r="5.5" fill="#1976d2"/>
+      <circle cx="160" cy="45" r="5.5" fill="#1976d2"/>
+      <circle cx="105" cy="130" r="5.5" fill="#1976d2"/>
+      <circle cx="140" cy="115" r="5.5" fill="#1976d2"/>
+
+      <!-- Support Vectors for Class A (on margin line) -->
+      <circle cx="186" cy="98" r="5.5" fill="#1976d2"/>
+      <circle cx="186" cy="98" r="9" fill="none" stroke="#d32f2f" stroke-width="2"/>
+      <circle cx="236" cy="61" r="5.5" fill="#1976d2"/>
+      <circle cx="236" cy="61" r="9" fill="none" stroke="#d32f2f" stroke-width="2"/>
+
+      <!-- Data Points: Class B (Orange squares) -->
+      <rect x="280" y="170" width="11" height="11" rx="2" fill="#f57c00"/>
+      <rect x="250" y="210" width="11" height="11" rx="2" fill="#f57c00"/>
+      <rect x="305" y="135" width="11" height="11" rx="2" fill="#f57c00"/>
+      <rect x="285" y="225" width="11" height="11" rx="2" fill="#f57c00"/>
+
+      <!-- Support Vector for Class B (on margin line) -->
+      <rect x="228" y="156" width="12" height="12" rx="2" fill="#f57c00"/>
+      <circle cx="234" cy="162" r="10" fill="none" stroke="#d32f2f" stroke-width="2"/>
+
+      <!-- Annotations on Plot -->
+      <path d="M 285,74 Q 280,35 250,25" fill="none" stroke="#555" stroke-width="1.2" marker-start="url(#arrow-annot)"/>
+      <text x="245" y="20" font-size="11" font-weight="bold" fill="#1e88e5" text-anchor="end">決定境界（マージン最大化）</text>
+
+      <path d="M 245,170 Q 260,195 285,195" fill="none" stroke="#555" stroke-width="1.2" marker-start="url(#arrow-annot)"/>
+      <text x="290" y="198" font-size="11" font-weight="bold" fill="#d32f2f">サポートベクター</text>
+
+      <!-- Right Panel: Explanation & Legend -->
+      <rect x="355" y="25" width="245" height="230" rx="6" fill="#f1f8e9" stroke="#c8e6c9" stroke-width="1.5"/>
+      <text x="477" y="48" font-size="13" font-weight="bold" fill="#2e7d32" text-anchor="middle">SVM（マージン最大化）の特徴</text>
+
+      <line x1="370" y1="75" x2="395" y2="75" stroke="#1e88e5" stroke-width="2.5"/>
+      <text x="405" y="73" font-size="12" font-weight="bold" fill="#1565c0">決定境界（分離超平面）</text>
+      <text x="405" y="89" font-size="11" fill="#455a64">2つのクラスを最もきれいに</text>
+      <text x="405" y="103" font-size="11" fill="#455a64">分ける境界線。</text>
+
+      <circle cx="382" cy="125" r="5" fill="#1976d2"/>
+      <circle cx="382" cy="125" r="8" fill="none" stroke="#d32f2f" stroke-width="1.5"/>
+      <text x="405" y="123" font-size="12" font-weight="bold" fill="#d32f2f">サポートベクター</text>
+      <text x="405" y="139" font-size="11" fill="#455a64">境界に最も近いデータ点。</text>
+      <text x="405" y="153" font-size="11" fill="#455a64">この点だけで境界の位置が決まる。</text>
+
+      <line x1="370" y1="178" x2="395" y2="178" stroke="#66bb6a" stroke-width="2" stroke-dasharray="4,3"/>
+      <text x="405" y="175" font-size="12" font-weight="bold" fill="#2e7d32">マージン（余白）の最大化</text>
+      <text x="405" y="191" font-size="11" fill="#455a64">境界とサポートベクターの距離。</text>
+      <text x="405" y="205" font-size="11" fill="#455a64">ここを広く取ることで、未知の</text>
+      <text x="405" y="219" font-size="11" fill="#455a64">データに対しても誤判定を防ぐ。</text>
+    </svg>
+    ```
+
+  - **例（迷惑メールの自動分類）**: メッセージに含まれる単語（例: 「当選」「無料」など）の出現頻度をもとに、通常メールと迷惑メールを分ける境界線を引きます。数千次元から数万次元という高次元空間の中で境界（超平面）を決めるため、誤判定の少ない高精度なフィルタリングが可能です。
 - **ニューラルネットワーク（Neural Network）**:
-  人間の脳の神経細胞（ニューロン）のネットワーク構造を数理モデル化したもの。入力層・中間層・出力層のシナプス結合の重みを調整して学習します。
-- **深層学習（Deep Learning）とは**:
-  ニューラルネットワークの中間層を何十層・何百層にも深く重ねたもの。画像、音声、自然言語などの高次元で複雑なデータから、人間が手作業で特徴量を設計することなく、極めて高度な抽象概念を自動的に獲得できるブレークスルーをもたらしました。
+  - **概要**: 人間の脳の神経細胞（ニューロン）のネットワーク構造を数理モデル化したもの。入力層・中間層・出力層からなり、シナプス結合の強さ（重み）を調整しながら複雑なパターンを学習します（中間層を多層に深く重ねたものが「深層学習（ディープラーニング）」です）。
+  - **例（手書き数字の認識）**: 手書きされた数字の画像（例: 28×28ピクセル）を入力層に渡し、中間層で「縦の直線」「丸み」「交差」といった特徴を捉え、出力層で「0〜9のどの数字であるか」を判定します。
+- **クラスタリング（Clustering）**:
+  - **概要**: 正解ラベル（事前のカテゴリやグループ名）が与えられていないデータに対し、データ間の類似度に基づいて似た特徴を持つもの同士を自動的にグループ（クラスタ）分けする**教師なし学習**の代表的な手法。代表的なアルゴリズムである「$k$-means法（$k$平均法）」では、あらかじめ指定したグループ数（$k$個）にデータを分割し、各グループの中心（重心）との距離が近くなるようにデータを割り当てます。
+
+    ```{=html}
+    <svg viewBox="0 0 680 270" width="100%" height="270" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1em 0;">
+      <defs>
+        <marker id="arrow-cluster" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#0288d1" />
+        </marker>
+      </defs>
+
+      <!-- Left Panel: Before Clustering -->
+      <rect x="25" y="20" width="260" height="230" rx="8" fill="#ffffff" stroke="#cfd8dc" stroke-width="1.5"/>
+      <text x="155" y="42" font-size="13" font-weight="bold" fill="#37474f" text-anchor="middle">【学習前】ラベルなしデータ</text>
+      <text x="155" y="58" font-size="11" fill="#78909c" text-anchor="middle">正解（どのグループか）は不明</text>
+
+      <!-- Neutral Points (Gray) -->
+      <!-- Group 1 cluster area -->
+      <circle cx="85" cy="100" r="5" fill="#90a4ae"/>
+      <circle cx="105" cy="85" r="5" fill="#90a4ae"/>
+      <circle cx="115" cy="110" r="5" fill="#90a4ae"/>
+      <circle cx="95" cy="120" r="5" fill="#90a4ae"/>
+      <circle cx="75" cy="115" r="5" fill="#90a4ae"/>
+
+      <!-- Group 2 cluster area -->
+      <circle cx="215" cy="95" r="5" fill="#90a4ae"/>
+      <circle cx="235" cy="110" r="5" fill="#90a4ae"/>
+      <circle cx="205" cy="120" r="5" fill="#90a4ae"/>
+      <circle cx="225" cy="80" r="5" fill="#90a4ae"/>
+      <circle cx="245" cy="100" r="5" fill="#90a4ae"/>
+
+      <!-- Group 3 cluster area -->
+      <circle cx="145" cy="180" r="5" fill="#90a4ae"/>
+      <circle cx="165" cy="195" r="5" fill="#90a4ae"/>
+      <circle cx="135" cy="205" r="5" fill="#90a4ae"/>
+      <circle cx="175" cy="180" r="5" fill="#90a4ae"/>
+      <circle cx="155" cy="215" r="5" fill="#90a4ae"/>
+
+      <!-- Center Transition Arrow -->
+      <g transform="translate(295, 105)">
+        <rect x="5" y="0" width="80" height="50" rx="6" fill="#e1f5fe" stroke="#0288d1" stroke-width="1.5"/>
+        <text x="45" y="20" font-size="11" font-weight="bold" fill="#01579b" text-anchor="middle">k-means法</text>
+        <text x="45" y="36" font-size="10" fill="#0277bd" text-anchor="middle">距離で自動分類</text>
+        <line x1="85" y1="25" x2="95" y2="25" stroke="#0288d1" stroke-width="2.5" marker-end="url(#arrow-cluster)"/>
+      </g>
+
+      <!-- Right Panel: After Clustering -->
+      <rect x="395" y="20" width="260" height="230" rx="8" fill="#ffffff" stroke="#cfd8dc" stroke-width="1.5"/>
+      <text x="525" y="42" font-size="13" font-weight="bold" fill="#0d47a1" text-anchor="middle">【学習後】クラスタの発見（k=3）</text>
+      <text x="525" y="58" font-size="11" fill="#546e7a" text-anchor="middle">類似度に基づきグループと重心を抽出</text>
+
+      <!-- Cluster 1 Area (Blue) -->
+      <ellipse cx="465" cy="105" rx="38" ry="32" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <circle cx="455" cy="100" r="5" fill="#1976d2"/>
+      <circle cx="475" cy="85" r="5" fill="#1976d2"/>
+      <circle cx="485" cy="110" r="5" fill="#1976d2"/>
+      <circle cx="465" cy="120" r="5" fill="#1976d2"/>
+      <circle cx="445" cy="115" r="5" fill="#1976d2"/>
+      <!-- Centroid 1 -->
+      <path d="M 461,101 L 469,109 M 469,101 L 461,109" stroke="#d32f2f" stroke-width="3"/>
+
+      <!-- Cluster 2 Area (Green) -->
+      <ellipse cx="585" cy="100" rx="38" ry="32" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <circle cx="585" cy="95" r="5" fill="#388e3c"/>
+      <circle cx="605" cy="110" r="5" fill="#388e3c"/>
+      <circle cx="575" cy="120" r="5" fill="#388e3c"/>
+      <circle cx="595" cy="80" r="5" fill="#388e3c"/>
+      <circle cx="615" cy="100" r="5" fill="#388e3c"/>
+      <!-- Centroid 2 -->
+      <path d="M 581,96 L 589,104 M 589,96 L 581,104" stroke="#d32f2f" stroke-width="3"/>
+
+      <!-- Cluster 3 Area (Orange) -->
+      <ellipse cx="525" cy="195" rx="38" ry="32" fill="#fff3e0" stroke="#f57c00" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <circle cx="515" cy="180" r="5" fill="#f57c00"/>
+      <circle cx="535" cy="195" r="5" fill="#f57c00"/>
+      <circle cx="505" cy="205" r="5" fill="#f57c00"/>
+      <circle cx="545" cy="180" r="5" fill="#f57c00"/>
+      <circle cx="525" cy="215" r="5" fill="#f57c00"/>
+      <!-- Centroid 3 -->
+      <path d="M 521,191 L 529,199 M 529,191 L 521,199" stroke="#d32f2f" stroke-width="3"/>
+
+      <!-- Legend below inside Right Panel -->
+      <path d="M 425,236 L 433,244 M 433,236 L 425,244" stroke="#d32f2f" stroke-width="2.5"/>
+      <text x="438" y="243" font-size="10" font-weight="bold" fill="#d32f2f">各クラスタの重心（セントロイド）</text>
+      <text x="590" y="243" font-size="10" fill="#666">破線：グループ領域</text>
+    </svg>
+    ```
+  - **例（購買データによる顧客セグメンテーション）**: 顧客の「年間の購入額」や「来店頻度」といったデータから、「たまに高額商品を買う層」「セール時にまとめ買いする層」などの類似した特徴を持つグループを自動的に見つけ出し、それぞれの顧客層に合わせたおすすめ商品やキャンペーンの企画に役立てます。
 
 ::: {.callout-note icon=false}
-### 練習問題 05-01：AIシステムの分類と技術
+### 練習問題 05-01：決定木の復習
+[「情報基礎１」でやった決定木の演習](https://docs.google.com/presentation/d/15AJ-9qA_hn38OqFq6pTnhpdxxM9lk2RfI8_F_qhreAU/edit?usp=sharing)を思い出してください。どのようなデータを基に、どのような質問を選び、どのような木構造ができましたか？
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 05-02：ニューラルネットワークの復習
+[「情報基礎１」でやったTeachable Machineの演習](https://docs.google.com/presentation/d/1URtepgCphenaS1ZcKf7-ucmtRtwv46drS0eLs4Sa4oI/edit?usp=sharing)を思い出してください。どのようなデータを入力して、どのような出力が出ましたか？精度はどうでしたか？
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 05-03：AIシステムの分類と技術
 あなたがこれまでに使ったことのあるAIサービス（例: ChatGPT、画像生成AI、スマートフォンの顔認証、レコメンド機能など）や、ニュース等で聞いたことのあるAIについて、以下の2点について考察し答えてください：
 
 1. 機械学習の3大分類（教師あり・教師なし・強化）のどれに当てはまるでしょうか？（複合している場合はその組み合わせ）
-2. どのような技術（ニューラルネットワーク、深層学習、決定木など）が活用されていると考えられますか？
+2. どのような技術（ニューラルネットワーク、決定木、SVM、クラスタリングなど）が活用されていると考えられますか？
 :::
 
 ---
@@ -116,15 +294,34 @@
 
 強化学習（Reinforcement Learning）は、3大分類の中でも際立ったユニークな立ち位置を持っています。
 
-> **強化学習の本質的位置づけ**  
-> **「報酬というデータが与えられるところは教師あり学習に近いが、最大の報酬を得る方法は自分で探さなければならないところは教師なし学習に近い」**
-
+### 他の機械学習との違い
 - **教師あり学習との比較**:
   「この局面ではこの手を打つのが正解」という模範解答（正解ラベル）は与えられません。与えられるのは「ゲームに勝った（+1）」「崖から落ちた（-100）」という結果としての**報酬（Reward）**の数値データだけです。
 - **教師なし学習との比較**:
   データの背後にあるパターンをただ見つけるだけでなく、「どう行動すれば最も報酬を多く獲得できるか」という明確な目標が存在します。
 - **試行錯誤（Trial and Error）と探索**:
   エージェントは、環境の中で自ら行動を起こし、成功や失敗の経験を積み重ねることで、どの状況（状態）でどの行動を選択すべきかという**方策（Policy）**を自律的に学習していきます。
+
+### 生物における強化学習の例：パブロフの犬
+人間や動物などの生物も、生来「強化学習」の仕組みを脳内に備えています。
+
+その代表的な例が、生理学・心理学で有名な**「パブロフの犬」**（条件反射の実験）です：
+
+- **ベルと餌（報酬）の結びつき**:
+  犬にベルの音を聞かせた直後に餌（報酬）を与えることを繰り返すと、犬はやがて「ベルの音を聞いただけで唾液を出す」ようになります。
+- **報酬の予測と脳の仕組み**:
+  犬の脳内では、「ベルの音＝もうすぐ報酬（餌）が得られる」という予測が行われています。現代の脳科学では、神経伝達物質（ドーパミン）が「期待していた報酬」と「実際に得られた報酬」のズレ（**報酬予測誤差**）を計算し、それをもとに行動や判断の基準を更新していることが分かっています。強化学習のアルゴリズムは、まさにこうした生物の学習メカニズムを数理モデル化したものといえます。
+
+### 強化学習の成功例：AlphaGo から AlphaZero へ
+強化学習が一躍世界的な脚光を浴びた歴史的な契機が、DeepMind社が開発した囲碁AIです。
+
+- **AlphaGo（アルファ碁）**:
+  - 2016年に世界トップ棋士に勝利し、世界中に衝撃を与えました。
+  - まず約3,000万手におよぶ**人間のプロ棋士の対局データ（棋譜）を教師あり学習**で学んだ後、**強化学習（自分自身との対局＝自己対局）**を何千万回も繰り返すことで、人間の直感を超える新手を編み出し、人類最強の打ち手を超越しました。
+- **AlphaZero（アルファゼロ）**:
+  - AlphaGoの成功をさらに推し進め、2017年に登場した次世代AIです。
+  - 人間の棋譜や定石などの知識を一切使わず、**ゲームの基本ルールだけ**を与えられて学習を開始しました。白紙の状態（ゼロ）から**純粋な強化学習（自己対局の試行錯誤のみ）**だけで打ち方を学び、わずか数十時間の学習でAlphaGoを破る強さに到達しました。さらに、同じ仕組みで将棋やチェスでも世界最強の座を獲得しました。
+  - 「人間の過去の知識に頼らずとも、強化学習の試行錯誤だけで人間を超える知能を自律的に獲得できる」ことを示した記念碑的な成果です。
 
 ---
 
@@ -158,7 +355,7 @@
 ## まとめ
 
 - **人工知能と機械学習**: 機械学習はAIの中核であり、深層学習は機械学習の多層ニューラルネットワーク技術である。
-- **問題解決の転換**: 従来のルール記述型から、データと答えからルール（モデル）を自律獲得するアプローチへ進化した。
+- **問題解決の転換**: 従来のルール記述型から、データからルール（モデル）を自律獲得するアプローチへ進化した。
 - **機械学習の3分類**: 教師あり（正解あり）、教師なし（構造発見）、強化学習（試行錯誤と報酬最大化）。
-- **強化学習の独自性**: 報酬データは与えられるが、それを最大化する道筋は自律的な試行錯誤によって切り拓く。
+- **強化学習の独自性と発展**: 生物の報酬学習（パブロフの犬など）に根ざした試行錯誤の仕組みであり、AlphaGoやAlphaZeroのように人間の模倣を超えて自律的に最適戦略を発見できる。
 - **バージョン管理の重要性**: Antigravityによるvibe codingでは、gitを活用することで変更の把握と安全なロールバックが可能になる。
