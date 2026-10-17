@@ -1,23 +1,515 @@
 # 多腕バンディット問題
 
-## 本章のねらい
-強化学習における最も本質的なジレンマである**「探索と活用のトレードオフ（Exploration vs. Exploitation Trade-off）」**を理解します。シンプルな「多腕バンディット問題」を通じて、$\epsilon$-greedy法（イプシロン・グリーディ法）の仕組みを学び、シミュレーションと可視化を通じてアルゴリズムの挙動を検証します。
+## まずは体験してみよう：スロットマシンゲーム
+
+カジノに並んだ3台のスロットマシンがあります。
+マシンごとに当たりやすさが異なりますが、**どのマシンが当たりやすいかは事前には分かりません**。
+
+手持ちのコインで挑戦できるのは **合計10回** です。
+どのマシンをどのように選べば、最も多くのコインを獲得できるでしょうか？実際にレバーを引いて試してみましょう！
+
+```{=html}
+<div id="bandit-widget" class="bandit-container">
+  <div class="bandit-dashboard">
+    <div class="bandit-status-card">
+      <div class="bandit-status-title">残り試行回数</div>
+      <div class="bandit-status-value"><span id="bandit-remaining">10</span> <span class="bandit-unit">回</span></div>
+    </div>
+    <div class="bandit-status-card bandit-coin-card">
+      <div class="bandit-status-title">獲得コイン</div>
+      <div class="bandit-status-value">🪙 <span id="bandit-total-coins">0</span> <span class="bandit-unit">枚</span></div>
+    </div>
+    <div class="bandit-action-area">
+      <button id="bandit-reset-btn" class="bandit-btn-secondary" type="button">最初からやり直す</button>
+    </div>
+  </div>
+
+  <div id="bandit-message" class="bandit-alert-info">
+    マシンを選んで「レバーを引く」をクリックしてください（全10回）
+  </div>
+
+  <div class="bandit-machines-grid">
+    <!-- マシン A -->
+    <div class="bandit-card" id="bandit-card-0">
+      <div class="bandit-card-header">
+        <span class="bandit-machine-icon">🎰</span>
+        <span class="bandit-card-title">マシン A</span>
+      </div>
+      <div class="bandit-display" id="bandit-display-0">❓</div>
+      <button class="bandit-lever-btn" id="bandit-lever-0" type="button">レバーを引く</button>
+      <div class="bandit-stats-list">
+        <div class="bandit-stat-row">
+          <span>試行回数:</span>
+          <strong id="bandit-trials-0">0 回</strong>
+        </div>
+        <div class="bandit-stat-row">
+          <span>当たり回数:</span>
+          <strong id="bandit-wins-0">0 回</strong>
+        </div>
+        <div class="bandit-stat-row">
+          <span>推定当たり確率:</span>
+          <strong id="bandit-rate-0">-</strong>
+        </div>
+      </div>
+      <div class="bandit-truth-badge" id="bandit-truth-0" style="display:none;">
+        真の確率: <strong>20%</strong>
+      </div>
+    </div>
+
+    <!-- マシン B -->
+    <div class="bandit-card" id="bandit-card-1">
+      <div class="bandit-card-header">
+        <span class="bandit-machine-icon">🎰</span>
+        <span class="bandit-card-title">マシン B</span>
+      </div>
+      <div class="bandit-display" id="bandit-display-1">❓</div>
+      <button class="bandit-lever-btn" id="bandit-lever-1" type="button">レバーを引く</button>
+      <div class="bandit-stats-list">
+        <div class="bandit-stat-row">
+          <span>試行回数:</span>
+          <strong id="bandit-trials-1">0 回</strong>
+        </div>
+        <div class="bandit-stat-row">
+          <span>当たり回数:</span>
+          <strong id="bandit-wins-1">0 回</strong>
+        </div>
+        <div class="bandit-stat-row">
+          <span>推定当たり確率:</span>
+          <strong id="bandit-rate-1">-</strong>
+        </div>
+      </div>
+      <div class="bandit-truth-badge" id="bandit-truth-1" style="display:none;">
+        真の確率: <strong>50%</strong>
+      </div>
+    </div>
+
+    <!-- マシン C -->
+    <div class="bandit-card" id="bandit-card-2">
+      <div class="bandit-card-header">
+        <span class="bandit-machine-icon">🎰</span>
+        <span class="bandit-card-title">マシン C</span>
+      </div>
+      <div class="bandit-display" id="bandit-display-2">❓</div>
+      <button class="bandit-lever-btn" id="bandit-lever-2" type="button">レバーを引く</button>
+      <div class="bandit-stats-list">
+        <div class="bandit-stat-row">
+          <span>試行回数:</span>
+          <strong id="bandit-trials-2">0 回</strong>
+        </div>
+        <div class="bandit-stat-row">
+          <span>当たり回数:</span>
+          <strong id="bandit-wins-2">0 回</strong>
+        </div>
+        <div class="bandit-stat-row">
+          <span>推定当たり確率:</span>
+          <strong id="bandit-rate-2">-</strong>
+        </div>
+      </div>
+      <div class="bandit-truth-badge" id="bandit-truth-2" style="display:none;">
+        真の確率: <strong>80%</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結果発表パネル -->
+  <div id="bandit-final-panel" class="bandit-result-box" style="display: none;">
+    <h4 style="margin-top: 0; color: #1e3a8a;">🎉 10回の試行が完了しました！</h4>
+    <p style="font-size: 1.1em; margin-bottom: 0.8em;">
+      獲得コイン枚数: <strong id="bandit-final-score" style="font-size: 1.4em; color: #b45309;">0</strong> 枚 / 10枚
+    </p>
+    <div id="bandit-comment" style="margin-bottom: 1em; padding: 0.6em 0.8em; background: #ffffff; border-radius: 6px; border-left: 4px solid #3b82f6;"></div>
+    <div class="bandit-reveal-container">
+      <div style="font-weight: bold; margin-bottom: 0.4em;">🔍 各マシンの「真の当たり確率」の種明かし</div>
+      <ul style="margin: 0; padding-left: 1.4em;">
+        <li><strong>マシン A</strong>: <span style="color: #dc2626;">20%</span>（ハズレが多い台）</li>
+        <li><strong>マシン B</strong>: <span style="color: #d97706;">50%</span>（半々で当たる台）</li>
+        <li><strong>マシン C</strong>: <span style="color: #16a34a;">80%</span>（最も当たりやすい大当たり台！）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+.bandit-container {
+  margin: 1.5em 0 2em 0;
+  padding: 1.25em;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.bandit-dashboard {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1em;
+}
+.bandit-status-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5em 1em;
+  min-width: 120px;
+}
+.bandit-coin-card {
+  background: #fefce8;
+  border-color: #fde047;
+}
+.bandit-status-title {
+  font-size: 0.8em;
+  color: #64748b;
+  font-weight: bold;
+}
+.bandit-status-value {
+  font-size: 1.4em;
+  font-weight: 800;
+  color: #1e293b;
+}
+.bandit-unit {
+  font-size: 0.7em;
+  font-weight: normal;
+  color: #64748b;
+}
+.bandit-action-area {
+  margin-left: auto;
+}
+.bandit-btn-secondary {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #94a3b8;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.bandit-btn-secondary:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #64748b;
+}
+.bandit-alert-info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  padding: 0.6em 1em;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 500;
+  margin-bottom: 1.2em;
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+}
+.bandit-machines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1em;
+}
+.bandit-card {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.bandit-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+.bandit-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 1.15em;
+  font-weight: bold;
+  color: #334155;
+  margin-bottom: 0.6em;
+}
+.bandit-machine-icon {
+  font-size: 1.3em;
+}
+.bandit-display {
+  width: 100%;
+  height: 60px;
+  background: #0f172a;
+  color: #38bdf8;
+  font-size: 1.6em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  margin-bottom: 0.8em;
+  letter-spacing: 0.05em;
+}
+.bandit-lever-btn {
+  width: 100%;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6em 0;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+.bandit-lever-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+.bandit-lever-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.bandit-lever-btn:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.bandit-stats-list {
+  width: 100%;
+  margin-top: 0.8em;
+  padding-top: 0.6em;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.85em;
+  color: #475569;
+}
+.bandit-stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25em;
+}
+.bandit-truth-badge {
+  margin-top: 0.6em;
+  padding: 0.3em 0.6em;
+  background: #f1f5f9;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #1e293b;
+  width: 100%;
+  text-align: center;
+}
+.bandit-result-box {
+  margin-top: 1.2em;
+  padding: 1.2em;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  border-radius: 10px;
+}
+.bandit-reveal-container {
+  background: #ffffff;
+  padding: 0.8em 1em;
+  border-radius: 6px;
+  border: 1px solid #dbeafe;
+}
+</style>
+
+<script>
+(function() {
+  const TOTAL_STEPS = 10;
+  const PROBABILITIES = [0.2, 0.5, 0.8]; // マシンA: 20%, マシンB: 50%, マシンC: 80%
+
+  let remaining = TOTAL_STEPS;
+  let totalCoins = 0;
+  const counts = [0, 0, 0];
+  const wins = [0, 0, 0];
+
+  function initBandit() {
+    const btnReset = document.getElementById("bandit-reset-btn");
+    if (!btnReset) return;
+
+    btnReset.addEventListener("click", resetGame);
+
+    for (let i = 0; i < 3; i++) {
+      const btn = document.getElementById(`bandit-lever-${i}`);
+      if (btn) {
+        btn.addEventListener("click", function() {
+          pullLever(i);
+        });
+      }
+    }
+  }
+
+  function pullLever(machineIdx) {
+    if (remaining <= 0) return;
+
+    remaining--;
+    counts[machineIdx]++;
+
+    // 確率判定
+    const isWin = Math.random() < PROBABILITIES[machineIdx];
+    const displayEl = document.getElementById(`bandit-display-${machineIdx}`);
+    const messageEl = document.getElementById("bandit-message");
+
+    if (isWin) {
+      wins[machineIdx]++;
+      totalCoins++;
+      if (displayEl) {
+        displayEl.textContent = "🪙 当たり!";
+        displayEl.style.color = "#facc15";
+      }
+      if (messageEl) {
+        messageEl.className = "bandit-alert-info";
+        messageEl.style.background = "#fefce8";
+        messageEl.style.borderColor = "#fef08a";
+        messageEl.style.color = "#854d0e";
+        messageEl.innerHTML = `🎉 <strong>マシン ${String.fromCharCode(65 + machineIdx)}</strong> で当たり！ コインを1枚獲得しました！`;
+      }
+    } else {
+      if (displayEl) {
+        displayEl.textContent = "💨 ハズレ";
+        displayEl.style.color = "#94a3b8";
+      }
+      if (messageEl) {
+        messageEl.className = "bandit-alert-info";
+        messageEl.style.background = "#f8fafc";
+        messageEl.style.borderColor = "#e2e8f0";
+        messageEl.style.color = "#475569";
+        messageEl.innerHTML = `マシン ${String.fromCharCode(65 + machineIdx)} はハズレでした…（コイン獲得ならず）`;
+      }
+    }
+
+    // UI更新
+    updateUI(machineIdx);
+
+    // 終了判定
+    if (remaining <= 0) {
+      finishGame();
+    }
+  }
+
+  function updateUI(activeIdx) {
+    document.getElementById("bandit-remaining").textContent = remaining;
+    document.getElementById("bandit-total-coins").textContent = totalCoins;
+
+    for (let i = 0; i < 3; i++) {
+      document.getElementById(`bandit-trials-${i}`).textContent = `${counts[i]} 回`;
+      document.getElementById(`bandit-wins-${i}`).textContent = `${wins[i]} 回`;
+      const rateEl = document.getElementById(`bandit-rate-${i}`);
+      if (counts[i] > 0) {
+        const rate = (wins[i] / counts[i] * 100).toFixed(0);
+        rateEl.textContent = `${rate}% (${wins[i]}/${counts[i]})`;
+      } else {
+        rateEl.textContent = "-";
+      }
+
+      if (i !== activeIdx && remaining > 0) {
+        // 他のマシンの表示を元に戻す
+        const d = document.getElementById(`bandit-display-${i}`);
+        if (d && d.textContent !== "❓") {
+          d.textContent = "❓";
+          d.style.color = "#38bdf8";
+        }
+      }
+    }
+  }
+
+  function finishGame() {
+    // ボタンの無効化
+    for (let i = 0; i < 3; i++) {
+      const btn = document.getElementById(`bandit-lever-${i}`);
+      if (btn) btn.disabled = true;
+      const truthBadge = document.getElementById(`bandit-truth-${i}`);
+      if (truthBadge) truthBadge.style.display = "block";
+    }
+
+    const panel = document.getElementById("bandit-final-panel");
+    const finalScore = document.getElementById("bandit-final-score");
+    const commentEl = document.getElementById("bandit-comment");
+
+    if (panel) panel.style.display = "block";
+    if (finalScore) finalScore.textContent = totalCoins;
+
+    let comment = "";
+    if (totalCoins >= 8) {
+      comment = "<strong>すばらしい！</strong> 高確率のマシンCを素早く見極めて集中的に引くことができたようです。";
+    } else if (totalCoins >= 5) {
+      comment = "<strong>平均以上の好成績です！</strong> 探索と活用のバランスを取りながら手堅くコインを稼げました。";
+    } else {
+      comment = "<strong>運が悪かったか、ハズレ台を引きすぎてしまったようです。</strong> たった10回の試行では、真に当たりやすい台を確信するのはとても難しいことが実感できたのではないでしょうか。";
+    }
+    if (commentEl) commentEl.innerHTML = comment;
+
+    const messageEl = document.getElementById("bandit-message");
+    if (messageEl) {
+      messageEl.style.background = "#eff6ff";
+      messageEl.style.borderColor = "#bfdbfe";
+      messageEl.style.color = "#1e40af";
+      messageEl.innerHTML = `🏁 10回の試行が終了しました！下の結果と種明かしを確認してください。`;
+    }
+  }
+
+  function resetGame() {
+    remaining = TOTAL_STEPS;
+    totalCoins = 0;
+    for (let i = 0; i < 3; i++) {
+      counts[i] = 0;
+      wins[i] = 0;
+      const btn = document.getElementById(`bandit-lever-${i}`);
+      if (btn) btn.disabled = false;
+      const displayEl = document.getElementById(`bandit-display-${i}`);
+      if (displayEl) {
+        displayEl.textContent = "❓";
+        displayEl.style.color = "#38bdf8";
+      }
+      const truthBadge = document.getElementById(`bandit-truth-${i}`);
+      if (truthBadge) truthBadge.style.display = "none";
+    }
+
+    const panel = document.getElementById("bandit-final-panel");
+    if (panel) panel.style.display = "none";
+
+    const messageEl = document.getElementById("bandit-message");
+    if (messageEl) {
+      messageEl.className = "bandit-alert-info";
+      messageEl.style.background = "#eff6ff";
+      messageEl.style.borderColor = "#bfdbfe";
+      messageEl.style.color = "#1e40af";
+      messageEl.innerHTML = "マシンを選んで「レバーを引く」をクリックしてください（全10回）";
+    }
+
+    updateUI(-1);
+  }
+
+  // ページロードまたは即時初期化
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initBandit);
+  } else {
+    initBandit();
+  }
+})();
+</script>
+```
+
+::: {.callout-note icon=false}
+### 練習問題 06-01：スロットマシンをやってみる
+隣の人と、どちらが多くのコインを稼げるか、何回か勝負してみましょう。
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 06-02：スロットマシンの期待値
+3台のスロットマシンをランダムに選んだ時、10回で獲得できるコインの期待値は何枚でしょうか？
+:::
 
 ---
 
-## スロットマシンとジレンマ
+## 探索と活用
 
-カジノに並んだ複数のスロットマシン（腕＝レバー）を思い浮かべてください。各マシンはお金を投入してレバーを引くと、一定の確率でコインを払い出します。しかし、**どのマシンが当たりやすいかは事前には分かりません**。
+上の例のように、どのマシンが当たりやすいか事前には分からない時、ランダムに選ぶよりも多くのコインを獲得する方法はあるでしょうか？
 
-コインの枚数を最大化するためには、どう行動すべきでしょうか？
-
-```
-  [マシン A]          [マシン B]          [マシン C]
-(当たり確率: 30%)   (当たり確率: 50%)   (当たり確率: 80%)
-     ※ ただし、プレイヤーにはこの真の確率は見えない！
-```
+最初の何回か試しにスロットマシンを引いてみて、当たったか外れたかを見れば、そのマシンがどれくらい当たりやすいか見当をつけることができます。その後で一番当たりやすいと思われるマシンを引けば良さそうです。
 
 ここで次の2つの欲求が衝突します：
+
 - **活用（Exploitation）**: 「これまで引いた中で最も当たったマシンを引いて、確実に稼ぎたい」
 - **探索（Exploration）**: 「まだあまり引いていない他のマシンを試せば、もっと当たりやすい最高のマシンが見つかるかもしれない」
 
@@ -27,140 +519,430 @@
 
 ## 価値の推定（標本平均法）
 
-マシン $a$ を選んだときに得られる報酬の期待値を $Q(a)$ とします。過去にマシン $a$ を $N(a)$ 回選び、合計 $R_{sum}(a)$ の報酬を得たとすると、推定価値 $Q(a)$ は平均値として求められます：
+あるマシンを選んだときに得られる報酬の期待値（価値）を、実際にプレイして得られた結果から推定することを考えます。
+
+過去にそのマシンを $n$ 回選び、得られた報酬が順に $R_1, R_2, \dots, R_n$ だったとすると、推定価値 $Q_n$ は平均値（標本平均）として求められます：
 
 $$
-Q(a) = \frac{R_{sum}(a)}{N(a)}
+Q_n = \frac{R_1 + R_2 + \dots + R_n}{n} = \frac{1}{n} \sum_{i=1}^{n} R_i
+$$ {#eq-mean}
+
+### インクリメンタル（逐次的）な更新式の導出
+
+新しい報酬 $R_n$ が得られるたびに、過去の報酬を最初からすべて足し直して平均を計算するのは、計算の手間もメモリも無駄になります。
+直前までの平均値 $Q_{n-1}$ を使って、新しい平均値 $Q_n$ を効率よく更新する式を導いてみましょう。
+
+まず、最後の報酬 $R_n$ だけを切り離します：
+
+$$
+Q_n = \frac{1}{n} \left( \sum_{i=1}^{n-1} R_i + R_n \right)
 $$
 
-新しい報酬 $R$ が得られたとき、インクリメンタル（逐次的）に更新する式は次のようになります：
+ここで、$n-1$ 回目までの平均値 $Q_{n-1} = \frac{1}{n-1} \sum_{i=1}^{n-1} R_i$ ですから、過去の報酬の合計は $\sum_{i=1}^{n-1} R_i = (n-1) Q_{n-1}$ と表せます。これを代入します：
 
 $$
-Q_{new}(a) = Q_{old}(a) + \frac{1}{N(a)} (R - Q_{old}(a))
+Q_n = \frac{1}{n} \left( (n-1) Q_{n-1} + R_n \right)
 $$
 
-この「（目標値 $-$ 現在の推定値）に係数を掛けて推定値を修正する」という更新式は、強化学習のあらゆるアルゴリズムの基礎になります。
+展開して整理します：
+
+$$
+\begin{aligned}
+Q_n &= \frac{n-1}{n} Q_{n-1} + \frac{1}{n} R_n \\
+    &= \left( 1 - \frac{1}{n} \right) Q_{n-1} + \frac{1}{n} R_n \\
+    &= Q_{n-1} - \frac{1}{n} Q_{n-1} + \frac{1}{n} R_n \\
+    &= Q_{n-1} + \frac{1}{n} (R_n - Q_{n-1})
+\end{aligned}
+$$ {#eq-incremental-mean}
+
+### この式が表している意味
+
+導出された更新式は、次のような構造をしています：
+
+$$
+\text{新しい推定値} \leftarrow \text{直前の推定値} + \frac{1}{n} \times \underbrace{\left( \text{今回の観測値} - \text{直前の推定値} \right)}_{\text{観測値と推定値のズレ（予測誤差）}}
+$$
+
+1. **観測値と推定値のズレ**:
+   $(R_n - Q_{n-1})$ は、「事前の予想（推定値）」に対して「実際に得られた結果（観測値）」がどれだけ違っていたかというズレ（予測誤差）を表します。
+2. **ズレを少しだけ修正する**:
+   そのズレに $\frac{1}{n}$（ステップサイズ・重み）を掛けて足し合わせることで、直前の推定値を今回の結果に少し引き寄せます。試行回数 $n$ が増えるほど $\frac{1}{n}$ は小さくなるため、データが増えるにつれて推定値は安定していきます。
+3. **メモリ効率**:
+   過去のすべての報酬履歴（$R_1, \dots, R_n$）を記憶しておく必要がなく、「現在の推定値 $Q$」と「試行回数 $n$」の2つの数値さえあれば計算できます。
+
+「**実際に観測された値と現在の推定値とのズレを見て、そのズレを埋める方向に推定値を修正する**」という更新の手法は、強化学習のアルゴリズムでよく使われます。
+
+### 具体的な計算例（4回の試行）
+
+あるスロットマシンを4回引いて、結果が **「ハズレ、当たり、当たり、ハズレ」** だった場合（当たり: $R=1$、ハズレ: $R=0$）の推定値の推移は次のようになります。
+
+| 試行 ($n$) | 結果 | 観測値 $R_n$ | 更新式（@eq-incremental-mean）による計算 | 新しい推定値 $Q_n$ |
+| :---: | :---: | :---: | :--- | :---: |
+| 1 | ハズレ | $0$ | $Q_1 = 0$ | $0$ |
+| 2 | 当たり | $1$ | $Q_2 = 0 + \frac{1}{2}(1 - 0) = \frac{1}{2}$ | $0.5$（$\frac{1}{2}$） |
+| 3 | 当たり | $1$ | $Q_3 = \frac{1}{2} + \frac{1}{3}\left(1 - \frac{1}{2}\right) = \frac{1}{2} + \frac{1}{6}$ | 約 $0.67$（$\frac{2}{3}$） |
+| 4 | ハズレ | $0$ | $Q_4 = \frac{2}{3} + \frac{1}{4}\left(0 - \frac{2}{3}\right) = \frac{2}{3} - \frac{1}{6}$ | $0.5$（$\frac{2}{4}$） |
+
+通常の標本平均（@eq-mean）で検算してみると $Q_4 = \frac{0 + 1 + 1 + 0}{4} = 0.5$ となり、逐次更新の結果と一致することがわかります。
+
+::: {.callout-note icon=false}
+### 練習問題 06-03：スロットマシンの価値を推定する
+スロットマシンで5回レバーを引いたら「当たり、ハズレ、当たり、ハズレ、当たり」という結果になりました。このスロットマシンの価値を @eq-mean を用いて推定してください。次に、 @eq-incremental-mean を繰り返し用いて推定し、同じ結果になることを確認してください。
+:::
 
 ---
 
 ## $\epsilon$-greedy法（イプシロン・グリーディ法）
 
-探索と活用をバランスよく両立させる最も基本的かつ強力な方策が **$\epsilon$-greedy法** です。
+探索と活用をバランスよく両立させる最も基本的な方策が **$\epsilon$-greedy法（イプシロン・グリーディ法）** です。
 
-- 確率 $1 - \epsilon$（例えば 90%）: **活用**（現在最も推定価値 $Q(a)$ が高いマシンを選択）
-- 確率 $\epsilon$（例えば 10%）: **探索**（すべてのマシンの中からランダムに選択）
+greedy（貪欲）とは「その時点で最も良さそうな選択肢をひたすら選ぶ（＝活用する）」という意味です。しかし、活用ばかりを優先していると、まだ試していない真の最高台を見逃してしまいます。
 
+そこで、**あらかじめ「探索（ランダムな選択）を行う確率」を決めておき、その確率をギリシャ文字の $\epsilon$（イプシロン）** で表します。例えば、$\epsilon = 0.1$（10%の確率で探索）や $\epsilon = 0.3$（30%の確率で探索）のように小さな値を設定します。
+
+### 乱数を使った意思決定の仕組み
+
+コンピュータ上で「確率 $\epsilon$ で探索し、確率 $1 - \epsilon$ で活用する」という動作を実現するために、実際には毎回 **0.0 から 1.0 までの実数の一様乱数 $r$**を生成します（Pythonでは`random()`）。
+
+生成された乱数 $r$ と設定した値 $\epsilon$ を比べることで、次のように確率通りに振る舞いを切り替えます：
+
+- **乱数 $r < \epsilon$ のとき（確率 $\epsilon$） $\rightarrow$ 【探索（Exploration）】**:
+  すべてのマシンの中からランダムに1台を選びます。これにより、まだあまり引いていないマシンや、過去にたまたまハズレてしまったマシンを試すことができます。
+- **乱数 $r \ge \epsilon$ のとき（確率 $1 - \epsilon$） $\rightarrow$ 【活用（Exploitation）】**:
+  現在までに推定された価値 $Q(a)$ が最も高いマシンを選びます。これまでの経験上もっとも当たりやすい台で手堅くコインを稼ぎます。
+
+例えば $\epsilon = 0.3$ に設定した場合、0.0〜1.0 の乱数を引くと $0.3$ 未満になる確率は 30%（探索）、$0.3$ 以上になる確率は 70%（活用）となります。このようにして、サイコロを振るように探索と活用を自動的に切り替えています。
+
+```{=html}
+<svg viewBox="0 0 640 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2563eb" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#16a34a" />
+    </marker>
+  </defs>
+
+  <!-- Start Node -->
+  <rect x="230" y="20" width="180" height="38" rx="19" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+  <text x="320" y="44" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">乱数 r を生成 (0 〜 1)</text>
+
+  <!-- Left branch: Exploitation -->
+  <path d="M 270 58 L 270 95 L 160 95 L 160 120" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <rect x="100" y="80" width="125" height="26" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="162" y="97" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">r ≧ ε (活用: 確率 1-ε)</text>
+
+  <!-- Right branch: Exploration -->
+  <path d="M 370 58 L 370 95 L 480 95 L 480 120" fill="none" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <rect x="415" y="80" width="125" height="26" rx="4" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="477" y="97" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">r &lt; ε (探索: 確率 ε)</text>
+
+  <!-- Exploitation Box -->
+  <rect x="55" y="125" width="210" height="65" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <text x="160" y="148" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">活用（Exploitation）</text>
+  <text x="160" y="172" text-anchor="middle" font-size="11" fill="#475569">現在 Q値 が最大のマシンを選ぶ</text>
+
+  <!-- Exploration Box -->
+  <rect x="375" y="125" width="210" height="65" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+  <text x="480" y="148" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">探索（Exploration）</text>
+  <text x="480" y="172" text-anchor="middle" font-size="11" fill="#475569">全マシンからランダムに1台選ぶ</text>
+</svg>
 ```
-                     乱数 r = random()
-                         │
-         ┌───────────────┴───────────────┐
-     r >= ε (活用: 1 - ε)             r < ε (探索: ε)
-         │                               │
-現在最も推定値が高いマシンを選ぶ         ランダムにマシンを選ぶ
-```
+
+### 具体例：3台のスロットマシンで10回試行してみる（$\epsilon = 0.3$）
+
+$\epsilon$-greedy法がどのように探索と活用を切り替えながら学習を進めるのか、具体例で追ってみましょう。
+
+#### 設定
+- **スロットマシン**: マシンA、マシンB、マシンC の3台
+- **探索率 $\epsilon$**: $0.3$（30%の確率で探索、70%の確率で活用）
+- **初期推定値**: $Q(A) = 0,\ Q(B) = 0,\ Q(C) = 0$（試行回数はすべて0回）
+- **意思決定ルール**:
+  1. 毎回、0.00 〜 1.00 の一様乱数 $r$ を生成します。
+  2. $r < 0.30$ なら「**探索**」とし、A・B・Cの3台からランダムに1台を選びます。
+  3. $r \ge 0.30$ なら「**活用**」とし、その時点で推定値 $Q$ が最大のマシンを選びます（最大が複数ある場合はその中からランダムに選択）。
+- **価値の更新**: コインが出れば報酬 $R=1$（当たり）、出なければ $R=0$（ハズレ）として、前節の逐次更新式（@eq-incremental-mean）でマシンの推定価値 $Q$ を更新します。
+
+#### 10回の試行推移
+
+| 試行 | 乱数 $r$ | 方針 | 選択マシン | 結果（報酬 $R$） | 更新計算 ($Q \leftarrow Q + \frac{1}{n}(R - Q)$) | 更新後の推定価値 $Q$ |
+| :---: | :---: | :---: | :---: | :---: | :--- | :--- |
+| 1 | 0.45 | 活用 ($\ge 0.3$) | **マシンB** | 当たり ($R=1$) | $Q(B) = 0 + \frac{1}{1}(1 - 0) = 1.00$ | A: 0, **B: 1.00**, C: 0 |
+| 2 | 0.82 | 活用 ($\ge 0.3$) | **マシンB** | ハズレ ($R=0$) | $Q(B) = 1.00 + \frac{1}{2}(0 - 1.00) = 0.50$ | A: 0, **B: 0.50**, C: 0 |
+| 3 | 0.15 | **探索** ($< 0.3$) | **マシンA** | ハズレ ($R=0$) | $Q(A) = 0 + \frac{1}{1}(0 - 0) = 0.00$ | A: 0.00, **B: 0.50**, C: 0 |
+| 4 | 0.60 | 活用 ($\ge 0.3$) | **マシンB** | 当たり ($R=1$) | $Q(B) = 0.50 + \frac{1}{3}(1 - 0.50) \approx 0.67$ | A: 0.00, **B: 0.67**, C: 0 |
+| 5 | 0.08 | **探索** ($< 0.3$) | **マシンC** | 当たり ($R=1$) | $Q(C) = 0 + \frac{1}{1}(1 - 0) = 1.00$ | A: 0.00, B: 0.67, **C: 1.00** |
+| 6 | 0.74 | 活用 ($\ge 0.3$) | **マシンC** | 当たり ($R=1$) | $Q(C) = 1.00 + \frac{1}{2}(1 - 1.00) = 1.00$ | A: 0.00, B: 0.67, **C: 1.00** |
+| 7 | 0.91 | 活用 ($\ge 0.3$) | **マシンC** | 当たり ($R=1$) | $Q(C) = 1.00 + \frac{1}{3}(1 - 1.00) = 1.00$ | A: 0.00, B: 0.67, **C: 1.00** |
+| 8 | 0.25 | **探索** ($< 0.3$) | **マシンA** | ハズレ ($R=0$) | $Q(A) = 0.00 + \frac{1}{2}(0 - 0.00) = 0.00$ | A: 0.00, B: 0.67, **C: 1.00** |
+| 9 | 0.53 | 活用 ($\ge 0.3$) | **マシンC** | ハズレ ($R=0$) | $Q(C) = 1.00 + \frac{1}{4}(0 - 1.00) = 0.75$ | A: 0.00, B: 0.67, **C: 0.75** |
+| 10 | 0.38 | 活用 ($\ge 0.3$) | **マシンC** | 当たり ($R=1$) | $Q(C) = 0.75 + \frac{1}{5}(1 - 0.75) = 0.80$ | A: 0.00, B: 0.67, **C: 0.80** |
+
+#### この具体例からわかる3つの重要ポイント
+
+1. **探索のおかげで真の大当たり台を見つけられた（試行 5）**:
+   試行4の時点では、マシンBの推定価値が $0.67$ でトップでした。もし「活用」しか行わない完全な貪欲（Greedy）手法だった場合、エージェントはマシンBばかりを引き続け、一度も引いていない最高台のマシンCに一生気づけなかったはずです。しかし、試行5で30%の確率を引いて**探索**したことでマシンCを試し、真の最高台を発見することができました。
+2. **発見した後は集中的に「活用」して稼ぐ（試行 6〜7、9〜10）**:
+   マシンCの推定価値が $1.00$ になった後は、70%の確率で発生する「活用」によってマシンCが集中的に選ばれ、コインを着実に稼ぐことができています。
+3. **探索に伴うコスト（試行 8）**:
+   試行8では探索が発生し、推定価値が $0.00$ であるマシンAを引いてハズレてしまいました。このように探索には「目先のコインを逃すリスク」がありますが、未知の優れた選択肢を見落とさないための必要経費といえます。
+
+::: {.callout-note icon=false}
+### 練習問題 06-04：$\epsilon$-greedyの次の行動を考える
+上の10回の試行が終わった直後（11回目の試行）を考えます。現在、各マシンの推定価値は $Q(A)=0.00,\ Q(B)=0.67,\ Q(C)=0.80$ です。
+
+1. もし乱数が $r = 0.85$ だった場合、エージェントは「活用」「探索」のどちらを行い、どのマシンを選びますか？
+2. もし乱数が $r = 0.12$ だった場合、エージェントはどのようにマシンを選びますか？
+:::
 
 ---
 
-## Pythonによるシミュレーション実装
+## vibe codingによるシミュレーションの作成
 
-3台のスロットマシン（当たり確率: 20%, 50%, 80%）を対象に、$\epsilon=0.1$ の $\epsilon$-greedy エージェントをシミュレーションしてみましょう。
+前節までに学んだ「3台のスロットマシン」と「$\epsilon$-greedy法」を組み合わせたシミュレーションプログラムを、Antigravity（coding agent）を使って **vibe coding** で作成してみましょう。
+
+第4回で学んだように、人間が一からコードを書くのではなく、「どのようなプログラムを作成したいか」という仕様・要件を自然言語で伝え、エージェントに対話形式でプログラムを構築・実行させます。
+
+### 作成するプログラムの仕様
+
+エージェントには以下の要件を満たすプログラムを作成してもらいます：
+
+1. **環境（スロットマシン）**:
+   - 3台のスロットマシン（マシン0: 20%、マシン1: 50%、マシン2: 80% の確率でコインが出る）。
+   - エージェント（学習側）にはこの「真の確率」をあらかじめ教えません（引いてみて初めて当たり・ハズレが分かる）。
+2. **学習アルゴリズム（$\epsilon$-greedy法）**:
+   - 探索率 $\epsilon = 0.1$（10%の確率でランダム探索、90%の確率で現在推定値が最大のマシンを活用）。
+   - コインが出れば報酬 $1$、出なければ $0$ とし、逐次更新式（@eq-incremental-mean）で推定価値 $Q$ を更新する。
+3. **シミュレーション実行**:
+   - 合計 1,000 ステップ試行する。
+   - 終了後、各マシンの「真の確率」「最終的な推定価値」「選ばれた回数」を画面に分かりやすく表示する。
+
+### エージェントへの指示（プロンプト例）
+
+Antigravityのチャット欄に、次のように指示（プロンプト）を入力して送信します。
+
+::: {.callout-tip}
+### プロンプト入力例
+3台のスロットマシン（当たり確率: 20%, 50%, 80%）を対象に、$\epsilon=0.1$ の $\epsilon$-greedy法で学習する強化学習シミュレーションプログラムを `bandit_simulation.py` として作成してください。
+
+【要件】
+1. 各マシンの推定価値 Q は逐次更新式 `Q = Q + (1 / n) * (R - Q)` で更新してください。
+2. 試行回数は 1,000 ステップとします。
+3. 実行後、各マシンの「真の確率」「推定価値」「選択された回数」をコンソールに分かりやすく表示してください。
+4. 作成後、実際にプログラムを実行して動作確認まで行ってください。
+:::
+
+### 実行結果の確認
+
+エージェントがプログラムを作成し、ターミナルで実行すると、以下のような結果が出力されます（乱数を使ったシミュレーションなので、数値は実行するたびに変わります）：
+
+```text
+=== 実験結果 ===
+マシン 0: 真の確率 = 0.20 | 推定価値 = 0.211 | 試行回数 = 38 回
+マシン 1: 真の確率 = 0.50 | 推定価値 = 0.485 | 試行回数 = 33 回
+マシン 2: 真の確率 = 0.80 | 推定価値 = 0.798 | 試行回数 = 929 回
+```
+
+実行結果を確認すると、次のことが分かります：
+
+- 全1,000回のうち、最も当たりやすい「マシン2（80%）」が **900回以上** も集中的に選ばれています。
+- 他のマシン0やマシン1も、$\epsilon=0.1$（10%）の探索によって数十回ずつ引かれており、推定価値がおおむね真の確率に近い値に収束しています。
+
+---
+
+## グラフ描画ライブラリ Matplotlib とは？
+
+強化学習のシミュレーションでは、学習の進み具合（エージェントがどれくらい報酬を獲得できるようになったか）を数値の羅列だけでなく、**グラフで可視化して評価する**ことがとても重要です。
+
+Pythonでグラフを描画するための世界標準のライブラリが **Matplotlib（マットプロットリブ）** です。折れ線グラフ、散布図、棒グラフなど、あらゆるグラフを数行のコードで作成できます。
+
+### パッケージ管理ツール `pip` とは？
+
+これまでに使った `math` や `random`、`time` などは、Python本体に最初から組み込まれている**標準ライブラリ（標準モジュール）**であるため、何も準備しなくても `import` 文を書くだけですぐに使うことができました。
+
+一方、今回使う **Matplotlib** や、第8回以降で使う強化学習ライブラリ **Gymnasium** などは、世界中の開発者によって作られ公開されている**外部ライブラリ（サードパーティ製パッケージ）**です。外部ライブラリはPython本体には最初から含まれていないため、使用する前に自分のPCへ追加インストールする必要があります。
+
+この追加インストールを行うためのPython公式ツールが **`pip`（ピップ）** です。
+
+- **`pip` の役割**: インターネット上の公式パッケージ公開サイト（PyPI: Python Package Index）から、指定したライブラリやその動作に必要な関連プログラムを自動的に探し出し、ダウンロードからインストールまでを一括で行ってくれます。
+- **事前の導入は不要**: 第1回でPythonの公式インストーラを使ってPythonを導入した際、`pip` も自動的に一緒にインストールされています。
+
+### Matplotlib のインストールと確認
+
+OS標準のターミナルアプリ（Windows は「コマンドプロンプト」または「PowerShell」、macOS は「ターミナル」）を開き、`pip` コマンドを使ってインストールします。一度インストールすれば、次回以降はそのまま使い続けることができます。
+
+#### 1. `pip install` でインストールする
+
+- **Windows の場合**（スタートメニューから「コマンドプロンプト」または「PowerShell」を起動）:
+  ```bash
+  pip install matplotlib
+  ```
+  （※ もし `pip` が見つからないというエラーが出る場合は、`py -m pip install matplotlib` または `python -m pip install matplotlib` を実行してください）
+
+- **macOS の場合**（「アプリケーション」→「ユーティリティ」から「ターミナル」を起動）:
+  ```bash
+  pip3 install matplotlib
+  ```
+  （※ または `python3 -m pip install matplotlib` を実行してください）
+
+#### 2. `pip list` でインストール済みライブラリを確認する
+
+インストールが完了したら、現在自分のPCにどのような外部ライブラリがインストールされているかを一覧表示する **`pip list`** コマンドを実行して確認してみましょう。
+
+- **Windows の場合**:
+  ```bash
+  pip list
+  ```
+- **macOS の場合**:
+  ```bash
+  pip3 list
+  ```
+
+実行すると、以下のようにインストール済みのパッケージ名とバージョンが一覧表示されます：
+
+```text
+Package         Version
+--------------- -------
+contourpy       1.3.1
+cycler          0.12.1
+fonttools       4.56.0
+kiwisolver      1.4.8
+matplotlib      3.10.1
+numpy           2.2.3
+packaging       24.2
+pillow          11.1.0
+pip             25.0.1
+pyparsing       3.2.1
+python-dateutil 2.9.0.post0
+six             1.17.0
+```
+
+一覧の中に `matplotlib` が表示されていれば導入は成功です（同時に、Matplotlib を動かすために必要な `numpy` や `pillow` などの関連ライブラリも `pip` によって自動的にインストールされていることが確認できます）。
+
+### 基本的な使い方（$y = x^2$ のグラフを描く例）
+
+まずは最もシンプルな例として、2次関数 $y = x^2$ の折れ線グラフを描くPythonコードを見てみましょう。
 
 ```python
-import numpy as np
 import matplotlib.pyplot as plt
 
-# スロットマシンの環境設定（真の報酬確率）
-TRUE_PROBABILITIES = [0.2, 0.5, 0.8]
-NUM_ARMS = len(TRUE_PROBABILITIES)
+# 1. データの準備 (xの値と、それに対応する y = x^2 の値)
+x = [-3, -2, -1, 0, 1, 2, 3]
+y = [val ** 2 for val in x]  # [9, 4, 1, 0, 1, 4, 9]
 
-class BanditEnv:
-    def __init__(self, probs):
-        self.probs = probs
-        
-    def step(self, action):
-        # 確率に応じて 1 (当たり) または 0 (ハズレ) を返す
-        reward = 1 if np.random.rand() < self.probs[action] else 0
-        return reward
+# 2. グラフの描画設定
+plt.plot(x, y, marker="o")      # xとyをプロットし、データ点に丸印をつける
+plt.title("y = x^2")            # グラフのタイトル
+plt.xlabel("x")                 # x軸のラベル
+plt.ylabel("y")                 # y軸のラベル
+plt.grid(True)                  # 目盛り線（グリッド）を表示
 
-class EpsilonGreedyAgent:
-    def __init__(self, n_arms, epsilon=0.1):
-        self.n_arms = n_arms
-        self.epsilon = epsilon
-        self.q_values = np.zeros(n_arms) # 推定価値
-        self.counts = np.zeros(n_arms)   # 選択回数
-        
-    def select_action(self):
-        # 探索 (確率 epsilon)
-        if np.random.rand() < self.epsilon:
-            return np.random.randint(self.n_arms)
-        # 活用 (確率 1 - epsilon)
-        else:
-            return np.argmax(self.q_values)
-            
-    def update(self, action, reward):
-        self.counts[action] += 1
-        # 逐次更新式
-        self.q_values[action] += (1.0 / self.counts[action]) * (reward - self.q_values[action])
-
-# シミュレーションの実行 (1000ステップ)
-env = BanditEnv(TRUE_PROBABILITIES)
-agent = EpsilonGreedyAgent(NUM_ARMS, epsilon=0.1)
-
-steps = 1000
-reward_history = []
-
-for step in range(steps):
-    action = agent.select_action()
-    reward = env.step(action)
-    agent.update(action, reward)
-    reward_history.append(reward)
-
-# 結果の表示
-print("=== 実験結果 ===")
-for i in range(NUM_ARMS):
-    print(f"マシン {i}: 真の確率 = {TRUE_PROBABILITIES[i]:.2f} | "
-          f"推定価値 = {agent.q_values[i]:.3f} | 試行回数 = {agent.counts[i]:.0f} 回")
+# 3. グラフの表示（または画像ファイルとして保存）
+plt.show()                      # 画面にウィンドウを開いて表示
+# plt.savefig("graph.png")      # 画像ファイルとして保存する場合はこちら
 ```
+
+基本的な流れは次の4ステップです：
+
+1. **インポート**: `import matplotlib.pyplot as plt` で描画モジュールを `plt` という短い別名で読み込みます。
+2. **データの用意**: 横軸のリスト `x` と縦軸のリスト `y` を用意します。
+3. **グラフの装飾**: `plt.plot(x, y)` で線を引いた後、`xlabel()` や `title()` で説明を追加します。
+4. **出力**: `plt.show()` で画面に表示するか、`plt.savefig()` で画像ファイルとして保存します。
+
+::: {.callout-note}
+### コラム：`[val ** 2 for val in x]` とは？（リスト内包表記）
+
+コードの2行目に出てきた `y = [val ** 2 for val in x]` という書き方は、Python特有の**リスト内包表記（List Comprehension）**と呼ばれる構文です。
+
+一見すると複雑に見えますが、パーツごとに分解すると非常にシンプルです：
+
+1. **`**` は「べき乗（2乗）」を表す演算子**:
+   Pythonでは `**` はべき乗を意味します。`val ** 2` は「`val` の 2乗（$val^2$）」を計算します。
+2. **`for val in x` は「元のリストから1つずつ取り出す」**:
+   元のリスト `x = [-3, -2, -1, 0, 1, 2, 3]` の先頭から、数値を順番に1つずつ取り出して変数 `val` に入れます。
+3. **全体を `[ ]` で囲んで「新しいリストにまとめる」**:
+   取り出して2乗した計算結果（$9, 4, 1, 0, 1, 4, 9$）を並べた、新しいリスト `y` を作成します。
+
+#### 通常の `for` 文で書いた場合との比較
+
+このリスト内包表記は、通常の `for` ループを使うと次のように書くのと同じ処理を行っています：
+
+```python
+# 通常の for 文で書いた場合（3行必要）
+y = []
+for val in x:
+    y.append(val ** 2)
+```
+
+通常の `for` 文では「空のリスト `y = []` を用意し、ループの中で1つずつ `.append()` で末尾に追加する」という手順が必要ですが、リスト内包表記を使えば**たった1行で簡潔に記述**できます。
+
+数学の集合の記法 $\{ x^2 \mid x \in X \}$ にもよく似ており、Pythonのデータ処理や強化学習のコードで非常によく使われる表現です。
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 06-05：matplotlibでグラフを描く
+上のプログラムの5行目の `y` の値を変更し、山と谷があるグラフを描いてみなさい。
+:::
+
+Matplotlibの基本を押さえたところで、先ほどのスロットマシンシミュレーションの学習結果をグラフで可視化してみましょう。
 
 ---
 
-## 結果の可視化
+## 対話的な機能拡張：学習曲線の可視化
 
-$\epsilon$ の値によって学習のパフォーマンスがどう変わるか（$\epsilon=0$ 完全活用、$\epsilon=0.1$ バランス型、$\epsilon=0.5$ 探索過剰）をグラフで比較してみましょう。
+vibe coding の強みは、一度できたプログラムに対して自然言語で機能追加や比較実験を簡単に行える点です。
 
-```python
-# 累積平均報酬のプロット（可視化用コード例）
-def run_experiment(eps, n_steps=1000):
-    env = BanditEnv(TRUE_PROBABILITIES)
-    agent = EpsilonGreedyAgent(NUM_ARMS, epsilon=eps)
-    history = []
-    for _ in range(n_steps):
-        a = agent.select_action()
-        r = env.step(a)
-        agent.update(a, r)
-        history.append(r)
-    return np.cumsum(history) / (np.arange(n_steps) + 1)
+探索率 $\epsilon$ の値によって学習結果がどう変わるか（$\epsilon=0.0$ 完全活用、$\epsilon=0.1$ バランス型、$\epsilon=0.5$ 探索過剰）を比較するグラフを描画させてみましょう。
 
-plt.figure(figsize=(9, 5))
-for eps in [0.0, 0.1, 0.5]:
-    curve = run_experiment(eps)
-    plt.plot(curve, label=f"epsilon = {eps}")
+### エージェントへの追加指示（プロンプト例）
 
-plt.xlabel("Steps")
-plt.ylabel("Average Reward")
-plt.title("Epsilon-Greedy Performance Comparison")
-plt.legend()
-plt.grid(True)
-plt.show()
-```
+チャット欄で続けて以下のように指示を出します。
 
-- $\epsilon = 0$（Greedy）: 最初にたまたま当たった台に固執し、真の最高台（80%）を一生試さない「局所解」に陥るリスクがある。
-- $\epsilon = 0.5$: 最高台を見つけるのは早いが、その後も半分はランダムに選び続けるため平均スコアが伸び悩む。
-- $\epsilon = 0.1$: 探索と活用のバランスが良く、長期的に高い平均報酬を維持できる。
+::: {.callout-tip}
+### プロンプト入力例
+`bandit_simulation.py` を拡張して、$\epsilon = 0.0$（探索なし）、$\epsilon = 0.1$（バランス型）、$\epsilon = 0.5$（探索多め）の3つのパターンでそれぞれ1,000ステップ実行し、ステップごとの「累積平均報酬」の推移を1つのグラフに比較プロットして画面に表示してください。
+:::
+
+### グラフからわかる $\epsilon$ の違い
+
+エージェントによって生成されたグラフを確認すると、3つの $\epsilon$ で以下のような特徴が現れます：
+
+- **$\epsilon = 0.0$（Greedy: 完全活用）**:
+  最初にたまたま当たった台に固執してしまい、真の最高台（80%）を一生引かない「局所解」に陥るリスクがあります。そのため、平均報酬が低いまま横ばいになってしまうことがあります。
+- **$\epsilon = 0.5$（探索過剰）**:
+  最高台を見つけるのは非常に早いですが、見つけた後も半分の確率でランダムに選び続けるため、平均スコアが頭打ちになります。
+- **$\epsilon = 0.1$（バランス型）**:
+  序盤に適度な探索を行い、最高台を発見した後は9割の確率でそれを活用するため、長期的に最も高い平均報酬を維持できます。
+
+::: {.callout-note icon=false}
+### 練習問題 06-06：シミュレーション結果の解釈
+乱数を使ったシミュレーションでは、1回の結果で判断するのは危険です。
+シミュレーションを何回か実行してみてください。$\epsilon = 0.0$が$\epsilon = 0.1$とほぼ同じかそれ以上に良いスコアになる時があります。
+
+1. どうしてこのようなことが起きるのでしょうか？
+2. $\epsilon = 0.0$よりも$\epsilon = 0.1$の方が良いという明確な根拠は、どのようにすれば示すことができるでしょうか。
+3. Antigravityに指示を出して、$\epsilon = 0.0$よりも$\epsilon = 0.1$の方が良いということが明確に分かるようにシミュレーションを修正してください。
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 06-07：マシンの推定価値の推移
+次のようなシミュレーションをしてみましょう。
+
+- スロットマシンを5台に増やし、当たり確率を `[0.1, 0.3, 0.5, 0.7, 0.9]` とします。
+- $\epsilon = 0.1$とします。
+- グラフの横軸をステップ数、縦軸をマシンの推定価値にし、各マシンの推定価値がどのように推移するか表示します。
+
+マシンの推定価値の推移のグラフを見ると、細かいギザギザのある線と、階段状の線がありますが、どうしてこのようなことが起きるのでしょうか？
+:::
 
 ---
 
 ## まとめ
-- **探索と活用のトレードオフ**: 強化学習における最大の課題。
-- **$\epsilon$-greedy法**: シンプルながら探索と活用を制御する代表的アプローチ。
-- 推定値の逐次更新式 $Q \leftarrow Q + \alpha (R - Q)$ は、この後のQ-learningや強化学習アルゴリズム全体の原型となる。
+
+- **多腕バンディット問題**: 未知の確率で報酬が得られる複数の選択肢（スロットマシン）から、限られた試行回数の中で累積報酬を最大化する強化学習の最も基本的な問題。
+- **探索と活用のトレードオフ**: 「まだ試していない選択肢の情報を集めること（探索）」と「過去の経験から最も良いと分かっている選択肢を選ぶこと（活用）」のジレンマ。
+- **価値の推定と逐次更新式**: 各行動の価値を「得られた報酬の平均値」で推定する。過去の全データを保持することなく、$Q \leftarrow Q + \frac{1}{n}(R - Q)$（または一定の学習率 $\alpha$ を用いた式）によって逐次更新できる仕組みは、次章以降で学ぶ Q-learning などの強化学習アルゴリズムでも使われる。
+- **$\epsilon$-greedy法**: 乱数を利用し、確率 $\epsilon$ でランダムに探索し、確率 $1 - \epsilon$ で現在最も価値が高い行動を活用する代表的な行動選択戦略。$\epsilon$ の設定次第で、局所解への固執（探索不足）や成果の頭打ち（探索過剰）が生じるため、適切なバランスが重要となる。
+- **vibe codingと可視化**: coding agent に対話的に指示を出してシミュレーションを構築・拡張し、Matplotlib による学習曲線の可視化を通してアルゴリズムの挙動やパラメータの影響を客観的に評価・分析する手法を体験した。
+
