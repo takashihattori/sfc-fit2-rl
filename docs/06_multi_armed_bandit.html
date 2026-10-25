@@ -1378,8 +1378,6 @@ Q_n &amp;= \frac{n-1}{n} Q_{n-1} + \frac{1}{n} R_n \\
 <li><strong><code>for val in x</code> は「元のリストから1つずつ取り出す」</strong>: 元のリスト <code>x = [-3, -2, -1, 0, 1, 2, 3]</code> の先頭から、数値を順番に1つずつ取り出して変数 <code>val</code> に入れます。</li>
 <li><strong>全体を <code>[ ]</code> で囲んで「新しいリストにまとめる」</strong>: 取り出して2乗した計算結果（<span class="math inline">\(9, 4, 1, 0, 1, 4, 9\)</span>）を並べた、新しいリスト <code>y</code> を作成します。</li>
 </ol>
-<section id="通常の-for-文で書いた場合との比較" class="level4" data-number="6.6.3.1">
-<h4 data-number="6.6.3.1" class="anchored" data-anchor-id="通常の-for-文で書いた場合との比較"><span class="header-section-number">6.6.3.1</span> 通常の <code>for</code> 文で書いた場合との比較</h4>
 <p>このリスト内包表記は、通常の <code>for</code> ループを使うと次のように書くのと同じ処理を行っています：</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-label="1"></a><span class="co"># 通常の for 文で書いた場合（3行必要）</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-label="2"></a>y <span class="op">=</span> []</span>
@@ -1387,7 +1385,6 @@ Q_n &amp;= \frac{n-1}{n} Q_{n-1} + \frac{1}{n} R_n \\
 <span id="cb8-4"><a href="#cb8-4" aria-label="4"></a>    y.append(val <span class="op">**</span> <span class="dv">2</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>通常の <code>for</code> 文では「空のリスト <code>y = []</code> を用意し、ループの中で1つずつ <code>.append()</code> で末尾に追加する」という手順が必要ですが、リスト内包表記を使えば<strong>たった1行で簡潔に記述</strong>できます。</p>
 <p>数学の集合の記法 <span class="math inline">\(\{ x^2 \mid x \in X \}\)</span> にもよく似ており、Pythonのデータ処理や強化学習のコードで非常によく使われる表現です。</p>
-</section>
 </div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
@@ -2821,87 +2818,85 @@ Q_n &amp;= \frac{n-1}{n} Q_{n-1} + \frac{1}{n} R_n \\
 <span id="cb9-864"><a href="#cb9-864" aria-label="864"></a><span class="ss">3. </span>**全体を `[ ]` で囲んで「新しいリストにまとめる」**:</span>
 <span id="cb9-865"><a href="#cb9-865" aria-label="865"></a>   取り出して2乗した計算結果（$9, 4, 1, 0, 1, 4, 9$）を並べた、新しいリスト <span class="in">`y`</span> を作成します。</span>
 <span id="cb9-866"><a href="#cb9-866" aria-label="866"></a></span>
-<span id="cb9-867"><a href="#cb9-867" aria-label="867"></a><span class="fu">#### 通常の `for` 文で書いた場合との比較</span></span>
+<span id="cb9-867"><a href="#cb9-867" aria-label="867"></a>このリスト内包表記は、通常の <span class="in">`for`</span> ループを使うと次のように書くのと同じ処理を行っています：</span>
 <span id="cb9-868"><a href="#cb9-868" aria-label="868"></a></span>
-<span id="cb9-869"><a href="#cb9-869" aria-label="869"></a>このリスト内包表記は、通常の <span class="in">`for`</span> ループを使うと次のように書くのと同じ処理を行っています：</span>
-<span id="cb9-870"><a href="#cb9-870" aria-label="870"></a></span>
-<span id="cb9-871"><a href="#cb9-871" aria-label="871"></a><span class="in">```python</span></span>
-<span id="cb9-872"><a href="#cb9-872" aria-label="872"></a><span class="co"># 通常の for 文で書いた場合（3行必要）</span></span>
-<span id="cb9-873"><a href="#cb9-873" aria-label="873"></a>y <span class="op">=</span> []</span>
-<span id="cb9-874"><a href="#cb9-874" aria-label="874"></a><span class="cf">for</span> val <span class="kw">in</span> x:</span>
-<span id="cb9-875"><a href="#cb9-875" aria-label="875"></a>    y.append(val <span class="op">**</span> <span class="dv">2</span>)</span>
-<span id="cb9-876"><a href="#cb9-876" aria-label="876"></a><span class="in">```</span></span>
+<span id="cb9-869"><a href="#cb9-869" aria-label="869"></a><span class="in">```python</span></span>
+<span id="cb9-870"><a href="#cb9-870" aria-label="870"></a><span class="co"># 通常の for 文で書いた場合（3行必要）</span></span>
+<span id="cb9-871"><a href="#cb9-871" aria-label="871"></a>y <span class="op">=</span> []</span>
+<span id="cb9-872"><a href="#cb9-872" aria-label="872"></a><span class="cf">for</span> val <span class="kw">in</span> x:</span>
+<span id="cb9-873"><a href="#cb9-873" aria-label="873"></a>    y.append(val <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb9-874"><a href="#cb9-874" aria-label="874"></a><span class="in">```</span></span>
+<span id="cb9-875"><a href="#cb9-875" aria-label="875"></a></span>
+<span id="cb9-876"><a href="#cb9-876" aria-label="876"></a>通常の <span class="in">`for`</span> 文では「空のリスト <span class="in">`y = []`</span> を用意し、ループの中で1つずつ <span class="in">`.append()`</span> で末尾に追加する」という手順が必要ですが、リスト内包表記を使えば**たった1行で簡潔に記述**できます。</span>
 <span id="cb9-877"><a href="#cb9-877" aria-label="877"></a></span>
-<span id="cb9-878"><a href="#cb9-878" aria-label="878"></a>通常の <span class="in">`for`</span> 文では「空のリスト <span class="in">`y = []`</span> を用意し、ループの中で1つずつ <span class="in">`.append()`</span> で末尾に追加する」という手順が必要ですが、リスト内包表記を使えば**たった1行で簡潔に記述**できます。</span>
-<span id="cb9-879"><a href="#cb9-879" aria-label="879"></a></span>
-<span id="cb9-880"><a href="#cb9-880" aria-label="880"></a>数学の集合の記法 $<span class="sc">\{</span> x^2 \mid x \in X <span class="sc">\}</span>$ にもよく似ており、Pythonのデータ処理や強化学習のコードで非常によく使われる表現です。</span>
-<span id="cb9-881"><a href="#cb9-881" aria-label="881"></a>:::</span>
-<span id="cb9-882"><a href="#cb9-882" aria-label="882"></a></span>
-<span id="cb9-883"><a href="#cb9-883" aria-label="883"></a>::: {.callout-note icon=false}</span>
-<span id="cb9-884"><a href="#cb9-884" aria-label="884"></a><span class="fu">### 練習問題 06-05：matplotlibでグラフを描く</span></span>
-<span id="cb9-885"><a href="#cb9-885" aria-label="885"></a>上のプログラムの5行目の <span class="in">`y`</span> の値を変更し、山と谷があるグラフを描いてみなさい。</span>
-<span id="cb9-886"><a href="#cb9-886" aria-label="886"></a>:::</span>
+<span id="cb9-878"><a href="#cb9-878" aria-label="878"></a>数学の集合の記法 $<span class="sc">\{</span> x^2 \mid x \in X <span class="sc">\}</span>$ にもよく似ており、Pythonのデータ処理や強化学習のコードで非常によく使われる表現です。</span>
+<span id="cb9-879"><a href="#cb9-879" aria-label="879"></a>:::</span>
+<span id="cb9-880"><a href="#cb9-880" aria-label="880"></a></span>
+<span id="cb9-881"><a href="#cb9-881" aria-label="881"></a>::: {.callout-note icon=false}</span>
+<span id="cb9-882"><a href="#cb9-882" aria-label="882"></a><span class="fu">### 練習問題 06-05：matplotlibでグラフを描く</span></span>
+<span id="cb9-883"><a href="#cb9-883" aria-label="883"></a>上のプログラムの5行目の <span class="in">`y`</span> の値を変更し、山と谷があるグラフを描いてみなさい。</span>
+<span id="cb9-884"><a href="#cb9-884" aria-label="884"></a>:::</span>
+<span id="cb9-885"><a href="#cb9-885" aria-label="885"></a></span>
+<span id="cb9-886"><a href="#cb9-886" aria-label="886"></a>Matplotlibの基本を押さえたところで、先ほどのスロットマシンシミュレーションの学習結果をグラフで可視化してみましょう。</span>
 <span id="cb9-887"><a href="#cb9-887" aria-label="887"></a></span>
-<span id="cb9-888"><a href="#cb9-888" aria-label="888"></a>Matplotlibの基本を押さえたところで、先ほどのスロットマシンシミュレーションの学習結果をグラフで可視化してみましょう。</span>
+<span id="cb9-888"><a href="#cb9-888" aria-label="888"></a>---</span>
 <span id="cb9-889"><a href="#cb9-889" aria-label="889"></a></span>
-<span id="cb9-890"><a href="#cb9-890" aria-label="890"></a>---</span>
+<span id="cb9-890"><a href="#cb9-890" aria-label="890"></a><span class="fu">## 対話的な機能拡張：学習曲線の可視化</span></span>
 <span id="cb9-891"><a href="#cb9-891" aria-label="891"></a></span>
-<span id="cb9-892"><a href="#cb9-892" aria-label="892"></a><span class="fu">## 対話的な機能拡張：学習曲線の可視化</span></span>
+<span id="cb9-892"><a href="#cb9-892" aria-label="892"></a>vibe coding の強みは、一度できたプログラムに対して自然言語で機能追加や比較実験を簡単に行える点です。</span>
 <span id="cb9-893"><a href="#cb9-893" aria-label="893"></a></span>
-<span id="cb9-894"><a href="#cb9-894" aria-label="894"></a>vibe coding の強みは、一度できたプログラムに対して自然言語で機能追加や比較実験を簡単に行える点です。</span>
+<span id="cb9-894"><a href="#cb9-894" aria-label="894"></a>探索率 $\epsilon$ の値によって学習結果がどう変わるか（$\epsilon=0.0$ 完全活用、$\epsilon=0.1$ バランス型、$\epsilon=0.5$ 探索過剰）を比較するグラフを描画させてみましょう。</span>
 <span id="cb9-895"><a href="#cb9-895" aria-label="895"></a></span>
-<span id="cb9-896"><a href="#cb9-896" aria-label="896"></a>探索率 $\epsilon$ の値によって学習結果がどう変わるか（$\epsilon=0.0$ 完全活用、$\epsilon=0.1$ バランス型、$\epsilon=0.5$ 探索過剰）を比較するグラフを描画させてみましょう。</span>
+<span id="cb9-896"><a href="#cb9-896" aria-label="896"></a><span class="fu">### エージェントへの追加指示（プロンプト例）</span></span>
 <span id="cb9-897"><a href="#cb9-897" aria-label="897"></a></span>
-<span id="cb9-898"><a href="#cb9-898" aria-label="898"></a><span class="fu">### エージェントへの追加指示（プロンプト例）</span></span>
+<span id="cb9-898"><a href="#cb9-898" aria-label="898"></a>チャット欄で続けて以下のように指示を出します。</span>
 <span id="cb9-899"><a href="#cb9-899" aria-label="899"></a></span>
-<span id="cb9-900"><a href="#cb9-900" aria-label="900"></a>チャット欄で続けて以下のように指示を出します。</span>
-<span id="cb9-901"><a href="#cb9-901" aria-label="901"></a></span>
-<span id="cb9-902"><a href="#cb9-902" aria-label="902"></a>::: {.callout-tip}</span>
-<span id="cb9-903"><a href="#cb9-903" aria-label="903"></a><span class="fu">### プロンプト入力例</span></span>
-<span id="cb9-904"><a href="#cb9-904" aria-label="904"></a><span class="in">`bandit_simulation.py`</span> を拡張して、$\epsilon = 0.0$（探索なし）、$\epsilon = 0.1$（バランス型）、$\epsilon = 0.5$（探索多め）の3つのパターンでそれぞれ1,000ステップ実行し、ステップごとの「累積平均報酬」の推移を1つのグラフに比較プロットして画面に表示してください。</span>
-<span id="cb9-905"><a href="#cb9-905" aria-label="905"></a>:::</span>
+<span id="cb9-900"><a href="#cb9-900" aria-label="900"></a>::: {.callout-tip}</span>
+<span id="cb9-901"><a href="#cb9-901" aria-label="901"></a><span class="fu">### プロンプト入力例</span></span>
+<span id="cb9-902"><a href="#cb9-902" aria-label="902"></a><span class="in">`bandit_simulation.py`</span> を拡張して、$\epsilon = 0.0$（探索なし）、$\epsilon = 0.1$（バランス型）、$\epsilon = 0.5$（探索多め）の3つのパターンでそれぞれ1,000ステップ実行し、ステップごとの「累積平均報酬」の推移を1つのグラフに比較プロットして画面に表示してください。</span>
+<span id="cb9-903"><a href="#cb9-903" aria-label="903"></a>:::</span>
+<span id="cb9-904"><a href="#cb9-904" aria-label="904"></a></span>
+<span id="cb9-905"><a href="#cb9-905" aria-label="905"></a><span class="fu">### グラフからわかる $\epsilon$ の違い</span></span>
 <span id="cb9-906"><a href="#cb9-906" aria-label="906"></a></span>
-<span id="cb9-907"><a href="#cb9-907" aria-label="907"></a><span class="fu">### グラフからわかる $\epsilon$ の違い</span></span>
+<span id="cb9-907"><a href="#cb9-907" aria-label="907"></a>エージェントによって生成されたグラフを確認すると、3つの $\epsilon$ で以下のような特徴が現れます：</span>
 <span id="cb9-908"><a href="#cb9-908" aria-label="908"></a></span>
-<span id="cb9-909"><a href="#cb9-909" aria-label="909"></a>エージェントによって生成されたグラフを確認すると、3つの $\epsilon$ で以下のような特徴が現れます：</span>
-<span id="cb9-910"><a href="#cb9-910" aria-label="910"></a></span>
-<span id="cb9-911"><a href="#cb9-911" aria-label="911"></a><span class="ss">- </span>**$\epsilon = 0.0$（Greedy: 完全活用）**:</span>
-<span id="cb9-912"><a href="#cb9-912" aria-label="912"></a>  最初にたまたま当たった台に固執してしまい、真の最高台（80%）を一生引かない「局所解」に陥るリスクがあります。そのため、平均報酬が低いまま横ばいになってしまうことがあります。</span>
-<span id="cb9-913"><a href="#cb9-913" aria-label="913"></a><span class="ss">- </span>**$\epsilon = 0.5$（探索過剰）**:</span>
-<span id="cb9-914"><a href="#cb9-914" aria-label="914"></a>  最高台を見つけるのは非常に早いですが、見つけた後も半分の確率でランダムに選び続けるため、平均スコアが頭打ちになります。</span>
-<span id="cb9-915"><a href="#cb9-915" aria-label="915"></a><span class="ss">- </span>**$\epsilon = 0.1$（バランス型）**:</span>
-<span id="cb9-916"><a href="#cb9-916" aria-label="916"></a>  序盤に適度な探索を行い、最高台を発見した後は9割の確率でそれを活用するため、長期的に最も高い平均報酬を維持できます。</span>
-<span id="cb9-917"><a href="#cb9-917" aria-label="917"></a></span>
-<span id="cb9-918"><a href="#cb9-918" aria-label="918"></a>::: {.callout-note icon=false}</span>
-<span id="cb9-919"><a href="#cb9-919" aria-label="919"></a><span class="fu">### 練習問題 06-06：シミュレーション結果の解釈</span></span>
-<span id="cb9-920"><a href="#cb9-920" aria-label="920"></a>乱数を使ったシミュレーションでは、1回の結果で判断するのは危険です。</span>
-<span id="cb9-921"><a href="#cb9-921" aria-label="921"></a>シミュレーションを何回か実行してみてください。$\epsilon = 0.0$が$\epsilon = 0.1$とほぼ同じかそれ以上に良いスコアになる時があります。</span>
-<span id="cb9-922"><a href="#cb9-922" aria-label="922"></a></span>
-<span id="cb9-923"><a href="#cb9-923" aria-label="923"></a><span class="ss">1. </span>どうしてこのようなことが起きるのでしょうか？</span>
-<span id="cb9-924"><a href="#cb9-924" aria-label="924"></a><span class="ss">2. </span>$\epsilon = 0.0$よりも$\epsilon = 0.1$の方が良いという明確な根拠は、どのようにすれば示すことができるでしょうか。</span>
-<span id="cb9-925"><a href="#cb9-925" aria-label="925"></a><span class="ss">3. </span>Antigravityに指示を出して、$\epsilon = 0.0$よりも$\epsilon = 0.1$の方が良いということが明確に分かるようにシミュレーションを修正してください。</span>
-<span id="cb9-926"><a href="#cb9-926" aria-label="926"></a>:::</span>
-<span id="cb9-927"><a href="#cb9-927" aria-label="927"></a></span>
-<span id="cb9-928"><a href="#cb9-928" aria-label="928"></a>::: {.callout-note icon=false}</span>
-<span id="cb9-929"><a href="#cb9-929" aria-label="929"></a><span class="fu">### 練習問題 06-07：マシンの推定価値の推移</span></span>
-<span id="cb9-930"><a href="#cb9-930" aria-label="930"></a>次のようなシミュレーションをしてみましょう。</span>
-<span id="cb9-931"><a href="#cb9-931" aria-label="931"></a></span>
-<span id="cb9-932"><a href="#cb9-932" aria-label="932"></a><span class="ss">- </span>スロットマシンを5台に増やし、当たり確率を <span class="in">`[0.1, 0.3, 0.5, 0.7, 0.9]`</span> とします。</span>
-<span id="cb9-933"><a href="#cb9-933" aria-label="933"></a><span class="ss">- </span>$\epsilon = 0.1$とします。</span>
-<span id="cb9-934"><a href="#cb9-934" aria-label="934"></a><span class="ss">- </span>グラフの横軸をステップ数、縦軸をマシンの推定価値にし、各マシンの推定価値がどのように推移するか表示します。</span>
-<span id="cb9-935"><a href="#cb9-935" aria-label="935"></a></span>
-<span id="cb9-936"><a href="#cb9-936" aria-label="936"></a>マシンの推定価値の推移のグラフを見ると、細かいギザギザのある線と、階段状の線がありますが、どうしてこのようなことが起きるのでしょうか？</span>
-<span id="cb9-937"><a href="#cb9-937" aria-label="937"></a>:::</span>
+<span id="cb9-909"><a href="#cb9-909" aria-label="909"></a><span class="ss">- </span>**$\epsilon = 0.0$（Greedy: 完全活用）**:</span>
+<span id="cb9-910"><a href="#cb9-910" aria-label="910"></a>  最初にたまたま当たった台に固執してしまい、真の最高台（80%）を一生引かない「局所解」に陥るリスクがあります。そのため、平均報酬が低いまま横ばいになってしまうことがあります。</span>
+<span id="cb9-911"><a href="#cb9-911" aria-label="911"></a><span class="ss">- </span>**$\epsilon = 0.5$（探索過剰）**:</span>
+<span id="cb9-912"><a href="#cb9-912" aria-label="912"></a>  最高台を見つけるのは非常に早いですが、見つけた後も半分の確率でランダムに選び続けるため、平均スコアが頭打ちになります。</span>
+<span id="cb9-913"><a href="#cb9-913" aria-label="913"></a><span class="ss">- </span>**$\epsilon = 0.1$（バランス型）**:</span>
+<span id="cb9-914"><a href="#cb9-914" aria-label="914"></a>  序盤に適度な探索を行い、最高台を発見した後は9割の確率でそれを活用するため、長期的に最も高い平均報酬を維持できます。</span>
+<span id="cb9-915"><a href="#cb9-915" aria-label="915"></a></span>
+<span id="cb9-916"><a href="#cb9-916" aria-label="916"></a>::: {.callout-note icon=false}</span>
+<span id="cb9-917"><a href="#cb9-917" aria-label="917"></a><span class="fu">### 練習問題 06-06：シミュレーション結果の解釈</span></span>
+<span id="cb9-918"><a href="#cb9-918" aria-label="918"></a>乱数を使ったシミュレーションでは、1回の結果で判断するのは危険です。</span>
+<span id="cb9-919"><a href="#cb9-919" aria-label="919"></a>シミュレーションを何回か実行してみてください。$\epsilon = 0.0$が$\epsilon = 0.1$とほぼ同じかそれ以上に良いスコアになる時があります。</span>
+<span id="cb9-920"><a href="#cb9-920" aria-label="920"></a></span>
+<span id="cb9-921"><a href="#cb9-921" aria-label="921"></a><span class="ss">1. </span>どうしてこのようなことが起きるのでしょうか？</span>
+<span id="cb9-922"><a href="#cb9-922" aria-label="922"></a><span class="ss">2. </span>$\epsilon = 0.0$よりも$\epsilon = 0.1$の方が良いという明確な根拠は、どのようにすれば示すことができるでしょうか。</span>
+<span id="cb9-923"><a href="#cb9-923" aria-label="923"></a><span class="ss">3. </span>Antigravityに指示を出して、$\epsilon = 0.0$よりも$\epsilon = 0.1$の方が良いということが明確に分かるようにシミュレーションを修正してください。</span>
+<span id="cb9-924"><a href="#cb9-924" aria-label="924"></a>:::</span>
+<span id="cb9-925"><a href="#cb9-925" aria-label="925"></a></span>
+<span id="cb9-926"><a href="#cb9-926" aria-label="926"></a>::: {.callout-note icon=false}</span>
+<span id="cb9-927"><a href="#cb9-927" aria-label="927"></a><span class="fu">### 練習問題 06-07：マシンの推定価値の推移</span></span>
+<span id="cb9-928"><a href="#cb9-928" aria-label="928"></a>次のようなシミュレーションをしてみましょう。</span>
+<span id="cb9-929"><a href="#cb9-929" aria-label="929"></a></span>
+<span id="cb9-930"><a href="#cb9-930" aria-label="930"></a><span class="ss">- </span>スロットマシンを5台に増やし、当たり確率を <span class="in">`[0.1, 0.3, 0.5, 0.7, 0.9]`</span> とします。</span>
+<span id="cb9-931"><a href="#cb9-931" aria-label="931"></a><span class="ss">- </span>$\epsilon = 0.1$とします。</span>
+<span id="cb9-932"><a href="#cb9-932" aria-label="932"></a><span class="ss">- </span>グラフの横軸をステップ数、縦軸をマシンの推定価値にし、各マシンの推定価値がどのように推移するか表示します。</span>
+<span id="cb9-933"><a href="#cb9-933" aria-label="933"></a></span>
+<span id="cb9-934"><a href="#cb9-934" aria-label="934"></a>マシンの推定価値の推移のグラフを見ると、細かいギザギザのある線と、階段状の線がありますが、どうしてこのようなことが起きるのでしょうか？</span>
+<span id="cb9-935"><a href="#cb9-935" aria-label="935"></a>:::</span>
+<span id="cb9-936"><a href="#cb9-936" aria-label="936"></a></span>
+<span id="cb9-937"><a href="#cb9-937" aria-label="937"></a>---</span>
 <span id="cb9-938"><a href="#cb9-938" aria-label="938"></a></span>
-<span id="cb9-939"><a href="#cb9-939" aria-label="939"></a>---</span>
+<span id="cb9-939"><a href="#cb9-939" aria-label="939"></a><span class="fu">## まとめ</span></span>
 <span id="cb9-940"><a href="#cb9-940" aria-label="940"></a></span>
-<span id="cb9-941"><a href="#cb9-941" aria-label="941"></a><span class="fu">## まとめ</span></span>
-<span id="cb9-942"><a href="#cb9-942" aria-label="942"></a></span>
-<span id="cb9-943"><a href="#cb9-943" aria-label="943"></a><span class="ss">- </span>**多腕バンディット問題**: 未知の確率で報酬が得られる複数の選択肢（スロットマシン）から、限られた試行回数の中で累積報酬を最大化する強化学習の最も基本的な問題。</span>
-<span id="cb9-944"><a href="#cb9-944" aria-label="944"></a><span class="ss">- </span>**探索と活用のトレードオフ**: 「まだ試していない選択肢の情報を集めること（探索）」と「過去の経験から最も良いと分かっている選択肢を選ぶこと（活用）」のジレンマ。</span>
-<span id="cb9-945"><a href="#cb9-945" aria-label="945"></a><span class="ss">- </span>**価値の推定と逐次更新式**: 各行動の価値を「得られた報酬の平均値」で推定する。過去の全データを保持することなく、$Q \leftarrow Q + \frac{1}{n}(R - Q)$（または一定の学習率 $\alpha$ を用いた式）によって逐次更新できる仕組みは、次章以降で学ぶ Q-learning などの強化学習アルゴリズムでも使われる。</span>
-<span id="cb9-946"><a href="#cb9-946" aria-label="946"></a><span class="ss">- </span>**$\epsilon$-greedy法**: 乱数を利用し、確率 $\epsilon$ でランダムに探索し、確率 $1 - \epsilon$ で現在最も価値が高い行動を活用する代表的な行動選択戦略。$\epsilon$ の設定次第で、局所解への固執（探索不足）や成果の頭打ち（探索過剰）が生じるため、適切なバランスが重要となる。</span>
-<span id="cb9-947"><a href="#cb9-947" aria-label="947"></a><span class="ss">- </span>**vibe codingと可視化**: coding agent に対話的に指示を出してシミュレーションを構築・拡張し、Matplotlib による学習曲線の可視化を通してアルゴリズムの挙動やパラメータの影響を客観的に評価・分析する手法を体験した。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb9-941"><a href="#cb9-941" aria-label="941"></a><span class="ss">- </span>**多腕バンディット問題**: 未知の確率で報酬が得られる複数の選択肢（スロットマシン）から、限られた試行回数の中で累積報酬を最大化する強化学習の最も基本的な問題。</span>
+<span id="cb9-942"><a href="#cb9-942" aria-label="942"></a><span class="ss">- </span>**探索と活用のトレードオフ**: 「まだ試していない選択肢の情報を集めること（探索）」と「過去の経験から最も良いと分かっている選択肢を選ぶこと（活用）」のジレンマ。</span>
+<span id="cb9-943"><a href="#cb9-943" aria-label="943"></a><span class="ss">- </span>**価値の推定と逐次更新式**: 各行動の価値を「得られた報酬の平均値」で推定する。過去の全データを保持することなく、$Q \leftarrow Q + \frac{1}{n}(R - Q)$（または一定の学習率 $\alpha$ を用いた式）によって逐次更新できる仕組みは、次章以降で学ぶ Q-learning などの強化学習アルゴリズムでも使われる。</span>
+<span id="cb9-944"><a href="#cb9-944" aria-label="944"></a><span class="ss">- </span>**$\epsilon$-greedy法**: 乱数を利用し、確率 $\epsilon$ でランダムに探索し、確率 $1 - \epsilon$ で現在最も価値が高い行動を活用する代表的な行動選択戦略。$\epsilon$ の設定次第で、局所解への固執（探索不足）や成果の頭打ち（探索過剰）が生じるため、適切なバランスが重要となる。</span>
+<span id="cb9-945"><a href="#cb9-945" aria-label="945"></a><span class="ss">- </span>**vibe codingと可視化**: coding agent に対話的に指示を出してシミュレーションを構築・拡張し、Matplotlib による学習曲線の可視化を通してアルゴリズムの挙動やパラメータの影響を客観的に評価・分析する手法を体験した。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

@@ -1,106 +1,1659 @@
 # 強化学習の基礎
 
-## 本章のねらい
-前章の多腕バンディット問題（状態が存在しない問題）から一歩進み、行動によって周囲の状況が刻々と変わる一般的な強化学習の問題設定を定式化します。**状態・行動・報酬・方策・価値関数**という中核概念と、これらを数学的に表現する**マルコフ決定過程（MDP）**の枠組みを学びます。
-
----
-
 ## 強化学習のフレームワーク
 
-強化学習では、意思決定を行う主体である**エージェント（Agent）**と、エージェントが相互作用する対象である**環境（Environment）**が対話を繰り返します。
+強化学習では、意思決定を行う主体である**エージェント（Agent）**と、エージェントが相互作用する対象である**環境（Environment）**が対話を繰り返します。前章の多腕バンディット問題との最大の違いは、**エージェントの行動によって環境の「状態（状況）」が刻々と変化していく**という点です。
 
-```
-                    +-------------------+
-                    |                   |
-                    |     エージェント   |
-                    |     (Agent)       |
-                    |                   |
-                    +---------+---------+
-                              |
-               行動: A_t       |       状態: S_t
-             (Action)         |      (State)
-                              |       報酬: R_t
-                              V      (Reward)
-                    +---------+---------+
-                    |                   |
-                    |       環　境       |
-                    |   (Environment)   |
-                    |                   |
-                    +-------------------+
+```{=html}
+<svg viewBox="0 0 720 430" width="100%" height="430" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="rl-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="rl-arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#d84315" />
+    </marker>
+    <marker id="rl-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="rl-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2e7d32" />
+    </marker>
+    <marker id="rl-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- ==================== UPPER PANEL: 1-STEP INTERACTION LOOP ==================== -->
+
+  <!-- Agent Box (Top Center) -->
+  <rect x="210" y="18" width="300" height="68" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="360" y="44" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">エージェント（Agent）</text>
+  <text x="360" y="66" text-anchor="middle" font-size="11.5" fill="#1565c0">状態 S<tspan dy="3" font-size="9">t</tspan><tspan dy="-3"> を観測し、方策 π に基づいて行動 A</tspan><tspan dy="3" font-size="9">t</tspan><tspan dy="-3"> を決定</tspan></text>
+
+  <!-- Environment Box (Middle Center) -->
+  <rect x="125" y="150" width="470" height="126" rx="10" fill="#f1f8e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="360" y="264" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1b5e20">環境（Environment）：行動を受けて内部の「状態」が変化する対象</text>
+
+  <!-- Current State S_t Box inside Environment -->
+  <rect x="145" y="166" width="140" height="76" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="1.8"/>
+  <text x="215" y="186" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#0d47a1">現在の状態 S<tspan dy="3" font-size="9">t</tspan></text>
+  <!-- Mini-grid in S_t (3 cells) -->
+  <g transform="translate(182, 194)">
+    <rect x="0" y="0" width="22" height="20" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+    <rect x="22" y="0" width="22" height="20" fill="#fafafa" stroke="#cfd8dc" stroke-width="1"/>
+    <rect x="44" y="0" width="22" height="20" fill="#fffde7" stroke="#fbc02d" stroke-width="1"/>
+    <circle cx="11" cy="10" r="6" fill="#1976d2"/>
+    <text x="55" y="14" text-anchor="middle" font-size="11" fill="#f57f17">★</text>
+  </g>
+  <text x="215" y="231" text-anchor="middle" font-size="10" fill="#555">行動前の状況</text>
+
+  <!-- State Transition Arrow inside Environment (S_t -> S_{t+1}) -->
+  <line x1="292" y1="204" x2="424" y2="204" stroke="#e65100" stroke-width="3.5" marker-end="url(#rl-arrow-orange)"/>
+  <rect x="304" y="170" width="112" height="22" rx="4" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.2"/>
+  <text x="360" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">状態が変化！</text>
+  <text x="360" y="224" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">行動 A<tspan dy="3" font-size="8">t</tspan><tspan dy="-3"> による状態遷移</tspan></text>
+
+  <!-- Next State S_{t+1} Box inside Environment -->
+  <rect x="435" y="166" width="140" height="76" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2"/>
+  <text x="505" y="186" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#e65100">新しい状態 S<tspan dy="3" font-size="9">t+1</tspan></text>
+  <!-- Mini-grid in S_{t+1} (3 cells) -->
+  <g transform="translate(472, 194)">
+    <rect x="0" y="0" width="22" height="20" fill="#fafafa" stroke="#cfd8dc" stroke-width="1"/>
+    <rect x="22" y="0" width="22" height="20" fill="#ffe0b2" stroke="#ffb74d" stroke-width="1"/>
+    <rect x="44" y="0" width="22" height="20" fill="#fffde7" stroke="#fbc02d" stroke-width="1"/>
+    <circle cx="11" cy="10" r="5" fill="none" stroke="#90caf9" stroke-width="1.2" stroke-dasharray="2,2"/>
+    <circle cx="33" cy="10" r="6" fill="#e65100"/>
+    <text x="55" y="14" text-anchor="middle" font-size="11" fill="#f57f17">★</text>
+  </g>
+  <text x="505" y="231" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">変化後の状況 ＋ 報酬 R<tspan dy="3" font-size="8">t+1</tspan></text>
+
+  <!-- Arrow 1: Observe Current State S_t (Left upward loop) -->
+  <path d="M 145,204 L 78,204 Q 66,204 66,192 L 66,64 Q 66,52 78,52 L 201,52" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#rl-arrow-blue)"/>
+  <rect x="14" y="96" width="118" height="44" rx="6" fill="#e3f2fd" stroke="#64b5f6" stroke-width="1.2"/>
+  <text x="73" y="115" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">① 状態 S<tspan dy="3" font-size="9">t</tspan><tspan dy="-3"> を観測</tspan></text>
+  <text x="73" y="132" text-anchor="middle" font-size="9.5" fill="#1565c0">現在の状況を把握</text>
+
+  <!-- Arrow 2: Execute Action A_t (Center downward) -->
+  <line x1="360" y1="86" x2="360" y2="162" stroke="#d84315" stroke-width="2.5" marker-end="url(#rl-arrow-red)"/>
+  <rect x="294" y="98" width="132" height="42" rx="6" fill="#fbe9e7" stroke="#ff8a65" stroke-width="1.2"/>
+  <text x="360" y="116" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#bf360c">② 行動 A<tspan dy="3" font-size="9">t</tspan><tspan dy="-3"> を実行</tspan></text>
+  <text x="360" y="132" text-anchor="middle" font-size="9.5" fill="#d84315">環境に働きかける</text>
+
+  <!-- Arrow 3: Return Next State S_{t+1} & Reward R_{t+1} (Right upward loop) -->
+  <path d="M 575,204 L 642,204 Q 654,204 654,192 L 654,64 Q 654,52 642,52 L 519,52" fill="none" stroke="#2e7d32" stroke-width="2.5" marker-end="url(#rl-arrow-green)"/>
+  <rect x="582" y="90" width="126" height="54" rx="6" fill="#e8f5e9" stroke="#81c784" stroke-width="1.2"/>
+  <text x="645" y="108" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20">③ 新状態 S<tspan dy="3" font-size="8.5">t+1</tspan><tspan dy="-3"> と</tspan></text>
+  <text x="645" y="124" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20">報酬 R<tspan dy="3" font-size="8.5">t+1</tspan><tspan dy="-3"> を返す</tspan></text>
+  <text x="645" y="138" text-anchor="middle" font-size="9" fill="#2e7d32">（次ステップの S<tspan dy="2" font-size="7.5">t</tspan><tspan dy="-2"> になる）</tspan></text>
+
+  <!-- ==================== DIVIDER ==================== -->
+  <line x1="25" y1="292" x2="695" y2="292" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+  <!-- ==================== LOWER PANEL: TIME UNROLLED STATE CHAIN ==================== -->
+  <text x="360" y="315" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">【時間経過に伴う状態の連鎖】ステップ t = 0, 1, 2… と進むにつれて状態 S<tspan dy="3" font-size="9">t</tspan><tspan dy="-3"> の中身（マス A → B → C）が変化していく</tspan></text>
+
+  <!-- State S_0 = A (t=0) -->
+  <rect x="55" y="330" width="145" height="80" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="127" y="349" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1e293b">t = 0：S<tspan dy="3" font-size="8.5">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <g transform="translate(94, 358)">
+    <rect x="0" y="0" width="22" height="20" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+    <rect x="22" y="0" width="22" height="20" fill="#fafafa" stroke="#cfd8dc" stroke-width="1"/>
+    <rect x="44" y="0" width="22" height="20" fill="#fffde7" stroke="#fbc02d" stroke-width="1"/>
+    <circle cx="11" cy="10" r="5.5" fill="#1976d2"/>
+    <text x="55" y="14" text-anchor="middle" font-size="11" fill="#f57f17">★</text>
+  </g>
+  <text x="127" y="397" text-anchor="middle" font-size="9.5" fill="#64748b">初期状態（左のマス A）</text>
+
+  <!-- Transition 0 -> 1 -->
+  <line x1="205" y1="370" x2="278" y2="370" stroke="#475569" stroke-width="2" marker-end="url(#rl-arrow-slate)"/>
+  <text x="244" y="358" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#d84315">行動 A<tspan dy="3" font-size="8">0</tspan></text>
+  <text x="244" y="386" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2e7d32">報酬 R<tspan dy="3" font-size="8">1</tspan></text>
+
+  <!-- State S_1 = B (t=1) -->
+  <rect x="288" y="330" width="145" height="80" rx="6" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+  <text x="360" y="349" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1e293b">t = 1：S<tspan dy="3" font-size="8.5">1</tspan><tspan dy="-3"> = B</tspan></text>
+  <g transform="translate(327, 358)">
+    <rect x="0" y="0" width="22" height="20" fill="#fafafa" stroke="#cfd8dc" stroke-width="1"/>
+    <rect x="22" y="0" width="22" height="20" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+    <rect x="44" y="0" width="22" height="20" fill="#fffde7" stroke="#fbc02d" stroke-width="1"/>
+    <circle cx="33" cy="10" r="5.5" fill="#1976d2"/>
+    <text x="55" y="14" text-anchor="middle" font-size="11" fill="#f57f17">★</text>
+  </g>
+  <text x="360" y="397" text-anchor="middle" font-size="9.5" fill="#64748b">1ステップ後（中央のマス B）</text>
+
+  <!-- Transition 1 -> 2 -->
+  <line x1="438" y1="370" x2="511" y2="370" stroke="#475569" stroke-width="2" marker-end="url(#rl-arrow-slate)"/>
+  <text x="477" y="358" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#d84315">行動 A<tspan dy="3" font-size="8">1</tspan></text>
+  <text x="477" y="386" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2e7d32">報酬 R<tspan dy="3" font-size="8">2</tspan></text>
+
+  <!-- State S_2 = C (t=2) -->
+  <rect x="521" y="330" width="145" height="80" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2"/>
+  <text x="593" y="349" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#e65100">t = 2：S<tspan dy="3" font-size="8.5">2</tspan><tspan dy="-3"> = C</tspan></text>
+  <g transform="translate(560, 358)">
+    <rect x="0" y="0" width="22" height="20" fill="#fafafa" stroke="#cfd8dc" stroke-width="1"/>
+    <rect x="22" y="0" width="22" height="20" fill="#fafafa" stroke="#cfd8dc" stroke-width="1"/>
+    <rect x="44" y="0" width="22" height="20" fill="#ffe0b2" stroke="#f57c00" stroke-width="1.5"/>
+    <circle cx="55" cy="10" r="6" fill="#e65100"/>
+  </g>
+  <text x="593" y="397" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#bf360c">右のマス C（ゴール到達！）</text>
+</svg>
 ```
 
-各離散時間ステップ $t = 0, 1, 2, \dots$ において：
+時間 $t = 0, 1, 2, \dots$ において：
+
 1. エージェントは現在の環境の**状態 $S_t$** を観測する。
 2. エージェントは方策に基づいて**行動 $A_t$** を決定し実行する。
-3. 環境は行動を受けて状態を更新し、新しい**状態 $S_{t+1}$** と即時**報酬 $R_{t+1}$** をエージェントに返す。
+3. 環境は行動を受けて状態を更新し、新しい**状態 $S_{t+1}$** と即時**報酬 $R_{t+1}$** をエージェントに返す（そして $S_{t+1}$ が次のステップの現在の状態となり、対話が繰り返される）。
+
+### マルコフ性（Markov Property）
+
+上の図の下段にあるように、ステップ $t = 0, 1, 2, \dots$ と進むにつれて状態は連鎖的に変化していきますが、この強化学習のフレームワークには**マルコフ性（Markov Property）**という重要な前提があります。
+
+**マルコフ性とは**
+「次の状態 $S_{t+1}$（および報酬 $R_{t+1}$）が生じる確率は、**直前の現在の状態 $S_t$ と行動 $A_t$ のみ**に依存し、それ以前の過去の履歴には一切依存しない」という性質です。
+
+たとえば迷路の移動やボードゲームにおいて、「いまどのマスにいるか・いま盤面がどうなっているか（現在の状態 $S_t$）」さえ分かれば、そこに至るまでにどのような経路や手順をたどってきたか（過去の経緯）を記憶していなくても、将来の予測や最適な行動決定を行うことができます。このようにマルコフ性を満たす環境における意思決定の枠組みを**マルコフ決定過程（MDP: Markov Decision Process）**と呼びます。
 
 ---
 
-## 重要な構成要素
+## 状態・行動・報酬
 
-### (1) 状態（State: $S$）
-エージェントが置かれている状況や局面の情報（例: マップ上の座標、残機、盤面の駒の配置、ロボットの角度や速度）。
+強化学習の中核となる「**状態・行動・報酬**」の3つの概念を、次のような**横一列に並んだ3つのマスの移動問題**を例にして具体的に見ていきましょう。
 
-### (2) 行動（Action: $A$）
-エージェントが取ることができる選択肢（例: 「上・下・左・右」「アクセルを踏む」「カードを引く」）。
+- **マスの配置（状態ラベル）**: 横一列に3つのマスがあり、エージェントがどのマスに居るかを状態として、左のマスから順に **$\text{A}, \text{B}, \text{C}$** とします。
+- **移動の選択肢（行動）**: **`Right`**（右へ移動）と **`Left`**（左へ移動）の2つですが、右端の **$\text{C}$ に到達するとエピソード終了**とし、そこからの行動は定義されません。
+- **評価のルール（報酬）**: **1回の行動につき $-1$**、そして **$\text{C}$ に到達したとき $+10$** が与えられます。
 
-### (3) 報酬（Reward: $R$）
-環境から与えられる即時の数値的な評価。エージェントにとっての「ご褒美（プラス値）」や「ペナルティ（マイナス値）」。
+```{=html}
+<svg viewBox="0 0 700 280" width="100%" height="280" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="ex-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="ex-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="ex-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
 
-### (4) 方策（Policy: $\pi$）
-状態 $s$ においてどのような行動 $a$ を選ぶかという**行動のルール（戦略）**。
-- 確率的方策: $\pi(a \mid s) = P(A_t = a \mid S_t = s)$ （状態 $s$ で行動 $a$ をとる確率）
-- 決定的方策: $a = \pi(s)$
+  <!-- Left Wall -->
+  <rect x="104" y="86" width="6" height="113" rx="2" fill="#475569"/>
 
-### (5) 収益（Return: $G_t$）と割引率（Discount Factor: $\gamma$）
-エージェントの目的は「目の前の1ステップの報酬」だけではなく、**「将来にわたって得られる累積の報酬」**を最大化することです。
+  <!-- Cell A -->
+  <rect x="110" y="90" width="160" height="105" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="190" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#0d47a1">状態 A</text>
+  <circle cx="190" cy="147" r="14" fill="#1976d2"/>
+  <text x="190" y="151" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffffff">AI</text>
+  <text x="190" y="182" text-anchor="middle" font-size="11" fill="#475569">左のマス（行動: Right / Left）</text>
 
-将来の報酬には、時間経過に伴う不確実性を考慮して**割引率 $\gamma$（$0 \le \gamma \le 1$、通常 $0.9 \sim 0.99$）**を掛け合わせます。
+  <!-- Cell B -->
+  <rect x="270" y="90" width="160" height="105" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="350" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#0d47a1">状態 B</text>
+  <text x="350" y="151" text-anchor="middle" font-size="12" fill="#64748b">（通過マス）</text>
+  <text x="350" y="182" text-anchor="middle" font-size="11" fill="#475569">中央のマス（行動: Right / Left）</text>
+
+  <!-- Cell C (Terminal / Goal) -->
+  <rect x="430" y="90" width="160" height="105" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/>
+  <text x="510" y="116" text-anchor="middle" font-size="16" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <rect x="446" y="128" width="128" height="25" rx="12.5" fill="#ffecb3" stroke="#ffa000" stroke-width="1.2"/>
+  <text x="510" y="145" text-anchor="middle" font-size="11" font-weight="bold" fill="#bf360c">到達時に報酬 +10</text>
+  <text x="510" y="171" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#c62828">エピソード終了</text>
+  <text x="510" y="186" text-anchor="middle" font-size="10" fill="#b71c1c">（ここからの行動は未定義）</text>
+
+  <!-- Action Right: A -> B -->
+  <path d="M 205,90 Q 270,42 332,84" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#ex-arrow-blue)"/>
+  <rect x="200" y="14" width="140" height="40" rx="5" fill="#e3f2fd" stroke="#90caf9" stroke-width="1.2"/>
+  <text x="270" y="31" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">行動: Right</text>
+  <text x="270" y="47" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">報酬: -1（行動1回分）</text>
+
+  <!-- Action Right: B -> C -->
+  <path d="M 365,90 Q 430,42 492,84" fill="none" stroke="#e65100" stroke-width="3" marker-end="url(#ex-arrow-orange)"/>
+  <rect x="355" y="10" width="185" height="44" rx="5" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.2"/>
+  <text x="447" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">行動: Right（C へ到達！）</text>
+  <text x="447" y="45" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2e7d32">報酬: -1（行動）+ 10（到達）= +9</text>
+
+  <!-- Action Left: B -> A -->
+  <path d="M 335,195 Q 270,242 208,201" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#ex-arrow-slate)"/>
+  <rect x="200" y="226" width="140" height="40" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="270" y="243" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">行動: Left</text>
+  <text x="270" y="259" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">報酬: -1（行動1回分）</text>
+
+  <!-- Action Left at A (Self-loop hitting left wall) -->
+  <path d="M 104,122 C 55,105 55,180 98,164" fill="none" stroke="#475569" stroke-width="2.2" stroke-dasharray="4,3" marker-end="url(#ex-arrow-slate)"/>
+  <rect x="12" y="196" width="132" height="42" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="78" y="213" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">行動: Left（壁で留まる）</text>
+  <text x="78" y="230" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">報酬: -1（行動1回分）</text>
+
+  <!-- Note on Right of C -->
+  <rect x="600" y="112" width="88" height="60" rx="6" fill="#ffebee" stroke="#ef9a9a" stroke-width="1.2" stroke-dasharray="3,2"/>
+  <text x="644" y="133" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">行動なし</text>
+  <text x="644" y="150" text-anchor="middle" font-size="9.5" fill="#b71c1c">C 到達で終了</text>
+  <text x="644" y="164" text-anchor="middle" font-size="9.5" fill="#b71c1c">するため未定義</text>
+</svg>
+```
+
+### 状態（State: $S$）
+エージェントが現在置かれている状況や局面の情報です（一般的にはマップ上の座標、盤面の駒の配置、ロボットの角度や速度などが該当します）。
+
+- **3マスの例における「状態」**:
+  エージェントが**どのマスに居るか**が状態であり、左のマスから順に **$\text{A}, \text{B}, \text{C}$** の3つの状態が存在します。
+  - **状態 $\text{A}$（左のマス）・状態 $\text{B}$（中央のマス）**: エージェントがこれから行動を選択する通常の状態です。
+  - **状態 $\text{C}$（右のマス）**: ここに到達すると1回分のプレイ（**エピソード**）が終了します。このような終了地点の状態を**終端状態（Terminal State）**と呼びます。
+  - **時刻 $t$ の状態 $S_t$ との関係**: $S_t$（$S_0, S_1, S_2, \dots$）は「ステップ $t$ の時点でどの状態にいるか」を表す変数であり、その中身（値）として $\text{A}, \text{B}, \text{C}$ が入ります。たとえば「時刻 $t=0$ にマス $\text{A}$ からスタートし、時刻 $t=1$ にマス $\text{B}$ へ移動した」場合、**$S_0 = \text{A},\; S_1 = \text{B}$** と表されます。
+
+### 行動（Action: $A$）
+エージェントが各状態において取ることができる選択肢です。
+
+- **3マスの例における「行動」**:
+  エージェントが選べる行動は **`Right`（右のマスへ移動）** と **`Left`（左のマスへ移動）** の2種類です。選ぶ行動によって、次の状態が以下のように変化します：
+  - 状態 **$\text{A}$** のとき：`Right` を選ぶと **$\text{B}$** へ移動します。`Left` を選ぶとこれ以上左にマスがないため、壁に阻まれて **$\text{A}$** に留まります（例：$S_0 = \text{A}$ で $A_0 = \text{Left}$ を選ぶと、次の時刻も $S_1 = \text{A}$ となります）。
+  - 状態 **$\text{B}$** のとき：`Right` を選ぶと **$\text{C}$** へ移動し、`Left` を選ぶと **$\text{A}$** へ戻ります。
+  - 状態 **$\text{C}$** のとき：$\text{C}$ に到達した時点でエピソード終了となるため、**$\text{C}$ からの行動は定義されません**。
+
+### 報酬（Reward: $R$）
+行動の結果として環境からエージェントに与えられる即時の数値的な評価です。エージェントにとっての「ご褒美（プラス値）」や「ペナルティ・コスト（マイナス値）」を表します。
+
+- **3マスの例における「報酬」**:
+  次の2つのルールで報酬が与えられます：
+  1. **1回の行動につき $-1$**：`Right` または `Left` を1回実行するたびに、移動コスト（時間経過のペナルティ）として **$-1$** が与えられます。もしこの $-1$ がなければ、エージェントは何百回も左右にウロウロしてからゴールしても損をしないことになりますが、1手ごとに $-1$ されることで**「できるだけ少ない手数（最短経路）でゴールする」**ことが促されます。
+  2. **$\text{C}$ に到達したとき $+10$**：ゴールである $\text{C}$ に到達したときに、目標達成のご褒美として **$+10$** が与えられます。
+  - したがって、各行動をとった直後に得られる報酬は、通常の移動（$\text{A} \to \text{B}$ や $\text{B} \to \text{A}$、$\text{A} \to \text{A}$）では **$-1$** となり、$\text{B}$ から `Right` を選んで **$\text{C}$ に到達したステップでは、1回分の行動に対する $-1$ と $\text{C}$ 到達の $+10$ を合わせて $-1 + 10 = +9$** となります。
+
+::: {.callout-note icon=false}
+### 練習問題 07-01：状態・行動・報酬の具体例
+1. **三目並べ（〇×ゲーム）**を強化学習でプレイするエージェントを作るとします。このとき、「**状態**」「**行動**」「**報酬**」はそれぞれ何になるでしょうか？
+2. 他にこの「状態・行動・報酬」の枠組みで考えられる問題にはどのようなものがありますか？具体例を挙げ、その問題における「状態」「行動」「報酬」が何かを考えてみましょう。
+:::
+
+---
+
+## 方策と収益
+
+「状態・行動・報酬」という環境のルールが定まったところで、次はエージェント側の「行動の選び方（**方策**）」と、その良し悪しを測る「獲得報酬の合計（**収益**）」について見ていきましょう。
+
+### 方策（Policy: $\pi$）
+エージェントが「どの状態において、どの行動を選ぶか」を定めた**行動のルール（戦略）**を**方策（Policy）**と呼び、ギリシャ文字の $\pi$（パイ）で表します。
+
+ここでは、各状態 $s$ に対して取るべき行動 $a$ がただ1つに決まっている**決定的方策（Deterministic Policy）**を考えます。数式では関数のように次のように表します：
+
+$$
+a = \pi(s)
+$$
+
+先ほどの3マスの移動問題では、行動を選択する状態は $\text{A}$ と $\text{B}$ の2つ（状態 $\text{C}$ はエピソード終了のため行動なし）であり、それぞれ `Right` か `Left` を選べるため、決定的方策は全部で $2 \times 2 = 4$ 通り存在します。
+
+### 収益（Return: $G_t$）と方策ごとの計算例
+強化学習におけるエージェントの目的は、目の前の1ステップの報酬だけではなく、**エピソード終了までに将来にわたって得られる報酬の総和**を最大化することです。この累積報酬を**収益（Return）**と呼び、$G_t$ で表します。
+
+まずは割引を考えない単純な報酬の足し算（$G_0 = R_1 + R_2 + R_3 + \dots$）として、代表的な2つの方策で**状態 $\text{A}$ からスタート（$S_0 = \text{A}$）したときの収益 $G_0$** を計算してみましょう。
+
+```{=html}
+<svg viewBox="0 0 700 265" width="100%" height="265" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="pol-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="pol-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="pol-arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c62828" />
+    </marker>
+  </defs>
+
+  <!-- ==================== CASE 1: POLICY RIGHT ==================== -->
+  <text x="25" y="28" font-size="13" font-weight="bold" fill="#0d47a1">【方策①】状態 A, B ともに Right を選ぶ方策：π(A) = Right, π(B) = Right</text>
+
+  <!-- S0 = A -->
+  <rect x="25" y="42" width="110" height="58" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="80" y="65" text-anchor="middle" font-size="13" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="9">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="80" y="86" text-anchor="middle" font-size="10" fill="#1565c0">スタート (t=0)</text>
+
+  <!-- Arrow 1 -->
+  <line x1="135" y1="71" x2="218" y2="71" stroke="#1976d2" stroke-width="2.5" marker-end="url(#pol-arrow-blue)"/>
+  <text x="178" y="60" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">Right</text>
+  <text x="178" y="88" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="8">1</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S1 = B -->
+  <rect x="226" y="42" width="110" height="58" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+  <text x="281" y="65" text-anchor="middle" font-size="13" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="9">1</tspan><tspan dy="-3"> = B</tspan></text>
+  <text x="281" y="86" text-anchor="middle" font-size="10" fill="#475569">中央のマス (t=1)</text>
+
+  <!-- Arrow 2 -->
+  <line x1="336" y1="71" x2="419" y2="71" stroke="#e65100" stroke-width="2.5" marker-end="url(#pol-arrow-orange)"/>
+  <text x="379" y="60" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">Right</text>
+  <text x="379" y="88" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2e7d32">R<tspan dy="2" font-size="8">2</tspan><tspan dy="-2"> = +9</tspan></text>
+
+  <!-- S2 = C -->
+  <rect x="427" y="42" width="125" height="58" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="489" y="65" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">S<tspan dy="3" font-size="9">2</tspan><tspan dy="-3"> = C ★</tspan></text>
+  <text x="489" y="86" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">ゴール・終了 (t=2)</text>
+
+  <!-- Summary Badge 1 -->
+  <rect x="565" y="45" width="115" height="52" rx="6" fill="#e8f5e9" stroke="#66bb6a" stroke-width="1.5"/>
+  <text x="622" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20">2手で終了！</text>
+  <text x="622" y="84" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2e7d32">γ=0.9 で G<tspan dy="2" font-size="8">0</tspan><tspan dy="-2"> = 7.1</tspan></text>
+
+  <!-- Divider -->
+  <line x1="25" y1="125" x2="680" y2="125" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+  <!-- ==================== CASE 2: POLICY LEFT ==================== -->
+  <text x="25" y="153" font-size="13" font-weight="bold" fill="#c62828">【方策②】状態 A, B ともに Left を選ぶ方策：π(A) = Left, π(B) = Left</text>
+
+  <!-- S0 = A -->
+  <rect x="25" y="168" width="95" height="58" rx="6" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="72" y="191" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#b71c1c">S<tspan dy="3" font-size="9">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="72" y="212" text-anchor="middle" font-size="9.5" fill="#c62828">壁に当たる</text>
+
+  <!-- Arrow 1 -->
+  <line x1="120" y1="197" x2="182" y2="197" stroke="#c62828" stroke-width="2" marker-end="url(#pol-arrow-red)"/>
+  <text x="152" y="186" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Left</text>
+  <text x="152" y="214" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="8">1</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S1 = A -->
+  <rect x="190" y="168" width="95" height="58" rx="6" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="237" y="191" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#b71c1c">S<tspan dy="3" font-size="9">1</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="237" y="212" text-anchor="middle" font-size="9.5" fill="#c62828">壁に当たる</text>
+
+  <!-- Arrow 2 -->
+  <line x1="285" y1="197" x2="347" y2="197" stroke="#c62828" stroke-width="2" marker-end="url(#pol-arrow-red)"/>
+  <text x="317" y="186" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Left</text>
+  <text x="317" y="214" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="8">2</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S2 = A -->
+  <rect x="355" y="168" width="95" height="58" rx="6" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="402" y="191" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#b71c1c">S<tspan dy="3" font-size="9">2</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="402" y="212" text-anchor="middle" font-size="9.5" fill="#c62828">壁に当たる</text>
+
+  <!-- Arrow 3 -> ... -->
+  <line x1="450" y1="197" x2="508" y2="197" stroke="#c62828" stroke-width="2" marker-end="url(#pol-arrow-red)"/>
+  <text x="480" y="186" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Left</text>
+  <text x="480" y="214" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="8">3</tspan><tspan dy="-2"> = -1</tspan></text>
+  <text x="532" y="203" text-anchor="middle" font-size="16" font-weight="bold" fill="#c62828">…</text>
+
+  <!-- Summary Badge 2 -->
+  <rect x="552" y="166" width="128" height="62" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="616" y="185" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">無限に終わらない</text>
+  <text x="616" y="201" text-anchor="middle" font-size="9.5" fill="#64748b">単純和は -∞ に発散</text>
+  <text x="616" y="218" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">γ=0.9 で G<tspan dy="2" font-size="8">0</tspan><tspan dy="-2"> = -10</tspan></text>
+</svg>
+```
+
+#### 状態 $\text{A}, \text{B}$ で `Right` という方策のとき
+状態 $\text{A}$ でも状態 $\text{B}$ でも常に `Right` を選ぶ方策（$\pi(\text{A}) = \text{Right},\; \pi(\text{B}) = \text{Right}$）に従い、状態 $\text{A}$（$S_0 = \text{A}$）からスタートします。
+
+1. **1ステップ目（$t = 0 \to 1$）**：状態 $\text{A}$ で `Right` を選び、状態 $\text{B}$（$S_1 = \text{B}$）へ移動します。1回の行動につき $-1$ の報酬が与えられるため、**$R_1 = -1$** です。
+2. **2ステップ目（$t = 1 \to 2$）**：状態 $\text{B}$ で `Right` を選び、状態 $\text{C}$（$S_2 = \text{C}$）へ到達します。行動1回分の $-1$ と状態 $\text{C}$ 到達の $+10$ により **$R_2 = -1 + 10 = +9$** を得て、ここで**エピソード終了**となります。
+
+したがって、単純に報酬を足し合わせた場合の収益 $G_0$ は次のようになります：
+
+$$
+G_0 = R_1 + R_2 = (-1) + 9 = +8
+$$
+
+#### 状態 $\text{A}, \text{B}$ で `Left` という方策のとき
+次に、状態 $\text{A}$ でも状態 $\text{B}$ でも常に `Left` を選ぶ方策（$\pi(\text{A}) = \text{Left},\; \pi(\text{B}) = \text{Left}$）に従い、同じく状態 $\text{A}$（$S_0 = \text{A}$）からスタートしてみます。
+
+1. **1ステップ目（$t = 0 \to 1$）**：状態 $\text{A}$ で `Left` を選びますが、左端の壁に阻まれて状態 $\text{A}$（$S_1 = \text{A}$）に留まります。報酬は **$R_1 = -1$** です。
+2. **2ステップ目（$t = 1 \to 2$）**：再び状態 $\text{A}$ にいるため、方策に従ってまた `Left` を選び、状態 $\text{A}$（$S_2 = \text{A}$）に留まって報酬 **$R_2 = -1$** を得ます。
+3. **3ステップ目以降**：この後も永久に状態 $\text{A}$ で `Left` を選び続け、いつまでも状態 $\text{C}$ に到達しないため、**エピソードが永遠に終わりません**。
+
+このとき、報酬を単純に足し合わせようとすると、
+
+$$
+G_0 = R_1 + R_2 + R_3 + \dots = (-1) + (-1) + (-1) + \dots = -\infty
+$$
+
+となり、**収益が無限大（$-\infty$）に発散**してしまいます。収益が発散してしまうと、方策どうしの良し悪しを数値として比較したり計算したりすることができなくなります。
+
+### 割引率（Discount Factor: $\gamma$）の導入
+このようにエピソードが無限に続く場合でも**収益が発散することを防ぎ、有限の数値として計算できるようにする**ために導入されるのが**割引率（Discount Factor）$\gamma$**（ガンマ、$0 \le \gamma < 1$）です。
+
+将来の報酬ほど時間経過に伴って価値が割り引かれると考え、1ステップ先になるごとに報酬に $\gamma$ を掛け合わせて**収益 $G_t$** を定義します：
 
 $$
 G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
 $$
 
-> **直感的理解**: 今すぐもらえる100円と、1年後にもらえる100円では価値が異なるのと同じです。$\gamma$ が小さいと「目先の利益を優先」、$\gamma$ が1に近いと「遠い未来の大きな報酬を重視」します。
+> **直感的理解**: 今すぐもらえる100円と、遠い将来にもらえる100円では現在の価値が異なるのと同じです。$\gamma$ が $0$ に近いと「目先の報酬だけを重視」し、$\gamma$ が $1$ に近い（通常 $0.9 \sim 0.99$）と「将来の報酬も重視」します。
+
+### 割引率 $\gamma = 0.9$ で収益を計算してみる
+それでは、割引率を **$\gamma = 0.9$** に設定して、先ほどの2つの方策で状態 $\text{A}$ からスタートしたときの収益 $G_0$ を改めて計算してみましょう。
+
+#### 状態 $\text{A}, \text{B}$ で `Right` という方策（$\gamma = 0.9$）
+2ステップでゴールに到達して終了するため、項は $R_1 = -1$ と $R_2 = +9$ の2つだけです。2ステップ目の報酬 $R_2$ に $\gamma = 0.9$ が1回掛けられます：
+
+$$
+G_0 = R_1 + \gamma R_2 = (-1) + 0.9 \times 9 = -1 + 8.1 = \mathbf{7.1}
+$$
+
+#### 状態 $\text{A}, \text{B}$ で `Left` という方策（$\gamma = 0.9$）
+毎ステップ $R_1 = -1,\; R_2 = -1,\; R_3 = -1, \dots$ が無限に続きますが、1ステップごとに $0.9$ 倍ずつ割り引かれるため、発散せずに有限の値に収束します：
+
+$$
+\begin{aligned}
+G_0 &= R_1 + \gamma R_2 + \gamma^2 R_3 + \gamma^3 R_4 + \dots \\
+&= (-1) + 0.9 \times (-1) + 0.9^2 \times (-1) + 0.9^3 \times (-1) + \dots \\
+&= (-1) \times \left(1 + 0.9 + 0.9^2 + 0.9^3 + \dots \right)
+\end{aligned}
+$$
+
+ここで、カッコの中身は初項 $1$・公比 $0.9$ の無限等比級数（$1 + \gamma + \gamma^2 + \dots = \dfrac{1}{1 - \gamma}$）なので、
+
+$$
+G_0 = (-1) \times \frac{1}{1 - 0.9} = (-1) \times \frac{1}{0.1} = \mathbf{-10}
+$$
+
+と求めることができます。
+
+::: {.callout-tip icon=true}
+### 別解：再帰的な関係式を使って求める方法
+無限等比級数の公式を覚えていなくても、次のような工夫で簡単に計算できます。
+$G_0$ の式の2項目以降を $0.9$ でくくると、カッコの中身は元の $G_0$ とまったく同じ形になります：
+
+$$
+\begin{aligned}
+G_0 &= -1 + 0.9 \times \underbrace{\left( -1 + 0.9 \times (-1) + 0.9^2 \times (-1) + \dots \right)}_{=\, G_0} \\
+G_0 &= -1 + 0.9\, G_0
+\end{aligned}
+$$
+
+この1次方程式を解くと、$0.1\, G_0 = -1$ より **$G_0 = -10$** がすぐに得られます。「現在の収益 ＝ 直後の報酬 ＋ $\gamma \times$ 次のステップからの収益」というこの関係は、強化学習において極めて重要な性質です。
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 07-02：別の方策での収益の計算
+割引率を $\gamma = 0.9$ とします。
+
+1. **方策①（状態 $\text{A}, \text{B}$ ともに `Right`）**に従うとき、中央の**状態 $\text{B}$ からスタート（$S_0 = \text{B}$）**した場合の収益 $G_0$ はいくらになりますか？
+2. **「状態 $\text{A}$ では `Right`、状態 $\text{B}$ では `Left` を選ぶ方策」**（$\pi(\text{A}) = \text{Right},\; \pi(\text{B}) = \text{Left}$）に従い、**状態 $\text{A}$ からスタート（$S_0 = \text{A}$）**すると、エージェントはどのように動き、そのときの収益 $G_0$ はいくらになりますか？
+:::
 
 ---
 
-## 価値関数（Value Function）
+## 確率的な状態遷移
 
-「ある状態にいること」や「ある状態で特定の行動を取ること」が、将来どれくらい有利であるかを表す期待値です。
+これまでの説明では、状態 $\text{A}$ で `Right` を選べば **100%確実に** 状態 $\text{B}$ へ移動できるように、「現在の状態と行動が決まれば、次の状態がただ1つに確定する」という前提で考えてきました。このような環境を**決定的（Deterministic）**な環境と呼びます。
 
-### 状態価値関数: $V^\pi(s)$
-方策 $\pi$ に従って行動したとき、**状態 $s$ からスタートして得られる期待収益**。
+しかし、現実世界や多くのゲーム環境では、エージェントが意図したとおりに100%確実に移動できるとは限りません。
 
-$$
-V^\pi(s) = \mathbb{E}_\pi [ G_t \mid S_t = s ]
-$$
+- 車輪ロボットが前進しようとしても、床が濡れていて**その場でスリップ（空回り）してしまう**。
+- ドローンや自動運転車が、突風や路面の状況によって**意図した位置へ進めない**。
+- ゲームにおいて、氷の上を歩くキャラクターが**一定の確率で滑ってその場にとどまったり、別の方向へ流されたりする**。
 
-### 行動価値関数: $Q^\pi(s, a)$
-方策 $\pi$ のもとで、**状態 $s$ でまず行動 $a$ を取り、その後は方策 $\pi$ に従って行動したときに得られる期待収益**。
+このように、ある状態で行動を実行したとき、次の状態が確率的に決まる仕組みを**確率的な状態遷移（Stochastic State Transition）**と呼びます。
 
-$$
-Q^\pi(s, a) = \mathbb{E}_\pi [ G_t \mid S_t = s, A_t = a ]
-$$
+::: {.callout-tip icon=true}
+### 確率的な状態遷移でも「マルコフ性」は成り立つ
+状態遷移が確率的であっても、「次の状態 $S_{t+1}$ がどの状態になるかの**確率**」が**直前の状態 $S_t$ と行動 $A_t$ のみ**によって決まり、それ以前の過去の履歴に依存しないならば、マルコフ性は満たされています。
+:::
 
-強化学習の最終目標は、すべての状態で最大の期待収益を達成できる**最適方策 $\pi^*$**、およびそれに対応する**最適価値関数 $V^*(s), Q^*(s, a)$** を見つけることです。最適行動価値関数 $Q^*$ が分かれば、各状態で最も $Q^*$ が高い行動を選び続けるだけで最適なプレイが可能になります。
+### 例：20%の確率でその場にとどまる環境
+先ほどの3マスの移動問題に、**「床が滑りやすく、移動しようとしても 20%（確率 $0.2$）で失敗してその場にとどまり、80%（確率 $0.8$）で意図した方向へ移動できる」**という確率的な状態遷移を取り入れてみましょう。
+
+```{=html}
+<svg viewBox="0 0 720 340" width="100%" height="340" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="st-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="st-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="st-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- Section Labels -->
+  <text x="360" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">▲ 上側：行動 Right を選んだとき（80%で右へ移動 ／ 20%でその場に留まる）</text>
+  <text x="360" y="328" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">▼ 下側：行動 Left を選んだとき（状態 B は 80%で左へ移動・20%で留まる ／ 状態 A は壁のため 100%留まる）</text>
+
+  <!-- Left Wall -->
+  <rect x="94" y="121" width="6" height="103" rx="2" fill="#475569"/>
+
+  <!-- Cell A -->
+  <rect x="100" y="125" width="170" height="95" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="185" y="150" text-anchor="middle" font-size="16" font-weight="bold" fill="#0d47a1">状態 A</text>
+  <circle cx="185" cy="178" r="13" fill="#1976d2"/>
+  <text x="185" y="182" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#ffffff">AI</text>
+  <text x="185" y="208" text-anchor="middle" font-size="10.5" fill="#475569">左のマス</text>
+
+  <!-- Cell B -->
+  <rect x="270" y="125" width="170" height="95" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="355" y="150" text-anchor="middle" font-size="16" font-weight="bold" fill="#0d47a1">状態 B</text>
+  <text x="355" y="180" text-anchor="middle" font-size="12" fill="#64748b">（通過マス）</text>
+  <text x="355" y="208" text-anchor="middle" font-size="10.5" fill="#475569">中央のマス</text>
+
+  <!-- Cell C (Terminal / Goal) -->
+  <rect x="440" y="125" width="170" height="95" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/>
+  <text x="525" y="150" text-anchor="middle" font-size="16" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <rect x="461" y="160" width="128" height="23" rx="11.5" fill="#ffecb3" stroke="#ffa000" stroke-width="1.2"/>
+  <text x="525" y="176" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#bf360c">到達時に報酬 +10</text>
+  <text x="525" y="204" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">エピソード終了</text>
+
+  <!-- ==================== TOP: ACTION RIGHT ==================== -->
+  <!-- 1. A -> A (Right: 20% stay) -->
+  <path d="M 135,125 C 110,75 175,75 158,118" fill="none" stroke="#1976d2" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#st-arrow-blue)"/>
+  <rect x="28" y="34" width="142" height="40" rx="5" fill="#e3f2fd" stroke="#90caf9" stroke-width="1.2"/>
+  <text x="99" y="50" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">Right：20% で留まる</text>
+  <text x="99" y="66" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">報酬: -1</text>
+
+  <!-- 2. A -> B (Right: 80% move) -->
+  <path d="M 205,125 Q 262,76 318,118" fill="none" stroke="#1976d2" stroke-width="2.8" marker-end="url(#st-arrow-blue)"/>
+  <rect x="182" y="34" width="142" height="40" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="253" y="50" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">Right：80% で B へ</text>
+  <text x="253" y="66" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">報酬: -1</text>
+
+  <!-- 3. B -> B (Right: 20% stay) -->
+  <path d="M 355,125 C 335,75 400,75 382,118" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#st-arrow-orange)"/>
+  <rect x="336" y="34" width="142" height="40" rx="5" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.2"/>
+  <text x="407" y="50" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">Right：20% で留まる</text>
+  <text x="407" y="66" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">報酬: -1</text>
+
+  <!-- 4. B -> C (Right: 80% move to Goal) -->
+  <path d="M 412,125 Q 468,76 518,118" fill="none" stroke="#e65100" stroke-width="3" marker-end="url(#st-arrow-orange)"/>
+  <rect x="490" y="34" width="195" height="40" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="587" y="50" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">Right：80% で C 到達！</text>
+  <text x="587" y="66" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">報酬: -1 + 10 = +9</text>
+
+  <!-- ==================== BOTTOM: ACTION LEFT ==================== -->
+  <!-- 1. A -> A (Left: 100% stay due to wall + slip) -->
+  <path d="M 94,152 C 42,135 42,205 88,190" fill="none" stroke="#475569" stroke-width="2.2" stroke-dasharray="4,3" marker-end="url(#st-arrow-slate)"/>
+  <rect x="20" y="256" width="155" height="42" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="97" y="273" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">Left：100% で A に留まる</text>
+  <text x="97" y="289" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">報酬: -1（壁またはスリップ）</text>
+
+  <!-- 2. B -> A (Left: 80% move) -->
+  <path d="M 325,220 Q 262,265 205,226" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#st-arrow-slate)"/>
+  <rect x="190" y="256" width="145" height="42" rx="5" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="262" y="273" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">Left：80% で A へ</text>
+  <text x="262" y="289" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">報酬: -1</text>
+
+  <!-- 3. B -> B (Left: 20% stay) -->
+  <path d="M 365,220 C 350,268 415,268 395,226" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#st-arrow-slate)"/>
+  <rect x="350" y="256" width="145" height="42" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="422" y="273" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">Left：20% で留まる</text>
+  <text x="422" y="289" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">報酬: -1</text>
+</svg>
+```
+
+この環境では、各状態において行動を選んだときの結果が次のように分かれます（行動を1回実行するたびに $-1$、状態 $\text{C}$ に到達したときだけ $+10$ が加わるルールは同じです）：
+
+- **状態 $\text{A}$ で `Right` を選んだとき**：
+  - **80%（確率 $0.8$）**で右の**状態 $\text{B}$** へ移動します（報酬 **$-1$**）。
+  - **20%（確率 $0.2$）**でその場（**状態 $\text{A}$**）にとどまります。移動できなくても1回分の行動を実行したため、報酬は **$-1$** です。
+- **状態 $\text{B}$ で `Right` を選んだとき**：
+  - **80%（確率 $0.8$）**で右の**状態 $\text{C}$（ゴール）**へ到達し、エピソード終了となります（報酬 $-1 + 10 = \mathbf{+9}$）。
+  - **20%（確率 $0.2$）**でその場（**状態 $\text{B}$**）にとどまります（報酬 **$-1$**）。
+- **状態 $\text{B}$ で `Left` を選んだとき**：
+  - **80%（確率 $0.8$）**で左の**状態 $\text{A}$** へ移動します（報酬 **$-1$**）。
+  - **20%（確率 $0.2$）**でその場（**状態 $\text{B}$**）にとどまります（報酬 **$-1$**）。
+- **状態 $\text{A}$ で `Left` を選んだとき**：
+  - 左に壁があるため、80%の移動と20%のスリップのどちらが起きても **100%（確率 $1.0$）**の確率で**状態 $\text{A}$** にとどまります（報酬 **$-1$**）。
+
+### 同じ方策でも試行ごとに経路と収益 $G_0$ が変わる
+
+状態遷移が確率的になると、エージェントが**まったく同じ方策に従って行動していても、エピソード（試行）ごとにたどる経路や得られる収益 $G_0$ が確率的に変化**します。
+
+具体例として、先ほどと同じ **方策①（状態 $\text{A}, \text{B}$ ともに `Right` を選ぶ：$\pi(\text{A}) = \text{Right},\; \pi(\text{B}) = \text{Right}$）** に従い、状態 $\text{A}$（$S_0 = \text{A}$）からスタートした場合（割引率 $\gamma = 0.9$）を考えてみましょう。
+
+```{=html}
+<svg viewBox="0 0 720 355" width="100%" height="355" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="tr-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="tr-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="tr-arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#7b1fa2" />
+    </marker>
+  </defs>
+
+  <!-- ==================== PATTERN 1 ==================== -->
+  <text x="20" y="25" font-size="12.5" font-weight="bold" fill="#0d47a1">【経路パターン1】1度も滑らずに最短の2ステップでゴールする場合（A → B → C）</text>
+
+  <!-- S0 = A -->
+  <rect x="20" y="36" width="88" height="52" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="64" y="57" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8.5">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="64" y="76" text-anchor="middle" font-size="9.5" fill="#1565c0">スタート</text>
+
+  <!-- Step 1 -->
+  <line x1="108" y1="62" x2="184" y2="62" stroke="#1976d2" stroke-width="2.5" marker-end="url(#tr-arrow-blue)"/>
+  <text x="146" y="51" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0d47a1">80% (0.8)</text>
+  <text x="146" y="78" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7.5">1</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S1 = B -->
+  <rect x="192" y="36" width="88" height="52" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+  <text x="236" y="57" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8.5">1</tspan><tspan dy="-3"> = B</tspan></text>
+  <text x="236" y="76" text-anchor="middle" font-size="9.5" fill="#475569">1ステップ後</text>
+
+  <!-- Step 2 -->
+  <line x1="280" y1="62" x2="356" y2="62" stroke="#e65100" stroke-width="2.5" marker-end="url(#tr-arrow-orange)"/>
+  <text x="318" y="51" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">80% (0.8)</text>
+  <text x="318" y="78" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2e7d32">R<tspan dy="2" font-size="7.5">2</tspan><tspan dy="-2"> = +9</tspan></text>
+
+  <!-- S2 = C -->
+  <rect x="364" y="36" width="96" height="52" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="412" y="57" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">S<tspan dy="3" font-size="8.5">2</tspan><tspan dy="-3"> = C ★</tspan></text>
+  <text x="412" y="76" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#bf360c">2手で終了</text>
+
+  <!-- Badge 1 -->
+  <rect x="548" y="34" width="152" height="56" rx="6" fill="#e8f5e9" stroke="#66bb6a" stroke-width="1.5"/>
+  <text x="624" y="55" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">確率: 0.8×0.8 = 64%</text>
+  <text x="624" y="76" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">収益 G<tspan dy="2" font-size="8">0</tspan><tspan dy="-2"> = 7.1</tspan></text>
+
+  <!-- Divider 1 -->
+  <line x1="20" y1="106" x2="700" y2="106" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5,4"/>
+
+  <!-- ==================== PATTERN 2 ==================== -->
+  <text x="20" y="130" font-size="12.5" font-weight="bold" fill="#7b1fa2">【経路パターン2】最初に状態 A で1回とどまり、3ステップでゴールする場合（A → A → B → C）</text>
+
+  <!-- S0 = A -->
+  <rect x="20" y="141" width="80" height="52" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="60" y="162" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="60" y="181" text-anchor="middle" font-size="9" fill="#1565c0">スタート</text>
+
+  <!-- Step 1 (Slip at A) -->
+  <line x1="100" y1="167" x2="162" y2="167" stroke="#7b1fa2" stroke-width="2.2" stroke-dasharray="4,2" marker-end="url(#tr-arrow-purple)"/>
+  <text x="131" y="156" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#7b1fa2">20% (留まる)</text>
+  <text x="131" y="183" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7.5">1</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S1 = A -->
+  <rect x="170" y="141" width="80" height="52" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="210" y="162" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#6a1b9a">S<tspan dy="3" font-size="8">1</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="210" y="181" text-anchor="middle" font-size="9" fill="#7b1fa2">A に留まる</text>
+
+  <!-- Step 2 (Move to B) -->
+  <line x1="250" y1="167" x2="312" y2="167" stroke="#1976d2" stroke-width="2.2" marker-end="url(#tr-arrow-blue)"/>
+  <text x="281" y="156" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0d47a1">80% (0.8)</text>
+  <text x="281" y="183" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7.5">2</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S2 = B -->
+  <rect x="320" y="141" width="80" height="52" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+  <text x="360" y="162" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">2</tspan><tspan dy="-3"> = B</tspan></text>
+  <text x="360" y="181" text-anchor="middle" font-size="9" fill="#475569">B へ移動</text>
+
+  <!-- Step 3 (Move to C) -->
+  <line x1="400" y1="167" x2="462" y2="167" stroke="#e65100" stroke-width="2.2" marker-end="url(#tr-arrow-orange)"/>
+  <text x="431" y="156" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">80% (0.8)</text>
+  <text x="431" y="183" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2e7d32">R<tspan dy="2" font-size="7.5">3</tspan><tspan dy="-2"> = +9</tspan></text>
+
+  <!-- S3 = C -->
+  <rect x="470" y="141" width="66" height="52" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="503" y="162" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#e65100">S<tspan dy="3" font-size="8">3</tspan><tspan dy="-3"> = C</tspan></text>
+  <text x="503" y="181" text-anchor="middle" font-size="9" font-weight="bold" fill="#bf360c">3手で終了</text>
+
+  <!-- Badge 2 -->
+  <rect x="548" y="139" width="152" height="56" rx="6" fill="#f3e5f5" stroke="#ab47bc" stroke-width="1.5"/>
+  <text x="624" y="160" text-anchor="middle" font-size="10" font-weight="bold" fill="#4a148c">確率: 0.2×0.8×0.8 = 12.8%</text>
+  <text x="624" y="181" text-anchor="middle" font-size="11" font-weight="bold" fill="#6a1b9a">収益 G<tspan dy="2" font-size="8">0</tspan><tspan dy="-2"> = 5.39</tspan></text>
+
+  <!-- Divider 2 -->
+  <line x1="20" y1="211" x2="700" y2="211" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5,4"/>
+
+  <!-- ==================== PATTERN 3 ==================== -->
+  <text x="20" y="235" font-size="12.5" font-weight="bold" fill="#e65100">【経路パターン3】状態 B で1回とどまり、3ステップでゴールする場合（A → B → B → C）</text>
+
+  <!-- S0 = A -->
+  <rect x="20" y="246" width="80" height="52" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="60" y="267" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="60" y="286" text-anchor="middle" font-size="9" fill="#1565c0">スタート</text>
+
+  <!-- Step 1 (Move to B) -->
+  <line x1="100" y1="272" x2="162" y2="272" stroke="#1976d2" stroke-width="2.2" marker-end="url(#tr-arrow-blue)"/>
+  <text x="131" y="261" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0d47a1">80% (0.8)</text>
+  <text x="131" y="288" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7.5">1</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S1 = B -->
+  <rect x="170" y="246" width="80" height="52" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+  <text x="210" y="267" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">1</tspan><tspan dy="-3"> = B</tspan></text>
+  <text x="210" y="286" text-anchor="middle" font-size="9" fill="#475569">B へ移動</text>
+
+  <!-- Step 2 (Slip at B) -->
+  <line x1="250" y1="272" x2="312" y2="272" stroke="#7b1fa2" stroke-width="2.2" stroke-dasharray="4,2" marker-end="url(#tr-arrow-purple)"/>
+  <text x="281" y="261" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#7b1fa2">20% (留まる)</text>
+  <text x="281" y="288" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7.5">2</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S2 = B -->
+  <rect x="320" y="246" width="80" height="52" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="360" y="267" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#6a1b9a">S<tspan dy="3" font-size="8">2</tspan><tspan dy="-3"> = B</tspan></text>
+  <text x="360" y="286" text-anchor="middle" font-size="9" fill="#7b1fa2">B に留まる</text>
+
+  <!-- Step 3 (Move to C) -->
+  <line x1="400" y1="272" x2="462" y2="272" stroke="#e65100" stroke-width="2.2" marker-end="url(#tr-arrow-orange)"/>
+  <text x="431" y="261" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">80% (0.8)</text>
+  <text x="431" y="288" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2e7d32">R<tspan dy="2" font-size="7.5">3</tspan><tspan dy="-2"> = +9</tspan></text>
+
+  <!-- S3 = C -->
+  <rect x="470" y="246" width="66" height="52" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="503" y="267" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#e65100">S<tspan dy="3" font-size="8">3</tspan><tspan dy="-3"> = C</tspan></text>
+  <text x="503" y="286" text-anchor="middle" font-size="9" font-weight="bold" fill="#bf360c">3手で終了</text>
+
+  <!-- Badge 3 (Exercise 07-03) -->
+  <rect x="548" y="244" width="152" height="56" rx="6" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="624" y="265" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">確率・収益はいくら？</text>
+  <text x="624" y="285" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">（練習問題 07-03）</text>
+
+  <!-- Footer Note -->
+  <text x="360" y="332" text-anchor="middle" font-size="11" font-weight="bold" fill="#475569">※ このほかにも、A や B で合計2回以上とどまってからゴールする経路（4ステップ以上）が無数に存在する</text>
+</svg>
+```
+
+#### 経路パターン1：1度も滑らずに2ステップでゴールする場合（$\text{A} \to \text{B} \to \text{C}$）
+- **1ステップ目（$t = 0 \to 1$）**：状態 $\text{A}$ で `Right` を選び、**80%（$0.8$）**の確率で状態 $\text{B}$ へ移動します（$R_1 = -1$）。
+- **2ステップ目（$t = 1 \to 2$）**：状態 $\text{B}$ で `Right` を選び、**80%（$0.8$）**の確率で状態 $\text{C}$ へ到達して終了します（$R_2 = +9$）。
+- **この経路をたどる確率**：
+  $$
+  0.8 \times 0.8 = 0.64 \quad (\mathbf{64\%})
+  $$
+- **このときの収益 $G_0$**：
+  $$
+  G_0 = R_1 + \gamma R_2 = (-1) + 0.9 \times 9 = \mathbf{7.1}
+  $$
+
+#### 経路パターン2：最初に状態 $\text{A}$ で1回とどまり、3ステップでゴールする場合（$\text{A} \to \text{A} \to \text{B} \to \text{C}$）
+- **1ステップ目（$t = 0 \to 1$）**：状態 $\text{A}$ で `Right` を選びますが、**20%（$0.2$）**の確率で滑って状態 $\text{A}$ にとどまります（$R_1 = -1$）。
+- **2ステップ目（$t = 1 \to 2$）**：再び状態 $\text{A}$ で `Right` を選び、今度は**80%（$0.8$）**の確率で状態 $\text{B}$ へ移動します（$R_2 = -1$）。
+- **3ステップ目（$t = 2 \to 3$）**：状態 $\text{B}$ で `Right` を選び、**80%（$0.8$）**の確率で状態 $\text{C}$ へ到達して終了します（$R_3 = +9$）。
+- **この経路をたどる確率**：
+  $$
+  0.2 \times 0.8 \times 0.8 = 0.128 \quad (\mathbf{12.8\%})
+  $$
+- **このときの収益 $G_0$**：1ステップ余計にかかったため、移動コスト $-1$ が増えるとともに、ゴール時の報酬 $+9$ が $\gamma^2 = 0.9^2 = 0.81$ 倍に割り引かれます：
+  $$
+  G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = (-1) + 0.9 \times (-1) + 0.9^2 \times 9 = -1 - 0.9 + 7.29 = \mathbf{5.39}
+  $$
+
+このように、確率的な状態遷移をもつ環境では、**同じ方策 $\pi$ に従っていても、1回のエピソードで得られる収益 $G_t$ は試行ごとに異なる値（確率変数）**になります。
+
+::: {.callout-note icon=false}
+### 練習問題 07-03：確率的な状態遷移での確率と収益
+20%の確率でその場にとどまる環境において、**方策①（状態 $\text{A}, \text{B}$ ともに `Right`）**に従い、**状態 $\text{A}$ からスタート（$S_0 = \text{A}$）**したとします（割引率 $\gamma = 0.9$）。
+
+1. 上の図の**【経路パターン3】**のように、「1ステップ目で状態 $\text{A}$ から $\text{B}$ へ移動できたものの、2ステップ目で状態 $\text{B}$ にとどまり、3ステップ目で状態 $\text{C}$ に到達した」場合（経路：$\text{A} \to \text{B} \to \text{B} \to \text{C}$）、この経路をたどる**確率**は何%ですか？また、このときの**収益 $G_0$** はいくらになりますか？
+2. 合計**3ステップ**でゴール（状態 $\text{C}$ に到達）する経路は、パターン2（$\text{A} \to \text{A} \to \text{B} \to \text{C}$）とパターン3（$\text{A} \to \text{B} \to \text{B} \to \text{C}$）の2通りあります。では、合計**4ステップ**でゴールする経路は何通りあり、それぞれどのような状態の列になりますか？
+:::
 
 ---
 
-## マルコフ決定過程（MDP: Markov Decision Process）
+## 確率的な方策
 
-強化学習の理論的基盤となるのが**マルコフ性（Markov Property）**です。
+前節では「環境側の状態遷移」が確率的になる場合を見ましたが、エージェント側の行動ルールである**「方策（Policy）」そのものが確率的になる**場合もあります。
 
-> **マルコフ性とは**:
-> 「未来の状態 $S_{t+1}$ の確率は、直前の現在の状態 $S_t$ と行動 $A_t$ のみに依存し、それ以前の過去の履歴には一切依存しない」という性質。
-> 
-> $$ P(S_{t+1} \mid S_t, A_t, S_{t-1}, A_{t-1}, \dots) = P(S_{t+1} \mid S_t, A_t) $$
+「方策と収益」の節では、各状態 $s$ に対して取るべき行動が $a = \pi(s)$ のようにただ1つに決まっている**決定的方策（Deterministic Policy）**を扱いました。これに対し、「ある状態 $s$ にいるとき、各行動 $a$ をそれぞれどのくらいの確率で選ぶか」を定めた方策を**確率的方策（Stochastic Policy）**と呼び、状態 $s$ で行動 $a$ を選ぶ確率を次のように表します：
 
-現在の状態 $S_t$ さえ見れば、過去の経緯を記憶していなくても将来の予測や最適な行動決定ができるという都合のよい性質です。MDPは、以下の要素の組 $(S, A, P, R, \gamma)$ で定義されます。
+$$
+\pi(a \mid s)
+$$
+
+たとえば、状態 $\text{A}$ において `Right` を選ぶ確率と `Left` を選ぶ確率がそれぞれ $50\%$（$0.5$）である場合、$\pi(\text{Right} \mid \text{A}) = 0.5,\; \pi(\text{Left} \mid \text{A}) = 0.5$ と表します（同じ状態で選びうるすべての行動の選択確率を足し合わせると必ず $1$ になります）。
+
+::: {.callout-tip icon=true}
+### なぜ確率的な方策を使うのか？
+1. **探索（Exploration）を行うため**：前章の多腕バンディット問題で学んだ $\varepsilon$-greedy 法のように、未知の状況を試してより良い経路を発見するためには、一定の確率でランダムに行動を選ぶ必要があります。特に学習開始時は、まだどの行動が良いか分からないため、**完全にランダムに行動を選ぶ方策**からスタートするのが一般的です。
+2. **対戦ゲームなどで裏をかくため**：じゃんけんやカードゲームのように相手がいる環境では、いつも同じ行動をとる決定的方策だと相手に先読みされてしまうため、確率的に行動を散らす方策が有効になります。
+:::
+
+### 例：ランダムに行動を選ぶ方策（50%ずつ `Right` と `Left` を選択）
+
+ここでは、確率的方策の働きを分かりやすく見るため、**環境の状態遷移は決定的（選んだ行動の方向へ100%確実に移動する）**に戻し、エージェントが**状態 $\text{A}$ でも状態 $\text{B}$ でも 50%（確率 $0.5$）ずつランダムに `Right` または `Left` を選ぶ方策**を考えてみましょう。
+
+$$
+\pi(\text{Right} \mid \text{A}) = 0.5, \quad \pi(\text{Left} \mid \text{A}) = 0.5
+$$
+$$
+\pi(\text{Right} \mid \text{B}) = 0.5, \quad \pi(\text{Left} \mid \text{B}) = 0.5
+$$
+
+```{=html}
+<svg viewBox="0 0 720 310" width="100%" height="310" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="sp-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="sp-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="sp-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- Title note -->
+  <text x="360" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">【ランダム方策】各状態で Right を 50%、Left を 50% の確率で選択（環境の状態遷移は100%決定的）</text>
+
+  <!-- Left Wall -->
+  <rect x="104" y="101" width="6" height="113" rx="2" fill="#475569"/>
+
+  <!-- Cell A -->
+  <rect x="110" y="105" width="170" height="105" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="195" y="130" text-anchor="middle" font-size="16" font-weight="bold" fill="#0d47a1">状態 A</text>
+  <circle cx="195" cy="158" r="13" fill="#1976d2"/>
+  <text x="195" y="162" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#ffffff">AI</text>
+  <rect x="123" y="180" width="144" height="20" rx="4" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+  <text x="195" y="194" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">Right 50% ／ Left 50%</text>
+
+  <!-- Cell B -->
+  <rect x="280" y="105" width="170" height="105" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="365" y="130" text-anchor="middle" font-size="16" font-weight="bold" fill="#0d47a1">状態 B</text>
+  <text x="365" y="161" text-anchor="middle" font-size="11.5" fill="#64748b">（通過マス）</text>
+  <rect x="293" y="180" width="144" height="20" rx="4" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+  <text x="365" y="194" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">Right 50% ／ Left 50%</text>
+
+  <!-- Cell C (Terminal / Goal) -->
+  <rect x="450" y="105" width="170" height="105" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/>
+  <text x="535" y="130" text-anchor="middle" font-size="16" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <rect x="471" y="143" width="128" height="24" rx="12" fill="#ffecb3" stroke="#ffa000" stroke-width="1.2"/>
+  <text x="535" y="159" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#bf360c">到達時に報酬 +10</text>
+  <text x="535" y="188" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#c62828">エピソード終了</text>
+
+  <!-- Action Right: A -> B (50%) -->
+  <path d="M 210,105 Q 280,58 345,99" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#sp-arrow-blue)"/>
+  <rect x="195" y="34" width="160" height="40" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.4"/>
+  <text x="275" y="50" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">行動 Right（選択確率 50%）</text>
+  <text x="275" y="66" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">B へ移動 ／ 報酬: -1</text>
+
+  <!-- Action Right: B -> C (50%) -->
+  <path d="M 380,105 Q 450,58 515,99" fill="none" stroke="#e65100" stroke-width="3" marker-end="url(#sp-arrow-orange)"/>
+  <rect x="375" y="34" width="185" height="40" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="467" y="50" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">行動 Right（選択確率 50%）</text>
+  <text x="467" y="66" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">C 到達！ ／ 報酬: -1 + 10 = +9</text>
+
+  <!-- Action Left: B -> A (50%) -->
+  <path d="M 345,210 Q 280,256 215,216" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#sp-arrow-slate)"/>
+  <rect x="200" y="242" width="160" height="42" rx="5" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="280" y="259" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">行動 Left（選択確率 50%）</text>
+  <text x="280" y="275" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">A へ戻る ／ 報酬: -1</text>
+
+  <!-- Action Left at A (50% Self-loop hitting left wall) -->
+  <path d="M 104,137 C 52,120 52,195 98,179" fill="none" stroke="#475569" stroke-width="2.2" stroke-dasharray="4,3" marker-end="url(#sp-arrow-slate)"/>
+  <rect x="14" y="218" width="165" height="42" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="96" y="235" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">行動 Left（選択確率 50%）</text>
+  <text x="96" y="251" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">壁で A に留まる ／ 報酬: -1</text>
+</svg>
+```
+
+### 環境が決定的でも、確率的方策によって経路と収益 $G_0$ が変わる
+
+環境の状態遷移が100%決定的であっても、エージェント自身が確率的に行動を選ぶため、**エピソード（試行）ごとに選ばれる行動の列が変わり、たどる経路と収益 $G_0$ が確率的に変化**します。
+
+このランダム方策に従い、状態 $\text{A}$（$S_0 = \text{A}$）からスタートした場合（割引率 $\gamma = 0.9$）の代表的な経路パターンを見てみましょう。
+
+```{=html}
+<svg viewBox="0 0 720 360" width="100%" height="360" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="rp-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="rp-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="rp-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- ==================== PATTERN 1 ==================== -->
+  <text x="18" y="25" font-size="12.5" font-weight="bold" fill="#0d47a1">【経路パターン1】2回連続で Right を選び、最短2ステップでゴールする場合（A → B → C）</text>
+
+  <!-- S0 = A -->
+  <rect x="18" y="36" width="84" height="52" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="60" y="57" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="60" y="76" text-anchor="middle" font-size="9" fill="#1565c0">スタート</text>
+
+  <!-- Step 1 -->
+  <line x1="102" y1="62" x2="178" y2="62" stroke="#1976d2" stroke-width="2.5" marker-end="url(#rp-arrow-blue)"/>
+  <text x="140" y="51" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0d47a1">Right (50%)</text>
+  <text x="140" y="78" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7.5">1</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S1 = B -->
+  <rect x="186" y="36" width="84" height="52" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+  <text x="228" y="57" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">1</tspan><tspan dy="-3"> = B</tspan></text>
+  <text x="228" y="76" text-anchor="middle" font-size="9" fill="#475569">B へ移動</text>
+
+  <!-- Step 2 -->
+  <line x1="270" y1="62" x2="346" y2="62" stroke="#e65100" stroke-width="2.5" marker-end="url(#rp-arrow-orange)"/>
+  <text x="308" y="51" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">Right (50%)</text>
+  <text x="308" y="78" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2e7d32">R<tspan dy="2" font-size="7.5">2</tspan><tspan dy="-2"> = +9</tspan></text>
+
+  <!-- S2 = C -->
+  <rect x="354" y="36" width="90" height="52" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="399" y="57" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#e65100">S<tspan dy="3" font-size="8">2</tspan><tspan dy="-3"> = C ★</tspan></text>
+  <text x="399" y="76" text-anchor="middle" font-size="9" font-weight="bold" fill="#bf360c">2手で終了</text>
+
+  <!-- Badge 1 -->
+  <rect x="548" y="34" width="154" height="56" rx="6" fill="#e8f5e9" stroke="#66bb6a" stroke-width="1.5"/>
+  <text x="625" y="55" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">確率: 0.5×0.5 = 25%</text>
+  <text x="625" y="76" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">収益 G<tspan dy="2" font-size="8">0</tspan><tspan dy="-2"> = 7.1</tspan></text>
+
+  <!-- Divider 1 -->
+  <line x1="18" y1="106" x2="702" y2="106" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5,4"/>
+
+  <!-- ==================== PATTERN 2 ==================== -->
+  <text x="18" y="130" font-size="12.5" font-weight="bold" fill="#334155">【経路パターン2】最初に A で Left を選び、その後2回 Right を選ぶ場合（A → A → B → C）</text>
+
+  <!-- S0 = A -->
+  <rect x="18" y="141" width="76" height="52" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="56" y="162" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">0</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="56" y="181" text-anchor="middle" font-size="8.5" fill="#1565c0">スタート</text>
+
+  <!-- Step 1 (Left at A) -->
+  <line x1="94" y1="167" x2="154" y2="167" stroke="#475569" stroke-width="2.2" stroke-dasharray="4,2" marker-end="url(#rp-arrow-slate)"/>
+  <text x="124" y="156" text-anchor="middle" font-size="9" font-weight="bold" fill="#334155">Left (50%)</text>
+  <text x="124" y="183" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7">1</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S1 = A -->
+  <rect x="162" y="141" width="76" height="52" rx="6" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+  <text x="200" y="162" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">S<tspan dy="3" font-size="8">1</tspan><tspan dy="-3"> = A</tspan></text>
+  <text x="200" y="181" text-anchor="middle" font-size="8.5" fill="#475569">壁で留まる</text>
+
+  <!-- Step 2 (Right at A) -->
+  <line x1="238" y1="167" x2="298" y2="167" stroke="#1976d2" stroke-width="2.2" marker-end="url(#rp-arrow-blue)"/>
+  <text x="268" y="156" text-anchor="middle" font-size="9" font-weight="bold" fill="#0d47a1">Right (50%)</text>
+  <text x="268" y="183" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="7">2</tspan><tspan dy="-2"> = -1</tspan></text>
+
+  <!-- S2 = B -->
+  <rect x="306" y="141" width="76" height="52" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+  <text x="344" y="162" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">S<tspan dy="3" font-size="8">2</tspan><tspan dy="-3"> = B</tspan></text>
+  <text x="344" y="181" text-anchor="middle" font-size="8.5" fill="#475569">B へ移動</text>
+
+  <!-- Step 3 (Right at B) -->
+  <line x1="382" y1="167" x2="442" y2="167" stroke="#e65100" stroke-width="2.2" marker-end="url(#rp-arrow-orange)"/>
+  <text x="412" y="156" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">Right (50%)</text>
+  <text x="412" y="183" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">R<tspan dy="2" font-size="7">3</tspan><tspan dy="-2"> = +9</tspan></text>
+
+  <!-- S3 = C -->
+  <rect x="450" y="141" width="72" height="52" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="486" y="162" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">S<tspan dy="3" font-size="8">3</tspan><tspan dy="-3"> = C ★</tspan></text>
+  <text x="486" y="181" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#bf360c">3手で終了</text>
+
+  <!-- Badge 2 -->
+  <rect x="548" y="139" width="154" height="56" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="625" y="160" text-anchor="middle" font-size="10" font-weight="bold" fill="#1e293b">確率: 0.5³ = 12.5%</text>
+  <text x="625" y="181" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">収益 G<tspan dy="2" font-size="8">0</tspan><tspan dy="-2"> = 5.39</tspan></text>
+
+  <!-- Divider 2 -->
+  <line x1="18" y1="211" x2="702" y2="211" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5,4"/>
+
+  <!-- ==================== PATTERN 3 ==================== -->
+  <text x="18" y="235" font-size="12.5" font-weight="bold" fill="#e65100">【経路パターン3】B へ進んだあと Left で A に戻り、4ステップでゴールする場合（A → B → A → B → C）</text>
+
+  <!-- S0 = A -->
+  <rect x="18" y="246" width="56" height="52" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.8"/>
+  <text x="46" y="267" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">S<tspan dy="2" font-size="7.5">0</tspan><tspan dy="-2">=A</tspan></text>
+  <text x="46" y="285" text-anchor="middle" font-size="8" fill="#1565c0">開始</text>
+
+  <!-- Step 1 -->
+  <line x1="74" y1="272" x2="122" y2="272" stroke="#1976d2" stroke-width="2" marker-end="url(#rp-arrow-blue)"/>
+  <text x="98" y="261" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#0d47a1">Right(50%)</text>
+  <text x="98" y="287" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="6.5">1</tspan><tspan dy="-2">=-1</tspan></text>
+
+  <!-- S1 = B -->
+  <rect x="128" y="246" width="56" height="52" rx="5" fill="#ffffff" stroke="#1976d2" stroke-width="1.8"/>
+  <text x="156" y="267" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">S<tspan dy="2" font-size="7.5">1</tspan><tspan dy="-2">=B</tspan></text>
+  <text x="156" y="285" text-anchor="middle" font-size="8" fill="#475569">右へ</text>
+
+  <!-- Step 2 (Left back to A) -->
+  <line x1="184" y1="272" x2="232" y2="272" stroke="#475569" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#rp-arrow-slate)"/>
+  <text x="208" y="261" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#334155">Left(50%)</text>
+  <text x="208" y="287" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="6.5">2</tspan><tspan dy="-2">=-1</tspan></text>
+
+  <!-- S2 = A -->
+  <rect x="238" y="246" width="56" height="52" rx="5" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+  <text x="266" y="267" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">S<tspan dy="2" font-size="7.5">2</tspan><tspan dy="-2">=A</tspan></text>
+  <text x="266" y="285" text-anchor="middle" font-size="8" fill="#475569">A に戻る</text>
+
+  <!-- Step 3 -->
+  <line x1="294" y1="272" x2="342" y2="272" stroke="#1976d2" stroke-width="2" marker-end="url(#rp-arrow-blue)"/>
+  <text x="318" y="261" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#0d47a1">Right(50%)</text>
+  <text x="318" y="287" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#c62828">R<tspan dy="2" font-size="6.5">3</tspan><tspan dy="-2">=-1</tspan></text>
+
+  <!-- S3 = B -->
+  <rect x="348" y="246" width="56" height="52" rx="5" fill="#ffffff" stroke="#1976d2" stroke-width="1.8"/>
+  <text x="376" y="267" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">S<tspan dy="2" font-size="7.5">3</tspan><tspan dy="-2">=B</tspan></text>
+  <text x="376" y="285" text-anchor="middle" font-size="8" fill="#475569">再び B</text>
+
+  <!-- Step 4 -->
+  <line x1="404" y1="272" x2="452" y2="272" stroke="#e65100" stroke-width="2" marker-end="url(#rp-arrow-orange)"/>
+  <text x="428" y="261" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Right(50%)</text>
+  <text x="428" y="287" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#2e7d32">R<tspan dy="2" font-size="6.5">4</tspan><tspan dy="-2">=+9</tspan></text>
+
+  <!-- S4 = C -->
+  <rect x="458" y="246" width="64" height="52" rx="5" fill="#fff8e1" stroke="#f57c00" stroke-width="2.2"/>
+  <text x="490" y="267" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">S<tspan dy="2" font-size="7.5">4</tspan><tspan dy="-2">=C ★</tspan></text>
+  <text x="490" y="285" text-anchor="middle" font-size="8" font-weight="bold" fill="#bf360c">4手で終了</text>
+
+  <!-- Badge 3 (Exercise 07-04) -->
+  <rect x="548" y="244" width="154" height="56" rx="6" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="625" y="265" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">確率・収益はいくら？</text>
+  <text x="625" y="285" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">（練習問題 07-04）</text>
+
+  <!-- Footer Note -->
+  <text x="360" y="335" text-anchor="middle" font-size="11" font-weight="bold" fill="#475569">※ このほかにも、A と B の間を何度も往復したり壁に当たり続けたりする無数の経路が存在する</text>
+</svg>
+```
+
+#### 経路パターン1：2回連続で `Right` を選び、2ステップでゴールする場合（$\text{A} \to \text{B} \to \text{C}$）
+- **1ステップ目（$t = 0 \to 1$）**：状態 $\text{A}$ で **50%（$0.5$）**の確率で `Right` を選び、状態 $\text{B}$ へ移動します（$R_1 = -1$）。
+- **2ステップ目（$t = 1 \to 2$）**：状態 $\text{B}$ で **50%（$0.5$）**の確率で `Right` を選び、状態 $\text{C}$ へ到達して終了します（$R_2 = +9$）。
+- **この経路をたどる確率**：
+  $$
+  0.5 \times 0.5 = 0.25 \quad (\mathbf{25\%})
+  $$
+- **このときの収益 $G_0$**：
+  $$
+  G_0 = R_1 + \gamma R_2 = (-1) + 0.9 \times 9 = \mathbf{7.1}
+  $$
+
+#### 経路パターン2：最初に状態 $\text{A}$ で `Left` を選び、3ステップでゴールする場合（$\text{A} \to \text{A} \to \text{B} \to \text{C}$）
+- **1ステップ目（$t = 0 \to 1$）**：状態 $\text{A}$ で **50%（$0.5$）**の確率で `Left` を選び、左の壁に阻まれて状態 $\text{A}$ にとどまります（$R_1 = -1$）。
+- **2ステップ目（$t = 1 \to 2$）**：状態 $\text{A}$ で **50%（$0.5$）**の確率で `Right` を選び、状態 $\text{B}$ へ移動します（$R_2 = -1$）。
+- **3ステップ目（$t = 2 \to 3$）**：状態 $\text{B}$ で **50%（$0.5$）**の確率で `Right` を選び、状態 $\text{C}$ へ到達して終了します（$R_3 = +9$）。
+- **この経路をたどる確率**：
+  $$
+  0.5 \times 0.5 \times 0.5 = 0.125 \quad (\mathbf{12.5\%})
+  $$
+- **このときの収益 $G_0$**：
+  $$
+  G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = (-1) + 0.9 \times (-1) + 0.9^2 \times 9 = -1 - 0.9 + 7.29 = \mathbf{5.39}
+  $$
+
+さらに、上の図の**【経路パターン3】**（$\text{A} \to \text{B} \to \text{A} \to \text{B} \to \text{C}$）のように、状態 $\text{B}$ で `Left`（50%）を選んだ場合は**状態 $\text{A}$ へ逆戻り**することになります。
+
+このように、**「環境の状態遷移が確率的である場合」**だけでなく、**「エージェントの方策が確率的である場合」**（あるいはその両方である場合）にも、1回のエピソードで得られる収益 $G_t$ は試行ごとにばらつくことになります。
+
+::: {.callout-note icon=false}
+### 練習問題 07-04：ランダム方策での確率と収益
+決定的な状態遷移（選んだ方向へ100%移動する環境）において、**50%ずつランダムに `Right` または `Left` を選ぶ方策**に従い、**状態 $\text{A}$ からスタート（$S_0 = \text{A}$）**したとします（割引率 $\gamma = 0.9$）。
+
+1. 上の図の**【経路パターン3】**のように、`Right` $\to$ `Left` $\to$ `Right` $\to$ `Right` の順に行動を選んで4ステップでゴールした場合（経路：$\text{A} \to \text{B} \to \text{A} \to \text{B} \to \text{C}$）、この経路をたどる**確率**は何%ですか？また、このときの**収益 $G_0$** はいくらになりますか？（ヒント：$0.9^3 = 0.729$）
+2. 前節の「20%でその場にとどまる環境（常に `Right` を選ぶ方策）」では、3ステップでゴールする経路が $\text{A} \to \text{A} \to \text{B} \to \text{C}$ と $\text{A} \to \text{B} \to \text{B} \to \text{C}$ の**2通り**ありました。一方、今回の「決定的な環境でのランダム方策」では、ちょうど3ステップでゴールする経路が $\text{A} \to \text{A} \to \text{B} \to \text{C}$ の**1通り**しかありません。なぜ今回は $\text{A} \to \text{B} \to \text{B} \to \text{C}$ という経路が起こらないのでしょうか？
+:::
+
+---
+
+## 確率的な状態遷移と確率的な方策
+
+ここまでの2つの節では、「環境の状態遷移だけが確率的な場合（方策は決定的）」と「エージェントの方策だけが確率的な場合（環境は決定的）」をそれぞれ個別に見てきました。
+
+しかし、実際の強化学習では**「環境の状態遷移が確率的」であり、かつ「エージェントの方策も確率的」**という状況がごく一般的に現れます。たとえば、滑りやすい床や風が吹く環境の中で、エージェントが未知の状況を探索するためにランダム性を交えて行動を選択する場合などがこれにあたります。
+
+このように両方とも確率的である場合、現在の状態 $S_t$ から次の状態 $S_{t+1}$ が決まるまでに、次の**2段階の確率的な枝分かれ**が順番に起こります：
+
+1. **第1段階（エージェントの方策 $\pi$）**：現在の状態 $S_t$ において、エージェントが確率的方策 $\pi(a \mid s)$ に従って**行動 $A_t$ を確率的に選ぶ**。
+2. **第2段階（環境の状態遷移）**：選ばれた行動 $A_t$ に対して、環境が状態遷移確率に従って**次の状態 $S_{t+1}$（と報酬 $R_{t+1}$）を確率的に決める**。
+
+### 状態 $\text{A}$ から次の状態が決まる様子
+
+これまでの2つの例を組み合わせて、次の設定で**状態 $\text{A}$（$S_t = \text{A}$）から1ステップ後の状態 $S_{t+1}$ が決まる様子**を具体的に追ってみましょう。
+
+- **エージェント（確率的方策）**：各状態で **`Right` を 50%（$0.5$）**、**`Left` を 50%（$0.5$）** の確率で選ぶ。
+- **環境（確率的状態遷移）**：選んだ方向へ **80%（$0.8$）の確率で移動**し、**20%（$0.2$）の確率でスリップしてその場に留まる**（ただし状態 $\text{A}$ の左には壁があるため、`Left` を選んだ場合は移動しようとしても壁に阻まれて状態 $\text{A}$ に留まる）。
+
+このとき、状態 $\text{A}$ から次の状態 $S_{t+1}$ が決まるまでの過程を枝分かれの図（樹形図）として描くと、次のようになります。
+
+```{=html}
+<svg viewBox="0 0 750 410" width="100%" height="410" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="br-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="br-arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#7b1fa2" />
+    </marker>
+    <marker id="br-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- ==================== STAGE HEADERS ==================== -->
+  <rect x="14" y="12" width="106" height="26" rx="5" fill="#e2e8f0"/>
+  <text x="67" y="29" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">現在の状態 S<tspan dy="2" font-size="8.5">t</tspan></text>
+
+  <rect x="135" y="12" width="182" height="26" rx="5" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+  <text x="226" y="29" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">① 方策 π による行動選択</text>
+
+  <rect x="332" y="12" width="256" height="26" rx="5" fill="#f3e5f5" stroke="#ce93d8" stroke-width="1"/>
+  <text x="460" y="29" text-anchor="middle" font-size="11" font-weight="bold" fill="#6a1b9a">② 環境による状態遷移と各枝の確率</text>
+
+  <rect x="602" y="12" width="134" height="26" rx="5" fill="#fff3e0" stroke="#ffb74d" stroke-width="1"/>
+  <text x="669" y="29" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">次の状態 S<tspan dy="2" font-size="8.5">t+1</tspan><tspan dy="-2"> の集計</tspan></text>
+
+  <!-- ==================== ROOT: CURRENT STATE A ==================== -->
+  <rect x="16" y="168" width="102" height="84" rx="8" fill="#ffffff" stroke="#0d47a1" stroke-width="2.5"/>
+  <text x="67" y="193" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">状態 A</text>
+  <circle cx="67" cy="216" r="12" fill="#1976d2"/>
+  <text x="67" y="220" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffffff">AI</text>
+  <text x="67" y="243" text-anchor="middle" font-size="10" fill="#475569">S<tspan dy="2" font-size="8">t</tspan><tspan dy="-2"> = A（左端）</tspan></text>
+
+  <!-- ==================== STAGE 1: POLICY BRANCHING ==================== -->
+  <!-- Branch to Right (50%) -->
+  <path d="M 118,195 Q 150,124 182,124" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#br-arrow-blue)"/>
+  <rect x="122" y="130" width="58" height="20" rx="4" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+  <text x="151" y="144" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">50% (0.5)</text>
+
+  <!-- Action Node: Right -->
+  <rect x="188" y="96" width="118" height="56" rx="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="247" y="120" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#0d47a1">行動 Right</text>
+  <text x="247" y="138" text-anchor="middle" font-size="9.5" fill="#1565c0">π(Right | A) = 0.5</text>
+
+  <!-- Branch to Left (50%) -->
+  <path d="M 118,225 Q 150,296 182,296" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#br-arrow-slate)"/>
+  <rect x="122" y="268" width="58" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="151" y="282" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">50% (0.5)</text>
+
+  <!-- Action Node: Left -->
+  <rect x="188" y="268" width="118" height="56" rx="28" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+  <text x="247" y="292" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#334155">行動 Left</text>
+  <text x="247" y="310" text-anchor="middle" font-size="9.5" fill="#475569">π(Left | A) = 0.5</text>
+
+  <!-- ==================== STAGE 2: ENVIRONMENT BRANCHING ==================== -->
+  <!-- 1. Right -> Move 80% -> State B -->
+  <path d="M 306,112 Q 355,80 412,80" fill="none" stroke="#1976d2" stroke-width="2.6" marker-end="url(#br-arrow-blue)"/>
+  <text x="360" y="72" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">移動 80% (0.8)</text>
+  <text x="360" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">報酬 R = -1</text>
+
+  <rect x="420" y="50" width="166" height="60" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="503" y="73" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#0d47a1">S<tspan dy="2" font-size="9">t+1</tspan><tspan dy="-2"> = B（右へ移動）</tspan></text>
+  <text x="503" y="96" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1565c0">確率: 0.5 × 0.8 = 40%</text>
+
+  <!-- 2. Right -> Slip 20% -> State A -->
+  <path d="M 306,136 Q 355,168 412,168" fill="none" stroke="#7b1fa2" stroke-width="2.2" stroke-dasharray="4,2" marker-end="url(#br-arrow-purple)"/>
+  <text x="360" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#7b1fa2">滑る 20% (0.2)</text>
+  <text x="360" y="182" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">報酬 R = -1</text>
+
+  <rect x="420" y="138" width="166" height="60" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="503" y="161" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#6a1b9a">S<tspan dy="2" font-size="9">t+1</tspan><tspan dy="-2"> = A（滑って留まる）</tspan></text>
+  <text x="503" y="184" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#7b1fa2">確率: 0.5 × 0.2 = 10%</text>
+
+  <!-- 3. Left -> Wall 80% -> State A -->
+  <path d="M 306,284 Q 355,254 412,254" fill="none" stroke="#475569" stroke-width="2.4" marker-end="url(#br-arrow-slate)"/>
+  <text x="360" y="246" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">壁で阻まれる 80%</text>
+  <text x="360" y="270" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">報酬 R = -1</text>
+
+  <rect x="420" y="224" width="166" height="60" rx="6" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+  <text x="503" y="247" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#334155">S<tspan dy="2" font-size="9">t+1</tspan><tspan dy="-2"> = A（壁で留まる）</tspan></text>
+  <text x="503" y="270" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#475569">確率: 0.5 × 0.8 = 40%</text>
+
+  <!-- 4. Left -> Slip 20% -> State A -->
+  <path d="M 306,308 Q 355,340 412,340" fill="none" stroke="#7b1fa2" stroke-width="2.2" stroke-dasharray="4,2" marker-end="url(#br-arrow-purple)"/>
+  <text x="360" y="320" text-anchor="middle" font-size="10" font-weight="bold" fill="#7b1fa2">滑る 20% (0.2)</text>
+  <text x="360" y="354" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">報酬 R = -1</text>
+
+  <rect x="420" y="310" width="166" height="60" rx="6" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="503" y="333" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#6a1b9a">S<tspan dy="2" font-size="9">t+1</tspan><tspan dy="-2"> = A（滑って留まる）</tspan></text>
+  <text x="503" y="356" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#7b1fa2">確率: 0.5 × 0.2 = 10%</text>
+
+  <!-- ==================== STAGE 3: AGGREGATION SUMMARY ==================== -->
+  <!-- Connector for State B -->
+  <line x1="586" y1="80" x2="604" y2="80" stroke="#1976d2" stroke-width="2"/>
+  <rect x="606" y="50" width="130" height="60" rx="6" fill="#e3f2fd" stroke="#0d47a1" stroke-width="2.2"/>
+  <text x="671" y="73" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">状態 B へ進む</text>
+  <text x="671" y="96" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565c0">合計 40%</text>
+
+  <!-- Bracket grouping the 3 State A outcomes -->
+  <path d="M 590,168 L 598,168 L 598,340 L 590,340" fill="none" stroke="#bf360c" stroke-width="2"/>
+  <line x1="598" y1="254" x2="606" y2="254" stroke="#bf360c" stroke-width="2"/>
+
+  <rect x="606" y="194" width="130" height="120" rx="6" fill="#fff3e0" stroke="#e65100" stroke-width="2.2"/>
+  <text x="671" y="218" text-anchor="middle" font-size="12" font-weight="bold" fill="#bf360c">状態 A に留まる</text>
+  <text x="671" y="240" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">10% + 40% + 10%</text>
+  <text x="671" y="264" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#c62828">合計 60%</text>
+  <text x="671" y="286" text-anchor="middle" font-size="9" fill="#555">（Rightで滑る 10%</text>
+  <text x="671" y="300" text-anchor="middle" font-size="9" fill="#555">＋ Leftで留まる 50%）</text>
+
+  <!-- Bottom Note -->
+  <text x="375" y="394" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#475569">※ 行動 Left を選んだ場合は壁（80%）でもスリップ（20%）でも A に留まるため、まとめて 0.5 × 1.0 = 50% と計算してもよい</text>
+</svg>
+```
+
+上の枝分かれの図を左から順にたどると、各枝の確率と最終的な次の状態 $S_{t+1}$ の確率は次のように計算できます：
+
+1. **行動 `Right`（選択確率 $50\% = 0.5$）を選んだ場合**：
+   - **80%（$0.8$）で移動に成功**：次の状態は **$S_{t+1} = \text{B}$**（報酬 $R_{t+1} = -1$）となります。この枝をたどる確率は、行動を選ぶ確率と状態遷移の確率を掛け合わせて
+     $$
+     0.5 \times 0.8 = 0.40 \quad (\mathbf{40\%})
+     $$
+   - **20%（$0.2$）でスリップ**：次の状態は **$S_{t+1} = \text{A}$**（報酬 $R_{t+1} = -1$）のままとなります。この枝をたどる確率は
+     $$
+     0.5 \times 0.2 = 0.10 \quad (\mathbf{10\%})
+     $$
+
+2. **行動 `Left`（選択確率 $50\% = 0.5$）を選んだ場合**：
+   - 左に動こうとして壁に阻まれる場合（$80\%$）も、スリップする場合（$20\%$）も、どちらも次の状態は **$S_{t+1} = \text{A}$**（報酬 $R_{t+1} = -1$）となります。したがって、`Left` を選んで状態 $\text{A}$ に留まる確率は
+     $$
+     0.5 \times 0.8 + 0.5 \times 0.2 = 0.40 + 0.10 = 0.50 \quad (\mathbf{50\%})
+     $$
+     （最初から「`Left` を選べば $100\%$（$1.0$）の確率で $\text{A}$ に留まる」と考えて $0.5 \times 1.0 = 0.50$ と計算しても同じです。）
+
+3. **次の状態 $S_{t+1}$ ごとに確率をまとめる**：
+   注目すべき点は、**「`Right` を選んだけれどスリップしたケース（$10\%$）」**と**「`Left` を選んで留まったケース（$50\%$）」**という異なる枝から、どちらも同じ**状態 $\text{A}$** に到達していることです。これらを足し合わせると、状態 $\text{A}$ から1ステップ進んだ後の状態 $S_{t+1}$ の確率分布は次のようになります：
+   - **状態 $\text{B}$ へ進む確率**：**$40\%$**（$0.4$）
+   - **状態 $\text{A}$ に留まる確率**：$10\% + 50\% = \mathbf{60\%}$（$0.6$）
+
+### エピソード全体の経路の確率と収益 $G_0$
+
+同様に、中央の**状態 $\text{B}$** にいるときも「① 行動の選択（`Right` $50\%$ ／ `Left` $50\%$）」と「② 環境の状態遷移（移動成功 $80\%$ ／ スリップ $20\%$）」の2段階の枝分かれが起こります。たとえば状態 $\text{B}$ から1ステップでゴール（状態 $\text{C}$）へ到達するには、状態 $\text{B}$ で `Right`（$50\%$）を選び、かつ滑らずに移動（$80\%$）する必要があるため、その確率は $0.5 \times 0.8 = 0.40$（**$40\%$**）となります。
+
+これを使うと、状態 $\text{A}$ からスタート（$S_0 = \text{A}$）したときの各経路の確率と収益 $G_0$（割引率 $\gamma = 0.9$）もこれまでと同じように計算できます：
+
+- **最短の2ステップでゴールする場合（$\text{A} \to \text{B} \to \text{C}$）**：
+  - 1ステップ目に $\text{A} \to \text{B}$ となる確率が **$40\%$（$0.4$）**、2ステップ目に $\text{B} \to \text{C}$ となる確率も **$40\%$（$0.4$）** なので、この経路をたどる確率は
+    $$
+    0.4 \times 0.4 = 0.16 \quad (\mathbf{16\%})
+    $$
+  - 収益はこれまでと同じく $G_0 = (-1) + 0.9 \times 9 = \mathbf{7.1}$ です。
+
+- **最初に状態 $\text{A}$ に1回留まり、3ステップでゴールする場合（$\text{A} \to \text{A} \to \text{B} \to \text{C}$）**：
+  - 1ステップ目に $\text{A} \to \text{A}$ となる確率は、`Right` で滑る確率（$10\%$）と `Left` で留まる確率（$50\%$）を合わせた **$60\%$（$0.6$）** です。その後 $\text{A} \to \text{B}$（$0.4$）、$\text{B} \to \text{C}$（$0.4$）と進むため、合計の確率は
+    $$
+    0.6 \times 0.4 \times 0.4 = 0.096 \quad (\mathbf{9.6\%})
+    $$
+  - 収益は $G_0 = (-1) + 0.9 \times (-1) + 0.9^2 \times 9 = \mathbf{5.39}$ です。
+
+::: {.callout-note icon=false}
+### 練習問題 07-05：確率的な状態遷移かつ確率的な方策での計算
+「20%の確率でスリップしてその場に留まる環境」において、「各状態で 50%ずつ `Right` または `Left` を選ぶ方策」に従うとします（割引率 $\gamma = 0.9$）。
+
+1. エージェントが中央の**状態 $\text{B}$**（$S_t = \text{B}$）にいるとき、状態 $\text{A}$ のときと同じように2段階の枝分かれを考えると、1ステップ後の状態 $S_{t+1}$ が **状態 $\text{C}$（ゴール）**、**状態 $\text{B}$（その場に留まる）**、**状態 $\text{A}$（左へ戻る）** になる確率はそれぞれ何%ですか？（ヒント：状態 $\text{B}$ に留まるケースは、`Right` を選んで滑る枝と `Left` を選んで滑る枝の2つがあります）
+2. 状態 $\text{A}$ からスタート（$S_0 = \text{A}$）し、「1ステップ目で状態 $\text{B}$ へ進み、2ステップ目で状態 $\text{B}$ に留まり、3ステップ目で状態 $\text{C}$ に到達する」という経路（$\text{A} \to \text{B} \to \text{B} \to \text{C}$）をたどる**確率**は何%ですか？また、このときの**収益 $G_0$** はいくらになりますか？
+:::
+
+---
+
+## vibe codingによるシミュレーションの作成
+
+ここまで学んだ「3マスの移動問題（確率的な状態遷移 × 確率的な方策）」を、Antigravity（coding agent）を使って **vibe coding** でプログラムとして作成し、実際にエージェントがたどる経路と得られる収益 $G_0$ を確認してみましょう。
+
+（※ エージェントの動きをアニメーションで可視化する方法は次節以降で扱うため、ここではまず**ターミナル上に文字（テキスト）で1ステップごとの動きと最終的な経路・収益を表示するプログラム**を作成します。）
+
+### 作成するプログラムの仕様
+
+エージェントには、以下の要件を満たすシミュレーションプログラムを作成してもらいます：
+
+1. **環境（3マスの移動問題・確率的状態遷移）**:
+   - 横一列に並んだ3つの状態 $\text{A}, \text{B}, \text{C}$ があり、初期状態は $S_0 = \text{A}$、右端の $\text{C}$ に到達したらエピソード終了（終端状態）とする。
+   - エージェントが選んだ方向へ **80%（確率 $0.8$）で移動に成功**し、**20%（確率 $0.2$）でスリップしてその場に留まる**。ただし、状態 $\text{A}$ の左には壁があるため、状態 $\text{A}$ で `Left` を選んだ場合は移動・スリップにかかわらず状態 $\text{A}$ に留まる。
+   - 報酬は、行動1回につき **$-1$**、状態 $\text{C}$ に到達したときは **$+10$** が加わる（つまり通常のステップは $-1$、$\text{B}$ から $\text{C}$ に到達したステップは $-1 + 10 = +9$）。
+2. **エージェント（確率的方策）**:
+   - 状態 $\text{A}$ および状態 $\text{B}$ において、それぞれ **50%（確率 $0.5$）で `Right`**、**50%（確率 $0.5$）で `Left`** をランダムに選ぶ。
+3. **文字による経過と結果の表示**:
+   - 割引率は $\gamma = 0.9$ とする。
+   - 状態 $\text{A}$ からスタートして状態 $\text{C}$ に到達するまでの1エピソードを実行し、各ステップで「ステップ番号」「現在の状態 $S_t$」「選んだ行動 $A_t$」「結果（移動成功／スリップ／壁）と次の状態 $S_{t+1}$」「得られた報酬 $R_{t+1}$」を文字で順番に表示する。
+   - エピソード終了後に、**たどった状態の経路（例：`A -> B -> C`）**、**合計ステップ数**、および **割引率 $\gamma = 0.9$ で計算した収益 $G_0$** を表示する。
+
+### エージェントへの指示（プロンプト例）
+
+Antigravityのチャット欄に、次のように指示（プロンプト）を入力して送信します。
+
+::: {.callout-tip icon=true}
+### プロンプト入力例
+横一列の3つの状態 A, B, C を移動する強化学習のシミュレーションプログラムを `three_states_sim.py` として作成してください（アニメーションやグラフは使わず、ターミナルに文字だけで表示してください）。
+
+【環境のルール】
+- 初期状態は A で、C に到達するとエピソード終了です。
+- 選べる行動は `Right` と `Left` の2つです。
+- 状態遷移は確率的で、80%の確率で選んだ方向へ移動し、20%の確率でスリップしてその場に留まります（状態 A の左には壁があるため、A で `Left` を選んで移動しようとした場合も壁に阻まれて A に留まります）。
+- 報酬は、1回の行動につき `-1`、状態 C に到達したときに `+10` が与えられます（C 到達ステップの報酬は `-1 + 10 = +9`）。
+
+【エージェントの方策と表示内容】
+- エージェントは状態 A, B において、50%の確率で `Right`、50%の確率で `Left` を選ぶ確率的方策に従います。
+- 割引率は `gamma = 0.9` とします。
+- 1エピソードを実行し、各ステップの「現在の状態」「選んだ行動」「移動結果（移動成功・スリップ・壁）と次の状態」「報酬」を1行ずつ文字で表示してください。
+- ゴール（状態 C）に到達したら、最後に「たどった経路（例: `A -> B -> C`）」「合計ステップ数」「割引率 0.9 での収益 G_0」を表示してください。
+- 作成後、実際にプログラムを数回実行して動作確認を行ってください。
+:::
+
+### 実行結果の確認
+
+エージェントがプログラムを作成して実行すると、ターミナルに以下のような文字出力が表示されます。確率的方策と確率的状態遷移の両方に乱数が使われているため、**プログラムを実行するたびにたどる経路も収益 $G_0$ も変化**します。
+
+#### 実行例1：最短の2ステップでゴールした場合
+
+```text
+=== 3マス移動シミュレーション開始 (初期状態: A, 割引率 γ = 0.9) ===
+ステップ 1: 状態 A | 行動: Right | 結果: 移動成功 -> 次の状態 B | 報酬: -1
+ステップ 2: 状態 B | 行動: Right | 結果: 移動成功 -> 次の状態 C | 報酬: +9 (ゴール到達！)
+
+=== エピソード終了 ===
+たどった経路 : A -> B -> C
+合計ステップ数: 2 ステップ
+獲得した収益 G_0: 7.100
+```
+
+#### 実行例2：途中でスリップや壁への移動が起きた場合
+
+```text
+=== 3マス移動シミュレーション開始 (初期状態: A, 割引率 γ = 0.9) ===
+ステップ 1: 状態 A | 行動: Right | 結果: スリップ -> 次の状態 A | 報酬: -1
+ステップ 2: 状態 A | 行動: Left  | 結果: 壁で留まる -> 次の状態 A | 報酬: -1
+ステップ 3: 状態 A | 行動: Right | 結果: 移動成功 -> 次の状態 B | 報酬: -1
+ステップ 4: 状態 B | 行動: Right | 結果: 移動成功 -> 次の状態 C | 報酬: +9 (ゴール到達！)
+
+=== エピソード終了 ===
+たどった経路 : A -> A -> A -> B -> C
+合計ステップ数: 4 ステップ
+獲得した収益 G_0: 3.851
+```
+
+実行例2では、1ステップ目に `Right` を選んだものの20%のスリップを引き、2ステップ目には `Left` を選んで壁に阻まれ、合計4ステップでゴールしています。その結果、手数が増えた分の行動コスト（$-1$）と割引率 $\gamma = 0.9$ の影響によって、収益が $G_0 = (-1) + 0.9\times(-1) + 0.9^2\times(-1) + 0.9^3\times 9 = 3.851$ へと下がっていることが確認できます。
+
+::: {.callout-note icon=false}
+### 練習問題 07-06：シミュレーションの実行と方策の変更
+1. 作成したプログラムを5回ほど繰り返し実行し、**最も少ないステップ数でゴールしたときの経路と収益 $G_0$**、および**最も多くのステップ数がかかったときの経路と収益 $G_0$** を確認してみましょう。
+2. Antigravityに追加の指示を出して、エージェントの方策を「`Right` を選ぶ確率 80%、`Left` を選ぶ確率 20%」に変更してもらうと、ゴールまでにかかるステップ数や収益 $G_0$ の傾向はどのように変わるでしょうか？実際に修正・実行して確かめてみましょう。
+:::
+
+---
+
+## 2Dゲーム・アニメーションライブラリ Pygame とは？
+
+前節ではターミナル上に文字でエージェントの移動履歴を表示しましたが、強化学習の実験では**エージェントが環境の中で実際にどのように動いているかをアニメーション（映像）として視覚的に確認する**ことが非常に役立ちます。文字だけでは気づきにくい「同じ場所をウロウロしている」「壁にぶつかり続けている」といった振る舞いも、画面上で動いている様子を見れば一目で直感的に把握できます。
+
+Pythonで2Dゲームやアニメーションを手軽に作成・描画できる代表的な外部ライブラリが **Pygame（パイゲーム）** です。
+
+- **Pygame でできること**:
+  専用のウィンドウを開き、円や四角形などの図形・テキスト・画像を自由な位置に描画して、1秒間に何十回も画面を書き換えることで滑らかなアニメーションを実現できます。キーボードやマウスの操作を受け取ることも可能です。
+- **強化学習との関わり**:
+  第8回以降で使用する強化学習の標準ライブラリ **Gymnasium** でも、内部で環境の画面描画（レンダリング）を行うために Pygame が広く使われています。
+
+### Pygame のインストールと確認
+
+前章で Matplotlib を導入したときと同じく、OS標準のターミナルアプリ（Windows は「コマンドプロンプト」または「PowerShell」、macOS は「ターミナル」）を開き、パッケージ管理ツール **`pip`** を使ってインストールします。一度インストールすれば、次回以降はそのまま使い続けることができます。
+
+#### 1. `pip install` でインストールする
+
+- **Windows の場合**:
+  ```bash
+  pip install pygame
+  ```
+  （※ もし `pip` が見つからないというエラーが出る場合は、`py -m pip install pygame` または `python -m pip install pygame` を実行してください）
+
+- **macOS の場合**:
+  ```bash
+  pip3 install pygame
+  ```
+  （※ または `python3 -m pip install pygame` を実行してください）
+
+#### 2. `pip list` で確認する
+
+インストールが完了したら、`pip list`（macOS は `pip3 list`）を実行し、表示される一覧の中に **`pygame`** が含まれていれば導入は成功です。
+
+### Pygame の画面座標系とアニメーションの仕組み
+
+Pygame で図形を動かす際にまず押さえておくべき重要なルールが**「画面の座標系」**です。
+
+数学のグラフ（Matplotlib など）では「左下」や「中央」を原点 $(0, 0)$ とし、上へ行くほど $y$ 座標が大きくなります。しかし、**Pygame（および多くのコンピュータ画面）では「左上隅が原点 $(0, 0)$」**となり、**右へ行くほど $x$ 座標が大きく、下へ行くほど $y$ 座標が大きくなる**という特徴があります。
+
+また、アニメーションは**「① 背景色で画面全体を塗りつぶして前の絵を消す $\to$ ② 座標 $(x, y)$ を少し変化させる $\to$ ③ 新しい座標に図形を描く $\to$ ④ 画面を更新して少し待つ」**という処理を、`while` ループ（**メインループ**）の中で1秒間に60回（60 FPS: Frames Per Second）などの一定ペースで繰り返すことで動いて見えます（パラパラ漫画と同じ仕組みです）。
+
+```{=html}
+<svg viewBox="0 0 680 310" width="100%" height="310" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="pg-arrow-axis" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#334155" />
+    </marker>
+    <marker id="pg-arrow-move" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="pg-arrow-reset" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+  </defs>
+
+  <!-- ==================== LEFT: PYGAME WINDOW & COORDINATES ==================== -->
+  <!-- Window Frame -->
+  <rect x="65" y="42" width="240" height="230" rx="6" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+  <!-- Title Bar -->
+  <path d="M 65,48 Q 65,42 71,42 L 299,42 Q 305,42 305,48 L 305,64 L 65,64 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/>
+  <circle cx="79" cy="53" r="4" fill="#ef4444"/>
+  <circle cx="91" cy="53" r="4" fill="#f59e0b"/>
+  <circle cx="103" cy="53" r="4" fill="#10b981"/>
+  <text x="185" y="57" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155">Moving Circle (400×400)</text>
+
+  <!-- X-axis arrow (Top) -->
+  <line x1="65" y1="28" x2="318" y2="28" stroke="#334155" stroke-width="2" marker-end="url(#pg-arrow-axis)"/>
+  <text x="195" y="19" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">x 座標が増加（右方向 +）</text>
+
+  <!-- Y-axis arrow (Left) -->
+  <line x1="48" y1="64" x2="48" y2="282" stroke="#334155" stroke-width="2" marker-end="url(#pg-arrow-axis)"/>
+  <text x="26" y="168" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1" writing-mode="tb">y 座標が増加（下方向 +）</text>
+
+  <!-- Origin (0, 0) label -->
+  <circle cx="65" cy="64" r="4" fill="#d84315"/>
+  <rect x="72" y="69" width="76" height="20" rx="4" fill="#fbe9e7" stroke="#ff8a65" stroke-width="1"/>
+  <text x="110" y="83" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">左上 (0, 0)</text>
+
+  <!-- Ghost circles along diagonal -->
+  <circle cx="92" cy="90" r="12" fill="#bbdefb" stroke="#64b5f6" stroke-width="1.2" stroke-dasharray="3,2"/>
+  <circle cx="145" cy="140" r="12" fill="#90caf9" stroke="#42a5f5" stroke-width="1.2" stroke-dasharray="3,2"/>
+  <!-- Active circle -->
+  <circle cx="205" cy="195" r="13" fill="#1976d2"/>
+  <!-- Diagonal movement arrow -->
+  <line x1="102" y1="99" x2="268" y2="252" stroke="#1976d2" stroke-width="2.5" marker-end="url(#pg-arrow-move)"/>
+  <text x="155" y="196" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">一定速度で移動</text>
+  <text x="155" y="210" text-anchor="middle" font-size="9.5" fill="#1565c0">(x += 3, y += 3)</text>
+
+  <!-- Bottom-right corner (400, 400) -->
+  <circle cx="285" cy="258" r="12" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="3,2"/>
+  <rect x="195" y="278" width="122" height="22" rx="4" fill="#fff3e0" stroke="#ffb74d" stroke-width="1"/>
+  <text x="256" y="293" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">右下隅 (400, 400)</text>
+
+  <!-- Reset curved arrow from bottom-right back to top-left -->
+  <path d="M 285,245 Q 290,95 108,82" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#pg-arrow-reset)"/>
+  <text x="242" y="114" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">右下隅に達したら</text>
+  <text x="242" y="127" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">左上 (0, 0) に戻る</text>
+
+  <!-- ==================== RIGHT: GAME LOOP EXPLANATION ==================== -->
+  <rect x="350" y="42" width="310" height="230" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="505" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">メインループ（1秒間に60回繰り返す）</text>
+
+  <rect x="370" y="82" width="270" height="36" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="505" y="104" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">① イベント確認（×ボタンで終了判定）</text>
+
+  <rect x="370" y="128" width="270" height="40" rx="6" fill="#e3f2fd" stroke="#64b5f6" stroke-width="1.2"/>
+  <text x="505" y="145" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">② 座標の更新（x, y を増やす）</text>
+  <text x="505" y="161" text-anchor="middle" font-size="9.5" fill="#1565c0">※ 右下隅を超えたら (0, 0) にリセット</text>
+
+  <rect x="370" y="178" width="270" height="36" rx="6" fill="#e8f5e9" stroke="#81c784" stroke-width="1.2"/>
+  <text x="505" y="200" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20">③ 背景を塗りつぶし、新しい位置に円を描画</text>
+
+  <rect x="370" y="224" width="270" height="36" rx="6" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.2"/>
+  <text x="505" y="246" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">④ 画面への反映（flip）と時間調整（tick）</text>
+</svg>
+```
+
+### 基本的な使い方（円が左上から右下へ移動する例）
+
+簡単な例として、**青い円が画面の左上 $(0, 0)$ から右下 $(400, 400)$ に向かって一定速度で移動し、右下隅まで到達すると再び左上に戻るプログラム**のソースコードを見てみましょう。
+
+```python
+import pygame
+
+# 1. Pygame の初期化とウィンドウの作成
+pygame.init()
+WIDTH, HEIGHT = 400, 400
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Moving Circle")
+clock = pygame.time.Clock()
+
+# 円の初期位置（左上）と移動速度・半径の設定
+x, y = 0, 0
+speed = 3
+radius = 20
+
+# 2. メインループ（アニメーションの繰り返し）
+running = True
+while running:
+    # ① イベント処理（ウィンドウの「×」ボタンが押されたら終了する）
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # ② 円の座標を一定速度で右下へ進める
+    x += speed
+    y += speed
+
+    # 右下隅まで到達したら左上 (0, 0) に戻す
+    if x > WIDTH and y > HEIGHT:
+        x, y = 0, 0
+
+    # ③ 画面の描画（背景を白で塗りつぶしてから、青い円を描く）
+    screen.fill((255, 255, 255))  # RGBで白色 (255, 255, 255)
+    pygame.draw.circle(screen, (30, 136, 229), (x, y), radius)
+
+    # ④ 描画内容を画面に反映し、1秒間に60回（60 FPS）のペースに保つ
+    pygame.display.flip()
+    clock.tick(60)
+
+# 3. Pygame の終了処理
+pygame.quit()
+```
+
+#### コードの重要ポイント
+
+1. **ウィンドウと時計の準備**:
+   - `pygame.display.set_mode((WIDTH, HEIGHT))` で横400ピクセル・縦400ピクセルのウィンドウを作成します。
+   - `clock = pygame.time.Clock()` はアニメーションの速度（フレームレート）を一定に保つためのタイマーです。ループの最後で `clock.tick(60)` を呼ぶことで、コンピュータの性能にかかわらず「1秒間に60回」のペースでループが回るように調整されます。
+2. **色の指定（RGB形式）**:
+   - Pygame では色を `(赤, 緑, 青)` の3つの数値（それぞれ `0`〜`255`）の組み合わせ（**RGB**）で指定します。`(255, 255, 255)` は白色、`(0, 0, 0)` は黒色、`(30, 136, 229)` は鮮やかな青色を表します。
+3. **毎フレーム `screen.fill()` で背景を塗りつぶす理由**:
+   - 新しい位置に円を描く前に `screen.fill((255, 255, 255))` で画面全体を白く塗りつぶしています。もしこれを行わないと、1フレーム前に描いた円が画面に残り続け、円が移動するのではなく「青い太線」が伸びていくような表示になってしまいます。
+4. **円の描画と画面への反映**:
+   - `pygame.draw.circle(描画先, 色, (中心x, 中心y), 半径)` で円を描き、最後に `pygame.display.flip()` を呼ぶことで、裏側で描いた絵が実際のウィンドウ画面にパッと反映されます。
+
+::: {.callout-note icon=false}
+### 練習問題 07-07：Pygame プログラムの動作と改造
+1. 上のプログラムを実行して、青い円が左上から右下へ移動し、右下隅に達すると左上に戻ることを確認してみましょう。
+2. もしこのプログラムで、円を**「画面の左下隅 $(0, 400)$ からスタートして、右上隅 $(400, 0)$ に向かって一定速度で移動し、右上隅に達したら左下にまた戻る」**ように変更したい場合、初期位置 `x, y` とループ内の座標更新（`x += ...`, `y += ...`）をどのように書き換えればよいでしょうか？
+:::
+
+---
+
+## 対話的な機能拡張：3マス移動問題のアニメーション表示
+
+Pygame の仕組みが分かったところで、先ほど文字だけで作成した3マス移動問題のシミュレーション（`three_states_sim.py`）を、**vibe coding** によって **Pygame のアニメーションで視覚的に表示するプログラムへと修正** してみましょう。
+
+一度動くプログラムを作ったあと、「文字表示だったものをアニメーション表示に変えてほしい」と自然言語で追加指示を出せるのが vibe coding の大きな魅力です。
+
+### 修正するプログラムの仕様
+
+エージェントには、`three_states_sim.py` を以下の仕様でアニメーション対応に修正してもらいます：
+
+1. **画面レイアウト（3つのマスと壁の描画）**:
+   - Pygame ウィンドウの中央に、横一列に並んだ3つのマス（左から **状態 $\text{A}$**、**状態 $\text{B}$**、**状態 $\text{C}$（ゴール）**）と、状態 $\text{A}$ の左端にある「壁」を描画する。
+2. **エージェントの移動アニメーション**:
+   - エージェントを青い円で表し、1ステップごとに現在のマスから次のマスへ滑らかに動くアニメーションを表示する。
+   - **移動成功時**: 隣のマスの中央まで円が一定速度でスーッと移動する。
+   - **スリップ時・壁で留まる時**: 選んだ方向へ少し動こうとしたあと元のマスの中央へ押し戻される（バウンスする）動きをつけることで、「`Right` を選んだけれど滑ったのか」「`Left` を選んで壁に当たったのか」が画面を見るだけで区別できるようにする。
+3. **経路・報酬・収益 $G_0$ の画面表示と再実行機能**:
+   - ウィンドウ内に「現在のステップ数」「選んだ行動（`Right` / `Left`）」「移動結果（移動成功／スリップ／壁）と報酬 $R$」「現在までの経路（`A -> B -> ...`）」「割引率 $\gamma = 0.9$ での累積収益 $G_0$」を文字でも表示する。
+   - 状態 $\text{C}$（ゴール）に到達したらエピソード終了とし、キーボードの **スペースキー（または `R` キー）を押すと最初から新しいエピソードを再実行** できるようにする。
+
+```{=html}
+<svg viewBox="0 0 700 350" width="100%" height="350" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="anim-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+  </defs>
+
+  <!-- Pygame Window Outer Frame -->
+  <rect x="40" y="16" width="620" height="318" rx="8" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/>
+  <!-- Window Title Bar -->
+  <path d="M 40,24 Q 40,16 48,16 L 652,16 Q 660,16 660,24 L 660,42 L 40,42 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/>
+  <circle cx="56" cy="29" r="4.5" fill="#ef4444"/>
+  <circle cx="70" cy="29" r="4.5" fill="#f59e0b"/>
+  <circle cx="84" cy="29" r="4.5" fill="#10b981"/>
+  <text x="350" y="34" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">3-State RL Simulation (Pygame Animation)</text>
+
+  <!-- Top Info Banner inside Window -->
+  <rect x="65" y="56" width="570" height="44" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="85" y="75" font-size="12" font-weight="bold" fill="#0d47a1">ステップ 3：状態 A で行動 [Right] を選択 → 移動成功！（報酬 R = -1）</text>
+  <text x="85" y="93" font-size="11" fill="#475569">方策: Right 50% / Left 50%　｜　環境: 移動成功 80% / スリップ 20%　｜　割引率 γ = 0.9</text>
+
+  <!-- Left Wall -->
+  <rect x="102" y="118" width="8" height="124" rx="2" fill="#475569"/>
+  <text x="90" y="184" text-anchor="end" font-size="10.5" font-weight="bold" fill="#475569">壁</text>
+
+  <!-- Cell A -->
+  <rect x="110" y="122" width="160" height="116" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="190" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">状態 A</text>
+  <text x="190" y="226" text-anchor="middle" font-size="10.5" fill="#64748b">スタート位置</text>
+
+  <!-- Cell B -->
+  <rect x="270" y="122" width="160" height="116" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="350" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">状態 B</text>
+  <text x="350" y="226" text-anchor="middle" font-size="10.5" fill="#64748b">中央のマス</text>
+
+  <!-- Cell C (Goal) -->
+  <rect x="430" y="122" width="160" height="116" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/>
+  <text x="510" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <text x="510" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#bf360c">GOAL (+10)</text>
+  <text x="510" y="226" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">終端状態</text>
+
+  <!-- Animated Agent Circle moving from A to B -->
+  <circle cx="190" cy="182" r="18" fill="#bbdefb" stroke="#64b5f6" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <circle cx="242" cy="182" r="18" fill="#90caf9" stroke="#42a5f5" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <circle cx="298" cy="182" r="19" fill="#1976d2"/>
+  <text x="298" y="186" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffffff">AI</text>
+  <line x1="208" y1="182" x2="272" y2="182" stroke="#0d47a1" stroke-width="2.5" marker-end="url(#anim-arrow-blue)"/>
+
+  <!-- Bottom Status Panel inside Window -->
+  <rect x="65" y="254" width="570" height="64" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="85" y="276" font-size="12" font-weight="bold" fill="#1e3a8a">たどった経路: A → A → A → B（現在 3 ステップ経過）</text>
+  <text x="85" y="298" font-size="12.5" font-weight="bold" fill="#b45309">現在の累積収益 G<tspan dy="2" font-size="9">0</tspan><tspan dy="-2"> : -2.710</tspan></text>
+  <text x="615" y="298" text-anchor="end" font-size="11" font-weight="bold" fill="#475569">[Space] / [R] キー: 最初からやり直す</text>
+</svg>
+```
+
+### エージェントへの追加指示（プロンプト例）
+
+Antigravityのチャット欄に、次のように追加の指示を入力して送信します。
+
+::: {.callout-tip icon=true}
+### プロンプト入力例
+先ほど作成した `three_states_sim.py` をもとに、Pygame を使ってエージェントの移動と収益をウィンドウ上でアニメーション表示するプログラム `three_states_anim.py` を作成してください（ターミナルへの文字出力もそのまま残してください）。
+
+【アニメーションと画面表示の要件】
+1. ウィンドウ内に横一列の3つのマス（状態 A, B, C）と、状態 A の左側の「壁」を描画してください。
+2. エージェントを青い円で描画し、1ステップごとに次の状態へ滑らかに移動するアニメーションを表示してください。
+   - 移動成功時は、隣のマスの中央まで円を一定速度で移動させます。
+   - スリップした時や壁に阻まれた時は、選んだ方向へ少し動いてから元のマスの中央へ押し戻されるような動きをつけ、なぜその場に留まったのかが視覚的に分かるようにしてください。
+3. 画面上に「ステップ数」「選んだ行動（Right / Left）」「移動結果（移動成功・スリップ・壁）と報酬」「ここまでの経路（`A -> B -> ...`）」「割引率 `gamma = 0.9` での収益 `G_0`」を表示してください。
+4. 状態 C（ゴール）に到達したらゴール達成メッセージと最終的な収益 `G_0` を表示し、スペースキーまたは `R` キーを押すと新しいエピソードを最初から再実行できるようにしてください。
+5. Pygame の画面上で日本語が文字化け（豆腐表示）しないよう、macOS（`/System/Library/Fonts/*W3.ttc` や `Arial Unicode.ttf` など）および Windows（メイリオや游ゴシック、MSゴシックなど）の日本語フォントファイルを確実に読み込んで描画してください。
+:::
+
+### アニメーションから確認できること
+
+修正されたプログラムを実行すると、ウィンドウが開いてエージェント（青い円）がステップごとに動いていきます。スペースキー（または `R` キー）で何度もエピソードをやり直しながら観察すると、次のことが視覚的に実感できます：
+
+- **2種類の「その場に留まる動き」の違い**:
+  文字で `A -> A` とだけ書かれているとどちらも同じに見えますが、アニメーションで見ると**「右（状態 $\text{B}$）へ進もうとして滑って戻されたのか（`Right`＋スリップ）」**、それとも**「左を選んで壁にぶつかって戻されたのか（`Left`）」**が動きの方向で明確に区別できます。
+- **手数が増えることによる収益 $G_0$ の減少**:
+  エージェントが途中でスリップしたり、状態 $\text{B}$ から `Left` を選んで状態 $\text{A}$ に逆戻りしたりして時間をかけるほど、$-1$ のペナルティが積み重なり、最後に状態 $\text{C}$ に到達したときの報酬 $+9$ も $\gamma^k$ で大きく割り引かれてしまう様子がリアルタイムに確認できます。
+
+::: {.callout-note icon=false}
+### 練習問題 07-08：アニメーションの確認と機能追加
+1. アニメーションを実行し、スペースキー（または `R` キー）で何回かエピソードを繰り返して、最短の2ステップでゴールするケースや、状態 $\text{B}$ から状態 $\text{A}$ へ逆戻りしてしまうケースの動きと収益 $G_0$ を観察してみましょう。
+2. Antigravityに指示を出して、次のいずれか（または両方）の改造を行ってみましょう：
+   - キーボードの数字キー（たとえば `1` キーと `2` キー）で、**「50%ずつランダムに選ぶ方策」**と**「常に `Right` を選ぶ方策」**を切り替えて動きや収益の違いを比較できるようにする。
+   - マスの数を3つ（$\text{A} \sim \text{C}$）から **4つ（$\text{A}, \text{B}, \text{C}, \text{D}$、右端の $\text{D}$ がゴール）** に増やしてアニメーション表示する。
+:::
 
 ---
 
 ## まとめ
-- 強化学習は「エージェント」と「環境」のループ（観測→行動→報酬・新状態）として定式化される。
-- エージェントの真の目標は、割引累積報酬である**収益 $G_t$** の最大化。
-- **状態価値関数 $V(s)$** は「状況の良さ」、**行動価値関数 $Q(s, a)$** は「ある状況での行動の良さ」を評価する指標。
+
+- **強化学習のフレームワークとマルコフ性**: 強化学習は「エージェント」と「環境」が状態 $S_t$・行動 $A_t$・報酬 $R_{t+1}$ をやり取りしながら状態を変化させていく枠組みであり、次の状態が生じる確率が直前の状態と行動のみに依存する**マルコフ性**を前提とする。
+- **状態・行動・報酬**: エージェントが置かれている状況を表す**状態**（エピソード終了となる**終端状態**を含む）、各状態で選べる選択肢である**行動**、および1ステップごとの評価を与える**報酬**の3要素によって環境が定義される。
+- **方策と収益（割引率 $\gamma$）**: エージェントの行動ルールを**方策 $\pi$**、将来にわたって得られる報酬の累積和を**収益 $G_t$** と呼ぶ。**割引率 $\gamma$**（$0 \le \gamma < 1$）を導入して $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots$ と定義することで、無限に続く経路でも収益が発散せず有限の値として計算・比較できるようになる。
+- **確率的な状態遷移と確率的な方策**: スリップなどで移動結果が確定しない**確率的な状態遷移**や、探索などのために行動を確率的に選ぶ**確率的な方策 $\pi(a \mid s)$**（およびその両方の組み合わせ）では、「① 方策による行動選択」と「② 環境による状態遷移」の2段階の枝分かれを経て次の状態が決まり、同じ方策でも試行ごとにたどる経路や収益 $G_0$ が確率的に変化する。
+- **vibe coding と Pygame によるアニメーション可視化**: 3マス移動問題のシミュレーションを vibe coding で構築し、文字による経路・収益の確認から、2Dアニメーションライブラリ **Pygame**（左上隅を原点 $(0, 0)$ とし、メインループで座標更新と再描画を繰り返す仕組み）を用いたアニメーション表示へと拡張することで、エージェントの振る舞いと収益の変化を視覚的に観察した。
