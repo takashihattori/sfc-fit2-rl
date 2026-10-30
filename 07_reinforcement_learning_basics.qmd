@@ -1367,23 +1367,25 @@ Pythonで2Dゲームやアニメーションを手軽に作成・描画できる
 
 前章で Matplotlib を導入したときと同じく、OS標準のターミナルアプリ（Windows は「コマンドプロンプト」または「PowerShell」、macOS は「ターミナル」）を開き、パッケージ管理ツール **`pip`** を使ってインストールします。一度インストールすれば、次回以降はそのまま使い続けることができます。
 
+なお、従来の `pygame` パッケージは最新の Python に対応しておらずインストール時にエラーが出ることがあるため、ここでは最新の Python にも対応している後継のコミュニティ版パッケージ **`pygame-ce`**（Pygame Community Edition）をインストールします（※ プログラムの中で使うときの記述は `import pygame` のままで変わりません）。
+
 #### 1. `pip install` でインストールする
 
 - **Windows の場合**:
   ```bash
-  pip install pygame
+  pip install pygame-ce
   ```
-  （※ もし `pip` が見つからないというエラーが出る場合は、`py -m pip install pygame` または `python -m pip install pygame` を実行してください）
+  （※ もし `pip` が見つからないというエラーが出る場合は、`py -m pip install pygame-ce` または `python -m pip install pygame-ce` を実行してください）
 
 - **macOS の場合**:
   ```bash
-  pip3 install pygame
+  pip3 install pygame-ce
   ```
-  （※ または `python3 -m pip install pygame` を実行してください）
+  （※ または `python3 -m pip install pygame-ce` を実行してください）
 
 #### 2. `pip list` で確認する
 
-インストールが完了したら、`pip list`（macOS は `pip3 list`）を実行し、表示される一覧の中に **`pygame`** が含まれていれば導入は成功です。
+インストールが完了したら、`pip list`（macOS は `pip3 list`）を実行し、表示される一覧の中に **`pygame-ce`** が含まれていれば導入は成功です。
 
 ### Pygame の画面座標系とアニメーションの仕組み
 

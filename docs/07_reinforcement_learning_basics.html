@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./08_rl_cliff_walking.html" rel="next">
+<link href="./08_value_and_monte_carlo.html" rel="next">
 <link href="./06_multi_armed_bandit.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -246,6 +246,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">強化学習の基礎</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_value_and_monte_carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">価値関数とモンテカルロ法</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -257,12 +263,6 @@ window.Quarto = {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./08_rl_cliff_walking.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">強化学習の例(1)</span></span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09_rl_blackjack.html" class="sidebar-item-text sidebar-link">
@@ -1812,20 +1812,21 @@ G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = (-1) + 0.9 \times (-1) + 0.9^2 \times 9 
 <section id="pygame-のインストールと確認" class="level3" data-number="7.8.1">
 <h3 data-number="7.8.1" class="anchored" data-anchor-id="pygame-のインストールと確認"><span class="header-section-number">7.8.1</span> Pygame のインストールと確認</h3>
 <p>前章で Matplotlib を導入したときと同じく、OS標準のターミナルアプリ（Windows は「コマンドプロンプト」または「PowerShell」、macOS は「ターミナル」）を開き、パッケージ管理ツール <strong><code>pip</code></strong> を使ってインストールします。一度インストールすれば、次回以降はそのまま使い続けることができます。</p>
+<p>なお、従来の <code>pygame</code> パッケージは最新の Python に対応しておらずインストール時にエラーが出ることがあるため、ここでは最新の Python にも対応している後継のコミュニティ版パッケージ <strong><code>pygame-ce</code></strong>（Pygame Community Edition）をインストールします（※ プログラムの中で使うときの記述は <code>import pygame</code> のままで変わりません）。</p>
 <section id="pip-install-でインストールする" class="level4" data-number="7.8.1.1">
 <h4 data-number="7.8.1.1" class="anchored" data-anchor-id="pip-install-でインストールする"><span class="header-section-number">7.8.1.1</span> 1. <code>pip install</code> でインストールする</h4>
 <ul>
 <li><p><strong>Windows の場合</strong>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="ex">pip</span> install pygame</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<p>（※ もし <code>pip</code> が見つからないというエラーが出る場合は、<code>py -m pip install pygame</code> または <code>python -m pip install pygame</code> を実行してください）</p></li>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="ex">pip</span> install pygame-ce</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p>（※ もし <code>pip</code> が見つからないというエラーが出る場合は、<code>py -m pip install pygame-ce</code> または <code>python -m pip install pygame-ce</code> を実行してください）</p></li>
 <li><p><strong>macOS の場合</strong>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="ex">pip3</span> install pygame</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<p>（※ または <code>python3 -m pip install pygame</code> を実行してください）</p></li>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-label="1"></a><span class="ex">pip3</span> install pygame-ce</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<p>（※ または <code>python3 -m pip install pygame-ce</code> を実行してください）</p></li>
 </ul>
 </section>
 <section id="pip-list-で確認する" class="level4" data-number="7.8.1.2">
 <h4 data-number="7.8.1.2" class="anchored" data-anchor-id="pip-list-で確認する"><span class="header-section-number">7.8.1.2</span> 2. <code>pip list</code> で確認する</h4>
-<p>インストールが完了したら、<code>pip list</code>（macOS は <code>pip3 list</code>）を実行し、表示される一覧の中に <strong><code>pygame</code></strong> が含まれていれば導入は成功です。</p>
+<p>インストールが完了したら、<code>pip list</code>（macOS は <code>pip3 list</code>）を実行し、表示される一覧の中に <strong><code>pygame-ce</code></strong> が含まれていれば導入は成功です。</p>
 </section>
 </section>
 <section id="pygame-の画面座標系とアニメーションの仕組み" class="level3" data-number="7.8.2">
@@ -2592,8 +2593,8 @@ G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = (-1) + 0.9 \times (-1) + 0.9^2 \times 9 
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./08_rl_cliff_walking.html" class="pagination-link" aria-label="強化学習の例(1)">
-        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">強化学習の例(1)</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./08_value_and_monte_carlo.html" class="pagination-link" aria-label="価値関数とモンテカルロ法">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">価値関数とモンテカルロ法</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">ソースコード</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
@@ -3966,296 +3967,298 @@ G_0 = R_1 + \gamma R_2 + \gamma^2 R_3 = (-1) + 0.9 \times (-1) + 0.9^2 \times 9 
 <span id="cb6-1367"><a href="#cb6-1367" aria-label="1367"></a></span>
 <span id="cb6-1368"><a href="#cb6-1368" aria-label="1368"></a>前章で Matplotlib を導入したときと同じく、OS標準のターミナルアプリ（Windows は「コマンドプロンプト」または「PowerShell」、macOS は「ターミナル」）を開き、パッケージ管理ツール **`pip`** を使ってインストールします。一度インストールすれば、次回以降はそのまま使い続けることができます。</span>
 <span id="cb6-1369"><a href="#cb6-1369" aria-label="1369"></a></span>
-<span id="cb6-1370"><a href="#cb6-1370" aria-label="1370"></a><span class="fu">#### 1. `pip install` でインストールする</span></span>
+<span id="cb6-1370"><a href="#cb6-1370" aria-label="1370"></a>なお、従来の <span class="in">`pygame`</span> パッケージは最新の Python に対応しておらずインストール時にエラーが出ることがあるため、ここでは最新の Python にも対応している後継のコミュニティ版パッケージ **`pygame-ce`**（Pygame Community Edition）をインストールします（※ プログラムの中で使うときの記述は <span class="in">`import pygame`</span> のままで変わりません）。</span>
 <span id="cb6-1371"><a href="#cb6-1371" aria-label="1371"></a></span>
-<span id="cb6-1372"><a href="#cb6-1372" aria-label="1372"></a><span class="ss">- </span>**Windows の場合**:</span>
-<span id="cb6-1373"><a href="#cb6-1373" aria-label="1373"></a>  <span class="in">```bash</span></span>
-<span id="cb6-1374"><a href="#cb6-1374" aria-label="1374"></a>  <span class="ex">pip</span> install pygame</span>
-<span id="cb6-1375"><a href="#cb6-1375" aria-label="1375"></a>  <span class="in">```</span></span>
-<span id="cb6-1376"><a href="#cb6-1376" aria-label="1376"></a>  （※ もし <span class="in">`pip`</span> が見つからないというエラーが出る場合は、<span class="in">`py -m pip install pygame`</span> または <span class="in">`python -m pip install pygame`</span> を実行してください）</span>
-<span id="cb6-1377"><a href="#cb6-1377" aria-label="1377"></a></span>
-<span id="cb6-1378"><a href="#cb6-1378" aria-label="1378"></a><span class="ss">- </span>**macOS の場合**:</span>
-<span id="cb6-1379"><a href="#cb6-1379" aria-label="1379"></a>  <span class="in">```bash</span></span>
-<span id="cb6-1380"><a href="#cb6-1380" aria-label="1380"></a>  <span class="ex">pip3</span> install pygame</span>
-<span id="cb6-1381"><a href="#cb6-1381" aria-label="1381"></a>  <span class="in">```</span></span>
-<span id="cb6-1382"><a href="#cb6-1382" aria-label="1382"></a>  （※ または <span class="in">`python3 -m pip install pygame`</span> を実行してください）</span>
-<span id="cb6-1383"><a href="#cb6-1383" aria-label="1383"></a></span>
-<span id="cb6-1384"><a href="#cb6-1384" aria-label="1384"></a><span class="fu">#### 2. `pip list` で確認する</span></span>
+<span id="cb6-1372"><a href="#cb6-1372" aria-label="1372"></a><span class="fu">#### 1. `pip install` でインストールする</span></span>
+<span id="cb6-1373"><a href="#cb6-1373" aria-label="1373"></a></span>
+<span id="cb6-1374"><a href="#cb6-1374" aria-label="1374"></a><span class="ss">- </span>**Windows の場合**:</span>
+<span id="cb6-1375"><a href="#cb6-1375" aria-label="1375"></a>  <span class="in">```bash</span></span>
+<span id="cb6-1376"><a href="#cb6-1376" aria-label="1376"></a>  <span class="ex">pip</span> install pygame-ce</span>
+<span id="cb6-1377"><a href="#cb6-1377" aria-label="1377"></a>  <span class="in">```</span></span>
+<span id="cb6-1378"><a href="#cb6-1378" aria-label="1378"></a>  （※ もし <span class="in">`pip`</span> が見つからないというエラーが出る場合は、<span class="in">`py -m pip install pygame-ce`</span> または <span class="in">`python -m pip install pygame-ce`</span> を実行してください）</span>
+<span id="cb6-1379"><a href="#cb6-1379" aria-label="1379"></a></span>
+<span id="cb6-1380"><a href="#cb6-1380" aria-label="1380"></a><span class="ss">- </span>**macOS の場合**:</span>
+<span id="cb6-1381"><a href="#cb6-1381" aria-label="1381"></a>  <span class="in">```bash</span></span>
+<span id="cb6-1382"><a href="#cb6-1382" aria-label="1382"></a>  <span class="ex">pip3</span> install pygame-ce</span>
+<span id="cb6-1383"><a href="#cb6-1383" aria-label="1383"></a>  <span class="in">```</span></span>
+<span id="cb6-1384"><a href="#cb6-1384" aria-label="1384"></a>  （※ または <span class="in">`python3 -m pip install pygame-ce`</span> を実行してください）</span>
 <span id="cb6-1385"><a href="#cb6-1385" aria-label="1385"></a></span>
-<span id="cb6-1386"><a href="#cb6-1386" aria-label="1386"></a>インストールが完了したら、<span class="in">`pip list`</span>（macOS は <span class="in">`pip3 list`</span>）を実行し、表示される一覧の中に **`pygame`** が含まれていれば導入は成功です。</span>
+<span id="cb6-1386"><a href="#cb6-1386" aria-label="1386"></a><span class="fu">#### 2. `pip list` で確認する</span></span>
 <span id="cb6-1387"><a href="#cb6-1387" aria-label="1387"></a></span>
-<span id="cb6-1388"><a href="#cb6-1388" aria-label="1388"></a><span class="fu">### Pygame の画面座標系とアニメーションの仕組み</span></span>
+<span id="cb6-1388"><a href="#cb6-1388" aria-label="1388"></a>インストールが完了したら、<span class="in">`pip list`</span>（macOS は <span class="in">`pip3 list`</span>）を実行し、表示される一覧の中に **`pygame-ce`** が含まれていれば導入は成功です。</span>
 <span id="cb6-1389"><a href="#cb6-1389" aria-label="1389"></a></span>
-<span id="cb6-1390"><a href="#cb6-1390" aria-label="1390"></a>Pygame で図形を動かす際にまず押さえておくべき重要なルールが**「画面の座標系」**です。</span>
+<span id="cb6-1390"><a href="#cb6-1390" aria-label="1390"></a><span class="fu">### Pygame の画面座標系とアニメーションの仕組み</span></span>
 <span id="cb6-1391"><a href="#cb6-1391" aria-label="1391"></a></span>
-<span id="cb6-1392"><a href="#cb6-1392" aria-label="1392"></a>数学のグラフ（Matplotlib など）では「左下」や「中央」を原点 $(0, 0)$ とし、上へ行くほど $y$ 座標が大きくなります。しかし、**Pygame（および多くのコンピュータ画面）では「左上隅が原点 $(0, 0)$」**となり、**右へ行くほど $x$ 座標が大きく、下へ行くほど $y$ 座標が大きくなる**という特徴があります。</span>
+<span id="cb6-1392"><a href="#cb6-1392" aria-label="1392"></a>Pygame で図形を動かす際にまず押さえておくべき重要なルールが**「画面の座標系」**です。</span>
 <span id="cb6-1393"><a href="#cb6-1393" aria-label="1393"></a></span>
-<span id="cb6-1394"><a href="#cb6-1394" aria-label="1394"></a>また、アニメーションは**「① 背景色で画面全体を塗りつぶして前の絵を消す $\to$ ② 座標 $(x, y)$ を少し変化させる $\to$ ③ 新しい座標に図形を描く $\to$ ④ 画面を更新して少し待つ」**という処理を、`while` ループ（**メインループ**）の中で1秒間に60回（60 FPS: Frames Per Second）などの一定ペースで繰り返すことで動いて見えます（パラパラ漫画と同じ仕組みです）。</span>
+<span id="cb6-1394"><a href="#cb6-1394" aria-label="1394"></a>数学のグラフ（Matplotlib など）では「左下」や「中央」を原点 $(0, 0)$ とし、上へ行くほど $y$ 座標が大きくなります。しかし、**Pygame（および多くのコンピュータ画面）では「左上隅が原点 $(0, 0)$」**となり、**右へ行くほど $x$ 座標が大きく、下へ行くほど $y$ 座標が大きくなる**という特徴があります。</span>
 <span id="cb6-1395"><a href="#cb6-1395" aria-label="1395"></a></span>
-<span id="cb6-1396"><a href="#cb6-1396" aria-label="1396"></a><span class="in">```{=html}</span></span>
-<span id="cb6-1397"><a href="#cb6-1397" aria-label="1397"></a><span class="in">&lt;svg viewBox="0 0 680 310" width="100%" height="310" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;"&gt;</span></span>
-<span id="cb6-1398"><a href="#cb6-1398" aria-label="1398"></a><span class="in">  &lt;defs&gt;</span></span>
-<span id="cb6-1399"><a href="#cb6-1399" aria-label="1399"></a><span class="in">    &lt;marker id="pg-arrow-axis" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb6-1400"><a href="#cb6-1400" aria-label="1400"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#334155" /&gt;</span></span>
-<span id="cb6-1401"><a href="#cb6-1401" aria-label="1401"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb6-1402"><a href="#cb6-1402" aria-label="1402"></a><span class="in">    &lt;marker id="pg-arrow-move" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb6-1403"><a href="#cb6-1403" aria-label="1403"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" /&gt;</span></span>
-<span id="cb6-1404"><a href="#cb6-1404" aria-label="1404"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb6-1405"><a href="#cb6-1405" aria-label="1405"></a><span class="in">    &lt;marker id="pg-arrow-reset" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb6-1406"><a href="#cb6-1406" aria-label="1406"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" /&gt;</span></span>
-<span id="cb6-1407"><a href="#cb6-1407" aria-label="1407"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb6-1408"><a href="#cb6-1408" aria-label="1408"></a><span class="in">  &lt;/defs&gt;</span></span>
-<span id="cb6-1409"><a href="#cb6-1409" aria-label="1409"></a></span>
-<span id="cb6-1410"><a href="#cb6-1410" aria-label="1410"></a><span class="in">  &lt;!-- ==================== LEFT: PYGAME WINDOW &amp; COORDINATES ==================== --&gt;</span></span>
-<span id="cb6-1411"><a href="#cb6-1411" aria-label="1411"></a><span class="in">  &lt;!-- Window Frame --&gt;</span></span>
-<span id="cb6-1412"><a href="#cb6-1412" aria-label="1412"></a><span class="in">  &lt;rect x="65" y="42" width="240" height="230" rx="6" fill="#ffffff" stroke="#334155" stroke-width="2.5"/&gt;</span></span>
-<span id="cb6-1413"><a href="#cb6-1413" aria-label="1413"></a><span class="in">  &lt;!-- Title Bar --&gt;</span></span>
-<span id="cb6-1414"><a href="#cb6-1414" aria-label="1414"></a><span class="in">  &lt;path d="M 65,48 Q 65,42 71,42 L 299,42 Q 305,42 305,48 L 305,64 L 65,64 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/&gt;</span></span>
-<span id="cb6-1415"><a href="#cb6-1415" aria-label="1415"></a><span class="in">  &lt;circle cx="79" cy="53" r="4" fill="#ef4444"/&gt;</span></span>
-<span id="cb6-1416"><a href="#cb6-1416" aria-label="1416"></a><span class="in">  &lt;circle cx="91" cy="53" r="4" fill="#f59e0b"/&gt;</span></span>
-<span id="cb6-1417"><a href="#cb6-1417" aria-label="1417"></a><span class="in">  &lt;circle cx="103" cy="53" r="4" fill="#10b981"/&gt;</span></span>
-<span id="cb6-1418"><a href="#cb6-1418" aria-label="1418"></a><span class="in">  &lt;text x="185" y="57" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155"&gt;Moving Circle (400×400)&lt;/text&gt;</span></span>
-<span id="cb6-1419"><a href="#cb6-1419" aria-label="1419"></a></span>
-<span id="cb6-1420"><a href="#cb6-1420" aria-label="1420"></a><span class="in">  &lt;!-- X-axis arrow (Top) --&gt;</span></span>
-<span id="cb6-1421"><a href="#cb6-1421" aria-label="1421"></a><span class="in">  &lt;line x1="65" y1="28" x2="318" y2="28" stroke="#334155" stroke-width="2" marker-end="url(#pg-arrow-axis)"/&gt;</span></span>
-<span id="cb6-1422"><a href="#cb6-1422" aria-label="1422"></a><span class="in">  &lt;text x="195" y="19" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1"&gt;x 座標が増加（右方向 +）&lt;/text&gt;</span></span>
-<span id="cb6-1423"><a href="#cb6-1423" aria-label="1423"></a></span>
-<span id="cb6-1424"><a href="#cb6-1424" aria-label="1424"></a><span class="in">  &lt;!-- Y-axis arrow (Left) --&gt;</span></span>
-<span id="cb6-1425"><a href="#cb6-1425" aria-label="1425"></a><span class="in">  &lt;line x1="48" y1="64" x2="48" y2="282" stroke="#334155" stroke-width="2" marker-end="url(#pg-arrow-axis)"/&gt;</span></span>
-<span id="cb6-1426"><a href="#cb6-1426" aria-label="1426"></a><span class="in">  &lt;text x="26" y="168" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1" writing-mode="tb"&gt;y 座標が増加（下方向 +）&lt;/text&gt;</span></span>
-<span id="cb6-1427"><a href="#cb6-1427" aria-label="1427"></a></span>
-<span id="cb6-1428"><a href="#cb6-1428" aria-label="1428"></a><span class="in">  &lt;!-- Origin (0, 0) label --&gt;</span></span>
-<span id="cb6-1429"><a href="#cb6-1429" aria-label="1429"></a><span class="in">  &lt;circle cx="65" cy="64" r="4" fill="#d84315"/&gt;</span></span>
-<span id="cb6-1430"><a href="#cb6-1430" aria-label="1430"></a><span class="in">  &lt;rect x="72" y="69" width="76" height="20" rx="4" fill="#fbe9e7" stroke="#ff8a65" stroke-width="1"/&gt;</span></span>
-<span id="cb6-1431"><a href="#cb6-1431" aria-label="1431"></a><span class="in">  &lt;text x="110" y="83" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c"&gt;左上 (0, 0)&lt;/text&gt;</span></span>
-<span id="cb6-1432"><a href="#cb6-1432" aria-label="1432"></a></span>
-<span id="cb6-1433"><a href="#cb6-1433" aria-label="1433"></a><span class="in">  &lt;!-- Ghost circles along diagonal --&gt;</span></span>
-<span id="cb6-1434"><a href="#cb6-1434" aria-label="1434"></a><span class="in">  &lt;circle cx="92" cy="90" r="12" fill="#bbdefb" stroke="#64b5f6" stroke-width="1.2" stroke-dasharray="3,2"/&gt;</span></span>
-<span id="cb6-1435"><a href="#cb6-1435" aria-label="1435"></a><span class="in">  &lt;circle cx="145" cy="140" r="12" fill="#90caf9" stroke="#42a5f5" stroke-width="1.2" stroke-dasharray="3,2"/&gt;</span></span>
-<span id="cb6-1436"><a href="#cb6-1436" aria-label="1436"></a><span class="in">  &lt;!-- Active circle --&gt;</span></span>
-<span id="cb6-1437"><a href="#cb6-1437" aria-label="1437"></a><span class="in">  &lt;circle cx="205" cy="195" r="13" fill="#1976d2"/&gt;</span></span>
-<span id="cb6-1438"><a href="#cb6-1438" aria-label="1438"></a><span class="in">  &lt;!-- Diagonal movement arrow --&gt;</span></span>
-<span id="cb6-1439"><a href="#cb6-1439" aria-label="1439"></a><span class="in">  &lt;line x1="102" y1="99" x2="268" y2="252" stroke="#1976d2" stroke-width="2.5" marker-end="url(#pg-arrow-move)"/&gt;</span></span>
-<span id="cb6-1440"><a href="#cb6-1440" aria-label="1440"></a><span class="in">  &lt;text x="155" y="196" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1"&gt;一定速度で移動&lt;/text&gt;</span></span>
-<span id="cb6-1441"><a href="#cb6-1441" aria-label="1441"></a><span class="in">  &lt;text x="155" y="210" text-anchor="middle" font-size="9.5" fill="#1565c0"&gt;(x += 3, y += 3)&lt;/text&gt;</span></span>
-<span id="cb6-1442"><a href="#cb6-1442" aria-label="1442"></a></span>
-<span id="cb6-1443"><a href="#cb6-1443" aria-label="1443"></a><span class="in">  &lt;!-- Bottom-right corner (400, 400) --&gt;</span></span>
-<span id="cb6-1444"><a href="#cb6-1444" aria-label="1444"></a><span class="in">  &lt;circle cx="285" cy="258" r="12" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="3,2"/&gt;</span></span>
-<span id="cb6-1445"><a href="#cb6-1445" aria-label="1445"></a><span class="in">  &lt;rect x="195" y="278" width="122" height="22" rx="4" fill="#fff3e0" stroke="#ffb74d" stroke-width="1"/&gt;</span></span>
-<span id="cb6-1446"><a href="#cb6-1446" aria-label="1446"></a><span class="in">  &lt;text x="256" y="293" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100"&gt;右下隅 (400, 400)&lt;/text&gt;</span></span>
-<span id="cb6-1447"><a href="#cb6-1447" aria-label="1447"></a></span>
-<span id="cb6-1448"><a href="#cb6-1448" aria-label="1448"></a><span class="in">  &lt;!-- Reset curved arrow from bottom-right back to top-left --&gt;</span></span>
-<span id="cb6-1449"><a href="#cb6-1449" aria-label="1449"></a><span class="in">  &lt;path d="M 285,245 Q 290,95 108,82" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#pg-arrow-reset)"/&gt;</span></span>
-<span id="cb6-1450"><a href="#cb6-1450" aria-label="1450"></a><span class="in">  &lt;text x="242" y="114" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100"&gt;右下隅に達したら&lt;/text&gt;</span></span>
-<span id="cb6-1451"><a href="#cb6-1451" aria-label="1451"></a><span class="in">  &lt;text x="242" y="127" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100"&gt;左上 (0, 0) に戻る&lt;/text&gt;</span></span>
-<span id="cb6-1452"><a href="#cb6-1452" aria-label="1452"></a></span>
-<span id="cb6-1453"><a href="#cb6-1453" aria-label="1453"></a><span class="in">  &lt;!-- ==================== RIGHT: GAME LOOP EXPLANATION ==================== --&gt;</span></span>
-<span id="cb6-1454"><a href="#cb6-1454" aria-label="1454"></a><span class="in">  &lt;rect x="350" y="42" width="310" height="230" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/&gt;</span></span>
-<span id="cb6-1455"><a href="#cb6-1455" aria-label="1455"></a><span class="in">  &lt;text x="505" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b"&gt;メインループ（1秒間に60回繰り返す）&lt;/text&gt;</span></span>
-<span id="cb6-1456"><a href="#cb6-1456" aria-label="1456"></a></span>
-<span id="cb6-1457"><a href="#cb6-1457" aria-label="1457"></a><span class="in">  &lt;rect x="370" y="82" width="270" height="36" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/&gt;</span></span>
-<span id="cb6-1458"><a href="#cb6-1458" aria-label="1458"></a><span class="in">  &lt;text x="505" y="104" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155"&gt;① イベント確認（×ボタンで終了判定）&lt;/text&gt;</span></span>
-<span id="cb6-1459"><a href="#cb6-1459" aria-label="1459"></a></span>
-<span id="cb6-1460"><a href="#cb6-1460" aria-label="1460"></a><span class="in">  &lt;rect x="370" y="128" width="270" height="40" rx="6" fill="#e3f2fd" stroke="#64b5f6" stroke-width="1.2"/&gt;</span></span>
-<span id="cb6-1461"><a href="#cb6-1461" aria-label="1461"></a><span class="in">  &lt;text x="505" y="145" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1"&gt;② 座標の更新（x, y を増やす）&lt;/text&gt;</span></span>
-<span id="cb6-1462"><a href="#cb6-1462" aria-label="1462"></a><span class="in">  &lt;text x="505" y="161" text-anchor="middle" font-size="9.5" fill="#1565c0"&gt;※ 右下隅を超えたら (0, 0) にリセット&lt;/text&gt;</span></span>
-<span id="cb6-1463"><a href="#cb6-1463" aria-label="1463"></a></span>
-<span id="cb6-1464"><a href="#cb6-1464" aria-label="1464"></a><span class="in">  &lt;rect x="370" y="178" width="270" height="36" rx="6" fill="#e8f5e9" stroke="#81c784" stroke-width="1.2"/&gt;</span></span>
-<span id="cb6-1465"><a href="#cb6-1465" aria-label="1465"></a><span class="in">  &lt;text x="505" y="200" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20"&gt;③ 背景を塗りつぶし、新しい位置に円を描画&lt;/text&gt;</span></span>
-<span id="cb6-1466"><a href="#cb6-1466" aria-label="1466"></a></span>
-<span id="cb6-1467"><a href="#cb6-1467" aria-label="1467"></a><span class="in">  &lt;rect x="370" y="224" width="270" height="36" rx="6" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.2"/&gt;</span></span>
-<span id="cb6-1468"><a href="#cb6-1468" aria-label="1468"></a><span class="in">  &lt;text x="505" y="246" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100"&gt;④ 画面への反映（flip）と時間調整（tick）&lt;/text&gt;</span></span>
-<span id="cb6-1469"><a href="#cb6-1469" aria-label="1469"></a><span class="in">&lt;/svg&gt;</span></span>
-<span id="cb6-1470"><a href="#cb6-1470" aria-label="1470"></a><span class="in">```</span></span>
-<span id="cb6-1471"><a href="#cb6-1471" aria-label="1471"></a></span>
-<span id="cb6-1472"><a href="#cb6-1472" aria-label="1472"></a><span class="fu">### 基本的な使い方（円が左上から右下へ移動する例）</span></span>
+<span id="cb6-1396"><a href="#cb6-1396" aria-label="1396"></a>また、アニメーションは**「① 背景色で画面全体を塗りつぶして前の絵を消す $\to$ ② 座標 $(x, y)$ を少し変化させる $\to$ ③ 新しい座標に図形を描く $\to$ ④ 画面を更新して少し待つ」**という処理を、`while` ループ（**メインループ**）の中で1秒間に60回（60 FPS: Frames Per Second）などの一定ペースで繰り返すことで動いて見えます（パラパラ漫画と同じ仕組みです）。</span>
+<span id="cb6-1397"><a href="#cb6-1397" aria-label="1397"></a></span>
+<span id="cb6-1398"><a href="#cb6-1398" aria-label="1398"></a><span class="in">```{=html}</span></span>
+<span id="cb6-1399"><a href="#cb6-1399" aria-label="1399"></a><span class="in">&lt;svg viewBox="0 0 680 310" width="100%" height="310" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;"&gt;</span></span>
+<span id="cb6-1400"><a href="#cb6-1400" aria-label="1400"></a><span class="in">  &lt;defs&gt;</span></span>
+<span id="cb6-1401"><a href="#cb6-1401" aria-label="1401"></a><span class="in">    &lt;marker id="pg-arrow-axis" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb6-1402"><a href="#cb6-1402" aria-label="1402"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#334155" /&gt;</span></span>
+<span id="cb6-1403"><a href="#cb6-1403" aria-label="1403"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb6-1404"><a href="#cb6-1404" aria-label="1404"></a><span class="in">    &lt;marker id="pg-arrow-move" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb6-1405"><a href="#cb6-1405" aria-label="1405"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" /&gt;</span></span>
+<span id="cb6-1406"><a href="#cb6-1406" aria-label="1406"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb6-1407"><a href="#cb6-1407" aria-label="1407"></a><span class="in">    &lt;marker id="pg-arrow-reset" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb6-1408"><a href="#cb6-1408" aria-label="1408"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" /&gt;</span></span>
+<span id="cb6-1409"><a href="#cb6-1409" aria-label="1409"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb6-1410"><a href="#cb6-1410" aria-label="1410"></a><span class="in">  &lt;/defs&gt;</span></span>
+<span id="cb6-1411"><a href="#cb6-1411" aria-label="1411"></a></span>
+<span id="cb6-1412"><a href="#cb6-1412" aria-label="1412"></a><span class="in">  &lt;!-- ==================== LEFT: PYGAME WINDOW &amp; COORDINATES ==================== --&gt;</span></span>
+<span id="cb6-1413"><a href="#cb6-1413" aria-label="1413"></a><span class="in">  &lt;!-- Window Frame --&gt;</span></span>
+<span id="cb6-1414"><a href="#cb6-1414" aria-label="1414"></a><span class="in">  &lt;rect x="65" y="42" width="240" height="230" rx="6" fill="#ffffff" stroke="#334155" stroke-width="2.5"/&gt;</span></span>
+<span id="cb6-1415"><a href="#cb6-1415" aria-label="1415"></a><span class="in">  &lt;!-- Title Bar --&gt;</span></span>
+<span id="cb6-1416"><a href="#cb6-1416" aria-label="1416"></a><span class="in">  &lt;path d="M 65,48 Q 65,42 71,42 L 299,42 Q 305,42 305,48 L 305,64 L 65,64 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/&gt;</span></span>
+<span id="cb6-1417"><a href="#cb6-1417" aria-label="1417"></a><span class="in">  &lt;circle cx="79" cy="53" r="4" fill="#ef4444"/&gt;</span></span>
+<span id="cb6-1418"><a href="#cb6-1418" aria-label="1418"></a><span class="in">  &lt;circle cx="91" cy="53" r="4" fill="#f59e0b"/&gt;</span></span>
+<span id="cb6-1419"><a href="#cb6-1419" aria-label="1419"></a><span class="in">  &lt;circle cx="103" cy="53" r="4" fill="#10b981"/&gt;</span></span>
+<span id="cb6-1420"><a href="#cb6-1420" aria-label="1420"></a><span class="in">  &lt;text x="185" y="57" text-anchor="middle" font-size="10" font-weight="bold" fill="#334155"&gt;Moving Circle (400×400)&lt;/text&gt;</span></span>
+<span id="cb6-1421"><a href="#cb6-1421" aria-label="1421"></a></span>
+<span id="cb6-1422"><a href="#cb6-1422" aria-label="1422"></a><span class="in">  &lt;!-- X-axis arrow (Top) --&gt;</span></span>
+<span id="cb6-1423"><a href="#cb6-1423" aria-label="1423"></a><span class="in">  &lt;line x1="65" y1="28" x2="318" y2="28" stroke="#334155" stroke-width="2" marker-end="url(#pg-arrow-axis)"/&gt;</span></span>
+<span id="cb6-1424"><a href="#cb6-1424" aria-label="1424"></a><span class="in">  &lt;text x="195" y="19" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1"&gt;x 座標が増加（右方向 +）&lt;/text&gt;</span></span>
+<span id="cb6-1425"><a href="#cb6-1425" aria-label="1425"></a></span>
+<span id="cb6-1426"><a href="#cb6-1426" aria-label="1426"></a><span class="in">  &lt;!-- Y-axis arrow (Left) --&gt;</span></span>
+<span id="cb6-1427"><a href="#cb6-1427" aria-label="1427"></a><span class="in">  &lt;line x1="48" y1="64" x2="48" y2="282" stroke="#334155" stroke-width="2" marker-end="url(#pg-arrow-axis)"/&gt;</span></span>
+<span id="cb6-1428"><a href="#cb6-1428" aria-label="1428"></a><span class="in">  &lt;text x="26" y="168" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1" writing-mode="tb"&gt;y 座標が増加（下方向 +）&lt;/text&gt;</span></span>
+<span id="cb6-1429"><a href="#cb6-1429" aria-label="1429"></a></span>
+<span id="cb6-1430"><a href="#cb6-1430" aria-label="1430"></a><span class="in">  &lt;!-- Origin (0, 0) label --&gt;</span></span>
+<span id="cb6-1431"><a href="#cb6-1431" aria-label="1431"></a><span class="in">  &lt;circle cx="65" cy="64" r="4" fill="#d84315"/&gt;</span></span>
+<span id="cb6-1432"><a href="#cb6-1432" aria-label="1432"></a><span class="in">  &lt;rect x="72" y="69" width="76" height="20" rx="4" fill="#fbe9e7" stroke="#ff8a65" stroke-width="1"/&gt;</span></span>
+<span id="cb6-1433"><a href="#cb6-1433" aria-label="1433"></a><span class="in">  &lt;text x="110" y="83" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c"&gt;左上 (0, 0)&lt;/text&gt;</span></span>
+<span id="cb6-1434"><a href="#cb6-1434" aria-label="1434"></a></span>
+<span id="cb6-1435"><a href="#cb6-1435" aria-label="1435"></a><span class="in">  &lt;!-- Ghost circles along diagonal --&gt;</span></span>
+<span id="cb6-1436"><a href="#cb6-1436" aria-label="1436"></a><span class="in">  &lt;circle cx="92" cy="90" r="12" fill="#bbdefb" stroke="#64b5f6" stroke-width="1.2" stroke-dasharray="3,2"/&gt;</span></span>
+<span id="cb6-1437"><a href="#cb6-1437" aria-label="1437"></a><span class="in">  &lt;circle cx="145" cy="140" r="12" fill="#90caf9" stroke="#42a5f5" stroke-width="1.2" stroke-dasharray="3,2"/&gt;</span></span>
+<span id="cb6-1438"><a href="#cb6-1438" aria-label="1438"></a><span class="in">  &lt;!-- Active circle --&gt;</span></span>
+<span id="cb6-1439"><a href="#cb6-1439" aria-label="1439"></a><span class="in">  &lt;circle cx="205" cy="195" r="13" fill="#1976d2"/&gt;</span></span>
+<span id="cb6-1440"><a href="#cb6-1440" aria-label="1440"></a><span class="in">  &lt;!-- Diagonal movement arrow --&gt;</span></span>
+<span id="cb6-1441"><a href="#cb6-1441" aria-label="1441"></a><span class="in">  &lt;line x1="102" y1="99" x2="268" y2="252" stroke="#1976d2" stroke-width="2.5" marker-end="url(#pg-arrow-move)"/&gt;</span></span>
+<span id="cb6-1442"><a href="#cb6-1442" aria-label="1442"></a><span class="in">  &lt;text x="155" y="196" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1"&gt;一定速度で移動&lt;/text&gt;</span></span>
+<span id="cb6-1443"><a href="#cb6-1443" aria-label="1443"></a><span class="in">  &lt;text x="155" y="210" text-anchor="middle" font-size="9.5" fill="#1565c0"&gt;(x += 3, y += 3)&lt;/text&gt;</span></span>
+<span id="cb6-1444"><a href="#cb6-1444" aria-label="1444"></a></span>
+<span id="cb6-1445"><a href="#cb6-1445" aria-label="1445"></a><span class="in">  &lt;!-- Bottom-right corner (400, 400) --&gt;</span></span>
+<span id="cb6-1446"><a href="#cb6-1446" aria-label="1446"></a><span class="in">  &lt;circle cx="285" cy="258" r="12" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="3,2"/&gt;</span></span>
+<span id="cb6-1447"><a href="#cb6-1447" aria-label="1447"></a><span class="in">  &lt;rect x="195" y="278" width="122" height="22" rx="4" fill="#fff3e0" stroke="#ffb74d" stroke-width="1"/&gt;</span></span>
+<span id="cb6-1448"><a href="#cb6-1448" aria-label="1448"></a><span class="in">  &lt;text x="256" y="293" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100"&gt;右下隅 (400, 400)&lt;/text&gt;</span></span>
+<span id="cb6-1449"><a href="#cb6-1449" aria-label="1449"></a></span>
+<span id="cb6-1450"><a href="#cb6-1450" aria-label="1450"></a><span class="in">  &lt;!-- Reset curved arrow from bottom-right back to top-left --&gt;</span></span>
+<span id="cb6-1451"><a href="#cb6-1451" aria-label="1451"></a><span class="in">  &lt;path d="M 285,245 Q 290,95 108,82" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#pg-arrow-reset)"/&gt;</span></span>
+<span id="cb6-1452"><a href="#cb6-1452" aria-label="1452"></a><span class="in">  &lt;text x="242" y="114" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100"&gt;右下隅に達したら&lt;/text&gt;</span></span>
+<span id="cb6-1453"><a href="#cb6-1453" aria-label="1453"></a><span class="in">  &lt;text x="242" y="127" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100"&gt;左上 (0, 0) に戻る&lt;/text&gt;</span></span>
+<span id="cb6-1454"><a href="#cb6-1454" aria-label="1454"></a></span>
+<span id="cb6-1455"><a href="#cb6-1455" aria-label="1455"></a><span class="in">  &lt;!-- ==================== RIGHT: GAME LOOP EXPLANATION ==================== --&gt;</span></span>
+<span id="cb6-1456"><a href="#cb6-1456" aria-label="1456"></a><span class="in">  &lt;rect x="350" y="42" width="310" height="230" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/&gt;</span></span>
+<span id="cb6-1457"><a href="#cb6-1457" aria-label="1457"></a><span class="in">  &lt;text x="505" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b"&gt;メインループ（1秒間に60回繰り返す）&lt;/text&gt;</span></span>
+<span id="cb6-1458"><a href="#cb6-1458" aria-label="1458"></a></span>
+<span id="cb6-1459"><a href="#cb6-1459" aria-label="1459"></a><span class="in">  &lt;rect x="370" y="82" width="270" height="36" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/&gt;</span></span>
+<span id="cb6-1460"><a href="#cb6-1460" aria-label="1460"></a><span class="in">  &lt;text x="505" y="104" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155"&gt;① イベント確認（×ボタンで終了判定）&lt;/text&gt;</span></span>
+<span id="cb6-1461"><a href="#cb6-1461" aria-label="1461"></a></span>
+<span id="cb6-1462"><a href="#cb6-1462" aria-label="1462"></a><span class="in">  &lt;rect x="370" y="128" width="270" height="40" rx="6" fill="#e3f2fd" stroke="#64b5f6" stroke-width="1.2"/&gt;</span></span>
+<span id="cb6-1463"><a href="#cb6-1463" aria-label="1463"></a><span class="in">  &lt;text x="505" y="145" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1"&gt;② 座標の更新（x, y を増やす）&lt;/text&gt;</span></span>
+<span id="cb6-1464"><a href="#cb6-1464" aria-label="1464"></a><span class="in">  &lt;text x="505" y="161" text-anchor="middle" font-size="9.5" fill="#1565c0"&gt;※ 右下隅を超えたら (0, 0) にリセット&lt;/text&gt;</span></span>
+<span id="cb6-1465"><a href="#cb6-1465" aria-label="1465"></a></span>
+<span id="cb6-1466"><a href="#cb6-1466" aria-label="1466"></a><span class="in">  &lt;rect x="370" y="178" width="270" height="36" rx="6" fill="#e8f5e9" stroke="#81c784" stroke-width="1.2"/&gt;</span></span>
+<span id="cb6-1467"><a href="#cb6-1467" aria-label="1467"></a><span class="in">  &lt;text x="505" y="200" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20"&gt;③ 背景を塗りつぶし、新しい位置に円を描画&lt;/text&gt;</span></span>
+<span id="cb6-1468"><a href="#cb6-1468" aria-label="1468"></a></span>
+<span id="cb6-1469"><a href="#cb6-1469" aria-label="1469"></a><span class="in">  &lt;rect x="370" y="224" width="270" height="36" rx="6" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.2"/&gt;</span></span>
+<span id="cb6-1470"><a href="#cb6-1470" aria-label="1470"></a><span class="in">  &lt;text x="505" y="246" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100"&gt;④ 画面への反映（flip）と時間調整（tick）&lt;/text&gt;</span></span>
+<span id="cb6-1471"><a href="#cb6-1471" aria-label="1471"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb6-1472"><a href="#cb6-1472" aria-label="1472"></a><span class="in">```</span></span>
 <span id="cb6-1473"><a href="#cb6-1473" aria-label="1473"></a></span>
-<span id="cb6-1474"><a href="#cb6-1474" aria-label="1474"></a>簡単な例として、**青い円が画面の左上 $(0, 0)$ から右下 $(400, 400)$ に向かって一定速度で移動し、右下隅まで到達すると再び左上に戻るプログラム**のソースコードを見てみましょう。</span>
+<span id="cb6-1474"><a href="#cb6-1474" aria-label="1474"></a><span class="fu">### 基本的な使い方（円が左上から右下へ移動する例）</span></span>
 <span id="cb6-1475"><a href="#cb6-1475" aria-label="1475"></a></span>
-<span id="cb6-1476"><a href="#cb6-1476" aria-label="1476"></a><span class="in">```python</span></span>
-<span id="cb6-1477"><a href="#cb6-1477" aria-label="1477"></a><span class="im">import</span> pygame</span>
-<span id="cb6-1478"><a href="#cb6-1478" aria-label="1478"></a></span>
-<span id="cb6-1479"><a href="#cb6-1479" aria-label="1479"></a><span class="co"># 1. Pygame の初期化とウィンドウの作成</span></span>
-<span id="cb6-1480"><a href="#cb6-1480" aria-label="1480"></a>pygame.init()</span>
-<span id="cb6-1481"><a href="#cb6-1481" aria-label="1481"></a>WIDTH, HEIGHT <span class="op">=</span> <span class="dv">400</span>, <span class="dv">400</span></span>
-<span id="cb6-1482"><a href="#cb6-1482" aria-label="1482"></a>screen <span class="op">=</span> pygame.display.set_mode((WIDTH, HEIGHT))</span>
-<span id="cb6-1483"><a href="#cb6-1483" aria-label="1483"></a>pygame.display.set_caption(<span class="st">"Moving Circle"</span>)</span>
-<span id="cb6-1484"><a href="#cb6-1484" aria-label="1484"></a>clock <span class="op">=</span> pygame.time.Clock()</span>
-<span id="cb6-1485"><a href="#cb6-1485" aria-label="1485"></a></span>
-<span id="cb6-1486"><a href="#cb6-1486" aria-label="1486"></a><span class="co"># 円の初期位置（左上）と移動速度・半径の設定</span></span>
-<span id="cb6-1487"><a href="#cb6-1487" aria-label="1487"></a>x, y <span class="op">=</span> <span class="dv">0</span>, <span class="dv">0</span></span>
-<span id="cb6-1488"><a href="#cb6-1488" aria-label="1488"></a>speed <span class="op">=</span> <span class="dv">3</span></span>
-<span id="cb6-1489"><a href="#cb6-1489" aria-label="1489"></a>radius <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb6-1490"><a href="#cb6-1490" aria-label="1490"></a></span>
-<span id="cb6-1491"><a href="#cb6-1491" aria-label="1491"></a><span class="co"># 2. メインループ（アニメーションの繰り返し）</span></span>
-<span id="cb6-1492"><a href="#cb6-1492" aria-label="1492"></a>running <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb6-1493"><a href="#cb6-1493" aria-label="1493"></a><span class="cf">while</span> running:</span>
-<span id="cb6-1494"><a href="#cb6-1494" aria-label="1494"></a>    <span class="co"># ① イベント処理（ウィンドウの「×」ボタンが押されたら終了する）</span></span>
-<span id="cb6-1495"><a href="#cb6-1495" aria-label="1495"></a>    <span class="cf">for</span> event <span class="kw">in</span> pygame.event.get():</span>
-<span id="cb6-1496"><a href="#cb6-1496" aria-label="1496"></a>        <span class="cf">if</span> event.<span class="bu">type</span> <span class="op">==</span> pygame.QUIT:</span>
-<span id="cb6-1497"><a href="#cb6-1497" aria-label="1497"></a>            running <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb6-1498"><a href="#cb6-1498" aria-label="1498"></a></span>
-<span id="cb6-1499"><a href="#cb6-1499" aria-label="1499"></a>    <span class="co"># ② 円の座標を一定速度で右下へ進める</span></span>
-<span id="cb6-1500"><a href="#cb6-1500" aria-label="1500"></a>    x <span class="op">+=</span> speed</span>
-<span id="cb6-1501"><a href="#cb6-1501" aria-label="1501"></a>    y <span class="op">+=</span> speed</span>
-<span id="cb6-1502"><a href="#cb6-1502" aria-label="1502"></a></span>
-<span id="cb6-1503"><a href="#cb6-1503" aria-label="1503"></a>    <span class="co"># 右下隅まで到達したら左上 (0, 0) に戻す</span></span>
-<span id="cb6-1504"><a href="#cb6-1504" aria-label="1504"></a>    <span class="cf">if</span> x <span class="op">&gt;</span> WIDTH <span class="kw">and</span> y <span class="op">&gt;</span> HEIGHT:</span>
-<span id="cb6-1505"><a href="#cb6-1505" aria-label="1505"></a>        x, y <span class="op">=</span> <span class="dv">0</span>, <span class="dv">0</span></span>
-<span id="cb6-1506"><a href="#cb6-1506" aria-label="1506"></a></span>
-<span id="cb6-1507"><a href="#cb6-1507" aria-label="1507"></a>    <span class="co"># ③ 画面の描画（背景を白で塗りつぶしてから、青い円を描く）</span></span>
-<span id="cb6-1508"><a href="#cb6-1508" aria-label="1508"></a>    screen.fill((<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>))  <span class="co"># RGBで白色 (255, 255, 255)</span></span>
-<span id="cb6-1509"><a href="#cb6-1509" aria-label="1509"></a>    pygame.draw.circle(screen, (<span class="dv">30</span>, <span class="dv">136</span>, <span class="dv">229</span>), (x, y), radius)</span>
-<span id="cb6-1510"><a href="#cb6-1510" aria-label="1510"></a></span>
-<span id="cb6-1511"><a href="#cb6-1511" aria-label="1511"></a>    <span class="co"># ④ 描画内容を画面に反映し、1秒間に60回（60 FPS）のペースに保つ</span></span>
-<span id="cb6-1512"><a href="#cb6-1512" aria-label="1512"></a>    pygame.display.flip()</span>
-<span id="cb6-1513"><a href="#cb6-1513" aria-label="1513"></a>    clock.tick(<span class="dv">60</span>)</span>
-<span id="cb6-1514"><a href="#cb6-1514" aria-label="1514"></a></span>
-<span id="cb6-1515"><a href="#cb6-1515" aria-label="1515"></a><span class="co"># 3. Pygame の終了処理</span></span>
-<span id="cb6-1516"><a href="#cb6-1516" aria-label="1516"></a>pygame.quit()</span>
-<span id="cb6-1517"><a href="#cb6-1517" aria-label="1517"></a><span class="in">```</span></span>
-<span id="cb6-1518"><a href="#cb6-1518" aria-label="1518"></a></span>
-<span id="cb6-1519"><a href="#cb6-1519" aria-label="1519"></a><span class="fu">#### コードの重要ポイント</span></span>
+<span id="cb6-1476"><a href="#cb6-1476" aria-label="1476"></a>簡単な例として、**青い円が画面の左上 $(0, 0)$ から右下 $(400, 400)$ に向かって一定速度で移動し、右下隅まで到達すると再び左上に戻るプログラム**のソースコードを見てみましょう。</span>
+<span id="cb6-1477"><a href="#cb6-1477" aria-label="1477"></a></span>
+<span id="cb6-1478"><a href="#cb6-1478" aria-label="1478"></a><span class="in">```python</span></span>
+<span id="cb6-1479"><a href="#cb6-1479" aria-label="1479"></a><span class="im">import</span> pygame</span>
+<span id="cb6-1480"><a href="#cb6-1480" aria-label="1480"></a></span>
+<span id="cb6-1481"><a href="#cb6-1481" aria-label="1481"></a><span class="co"># 1. Pygame の初期化とウィンドウの作成</span></span>
+<span id="cb6-1482"><a href="#cb6-1482" aria-label="1482"></a>pygame.init()</span>
+<span id="cb6-1483"><a href="#cb6-1483" aria-label="1483"></a>WIDTH, HEIGHT <span class="op">=</span> <span class="dv">400</span>, <span class="dv">400</span></span>
+<span id="cb6-1484"><a href="#cb6-1484" aria-label="1484"></a>screen <span class="op">=</span> pygame.display.set_mode((WIDTH, HEIGHT))</span>
+<span id="cb6-1485"><a href="#cb6-1485" aria-label="1485"></a>pygame.display.set_caption(<span class="st">"Moving Circle"</span>)</span>
+<span id="cb6-1486"><a href="#cb6-1486" aria-label="1486"></a>clock <span class="op">=</span> pygame.time.Clock()</span>
+<span id="cb6-1487"><a href="#cb6-1487" aria-label="1487"></a></span>
+<span id="cb6-1488"><a href="#cb6-1488" aria-label="1488"></a><span class="co"># 円の初期位置（左上）と移動速度・半径の設定</span></span>
+<span id="cb6-1489"><a href="#cb6-1489" aria-label="1489"></a>x, y <span class="op">=</span> <span class="dv">0</span>, <span class="dv">0</span></span>
+<span id="cb6-1490"><a href="#cb6-1490" aria-label="1490"></a>speed <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb6-1491"><a href="#cb6-1491" aria-label="1491"></a>radius <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb6-1492"><a href="#cb6-1492" aria-label="1492"></a></span>
+<span id="cb6-1493"><a href="#cb6-1493" aria-label="1493"></a><span class="co"># 2. メインループ（アニメーションの繰り返し）</span></span>
+<span id="cb6-1494"><a href="#cb6-1494" aria-label="1494"></a>running <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb6-1495"><a href="#cb6-1495" aria-label="1495"></a><span class="cf">while</span> running:</span>
+<span id="cb6-1496"><a href="#cb6-1496" aria-label="1496"></a>    <span class="co"># ① イベント処理（ウィンドウの「×」ボタンが押されたら終了する）</span></span>
+<span id="cb6-1497"><a href="#cb6-1497" aria-label="1497"></a>    <span class="cf">for</span> event <span class="kw">in</span> pygame.event.get():</span>
+<span id="cb6-1498"><a href="#cb6-1498" aria-label="1498"></a>        <span class="cf">if</span> event.<span class="bu">type</span> <span class="op">==</span> pygame.QUIT:</span>
+<span id="cb6-1499"><a href="#cb6-1499" aria-label="1499"></a>            running <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb6-1500"><a href="#cb6-1500" aria-label="1500"></a></span>
+<span id="cb6-1501"><a href="#cb6-1501" aria-label="1501"></a>    <span class="co"># ② 円の座標を一定速度で右下へ進める</span></span>
+<span id="cb6-1502"><a href="#cb6-1502" aria-label="1502"></a>    x <span class="op">+=</span> speed</span>
+<span id="cb6-1503"><a href="#cb6-1503" aria-label="1503"></a>    y <span class="op">+=</span> speed</span>
+<span id="cb6-1504"><a href="#cb6-1504" aria-label="1504"></a></span>
+<span id="cb6-1505"><a href="#cb6-1505" aria-label="1505"></a>    <span class="co"># 右下隅まで到達したら左上 (0, 0) に戻す</span></span>
+<span id="cb6-1506"><a href="#cb6-1506" aria-label="1506"></a>    <span class="cf">if</span> x <span class="op">&gt;</span> WIDTH <span class="kw">and</span> y <span class="op">&gt;</span> HEIGHT:</span>
+<span id="cb6-1507"><a href="#cb6-1507" aria-label="1507"></a>        x, y <span class="op">=</span> <span class="dv">0</span>, <span class="dv">0</span></span>
+<span id="cb6-1508"><a href="#cb6-1508" aria-label="1508"></a></span>
+<span id="cb6-1509"><a href="#cb6-1509" aria-label="1509"></a>    <span class="co"># ③ 画面の描画（背景を白で塗りつぶしてから、青い円を描く）</span></span>
+<span id="cb6-1510"><a href="#cb6-1510" aria-label="1510"></a>    screen.fill((<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>))  <span class="co"># RGBで白色 (255, 255, 255)</span></span>
+<span id="cb6-1511"><a href="#cb6-1511" aria-label="1511"></a>    pygame.draw.circle(screen, (<span class="dv">30</span>, <span class="dv">136</span>, <span class="dv">229</span>), (x, y), radius)</span>
+<span id="cb6-1512"><a href="#cb6-1512" aria-label="1512"></a></span>
+<span id="cb6-1513"><a href="#cb6-1513" aria-label="1513"></a>    <span class="co"># ④ 描画内容を画面に反映し、1秒間に60回（60 FPS）のペースに保つ</span></span>
+<span id="cb6-1514"><a href="#cb6-1514" aria-label="1514"></a>    pygame.display.flip()</span>
+<span id="cb6-1515"><a href="#cb6-1515" aria-label="1515"></a>    clock.tick(<span class="dv">60</span>)</span>
+<span id="cb6-1516"><a href="#cb6-1516" aria-label="1516"></a></span>
+<span id="cb6-1517"><a href="#cb6-1517" aria-label="1517"></a><span class="co"># 3. Pygame の終了処理</span></span>
+<span id="cb6-1518"><a href="#cb6-1518" aria-label="1518"></a>pygame.quit()</span>
+<span id="cb6-1519"><a href="#cb6-1519" aria-label="1519"></a><span class="in">```</span></span>
 <span id="cb6-1520"><a href="#cb6-1520" aria-label="1520"></a></span>
-<span id="cb6-1521"><a href="#cb6-1521" aria-label="1521"></a><span class="ss">1. </span>**ウィンドウと時計の準備**:</span>
-<span id="cb6-1522"><a href="#cb6-1522" aria-label="1522"></a><span class="ss">   - </span><span class="in">`pygame.display.set_mode((WIDTH, HEIGHT))`</span> で横400ピクセル・縦400ピクセルのウィンドウを作成します。</span>
-<span id="cb6-1523"><a href="#cb6-1523" aria-label="1523"></a><span class="ss">   - </span><span class="in">`clock = pygame.time.Clock()`</span> はアニメーションの速度（フレームレート）を一定に保つためのタイマーです。ループの最後で <span class="in">`clock.tick(60)`</span> を呼ぶことで、コンピュータの性能にかかわらず「1秒間に60回」のペースでループが回るように調整されます。</span>
-<span id="cb6-1524"><a href="#cb6-1524" aria-label="1524"></a><span class="ss">2. </span>**色の指定（RGB形式）**:</span>
-<span id="cb6-1525"><a href="#cb6-1525" aria-label="1525"></a><span class="ss">   - </span>Pygame では色を <span class="in">`(赤, 緑, 青)`</span> の3つの数値（それぞれ <span class="in">`0`</span>〜<span class="in">`255`</span>）の組み合わせ（**RGB**）で指定します。<span class="in">`(255, 255, 255)`</span> は白色、<span class="in">`(0, 0, 0)`</span> は黒色、<span class="in">`(30, 136, 229)`</span> は鮮やかな青色を表します。</span>
-<span id="cb6-1526"><a href="#cb6-1526" aria-label="1526"></a><span class="ss">3. </span>**毎フレーム `screen.fill()` で背景を塗りつぶす理由**:</span>
-<span id="cb6-1527"><a href="#cb6-1527" aria-label="1527"></a><span class="ss">   - </span>新しい位置に円を描く前に <span class="in">`screen.fill((255, 255, 255))`</span> で画面全体を白く塗りつぶしています。もしこれを行わないと、1フレーム前に描いた円が画面に残り続け、円が移動するのではなく「青い太線」が伸びていくような表示になってしまいます。</span>
-<span id="cb6-1528"><a href="#cb6-1528" aria-label="1528"></a><span class="ss">4. </span>**円の描画と画面への反映**:</span>
-<span id="cb6-1529"><a href="#cb6-1529" aria-label="1529"></a><span class="ss">   - </span><span class="in">`pygame.draw.circle(描画先, 色, (中心x, 中心y), 半径)`</span> で円を描き、最後に <span class="in">`pygame.display.flip()`</span> を呼ぶことで、裏側で描いた絵が実際のウィンドウ画面にパッと反映されます。</span>
-<span id="cb6-1530"><a href="#cb6-1530" aria-label="1530"></a></span>
-<span id="cb6-1531"><a href="#cb6-1531" aria-label="1531"></a>::: {.callout-note icon=false}</span>
-<span id="cb6-1532"><a href="#cb6-1532" aria-label="1532"></a><span class="fu">### 練習問題 07-07：Pygame プログラムの動作と改造</span></span>
-<span id="cb6-1533"><a href="#cb6-1533" aria-label="1533"></a><span class="ss">1. </span>上のプログラムを実行して、青い円が左上から右下へ移動し、右下隅に達すると左上に戻ることを確認してみましょう。</span>
-<span id="cb6-1534"><a href="#cb6-1534" aria-label="1534"></a><span class="ss">2. </span>もしこのプログラムで、円を**「画面の左下隅 $(0, 400)$ からスタートして、右上隅 $(400, 0)$ に向かって一定速度で移動し、右上隅に達したら左下にまた戻る」**ように変更したい場合、初期位置 <span class="in">`x, y`</span> とループ内の座標更新（<span class="in">`x += ...`</span>, <span class="in">`y += ...`</span>）をどのように書き換えればよいでしょうか？</span>
-<span id="cb6-1535"><a href="#cb6-1535" aria-label="1535"></a>:::</span>
-<span id="cb6-1536"><a href="#cb6-1536" aria-label="1536"></a></span>
-<span id="cb6-1537"><a href="#cb6-1537" aria-label="1537"></a>---</span>
+<span id="cb6-1521"><a href="#cb6-1521" aria-label="1521"></a><span class="fu">#### コードの重要ポイント</span></span>
+<span id="cb6-1522"><a href="#cb6-1522" aria-label="1522"></a></span>
+<span id="cb6-1523"><a href="#cb6-1523" aria-label="1523"></a><span class="ss">1. </span>**ウィンドウと時計の準備**:</span>
+<span id="cb6-1524"><a href="#cb6-1524" aria-label="1524"></a><span class="ss">   - </span><span class="in">`pygame.display.set_mode((WIDTH, HEIGHT))`</span> で横400ピクセル・縦400ピクセルのウィンドウを作成します。</span>
+<span id="cb6-1525"><a href="#cb6-1525" aria-label="1525"></a><span class="ss">   - </span><span class="in">`clock = pygame.time.Clock()`</span> はアニメーションの速度（フレームレート）を一定に保つためのタイマーです。ループの最後で <span class="in">`clock.tick(60)`</span> を呼ぶことで、コンピュータの性能にかかわらず「1秒間に60回」のペースでループが回るように調整されます。</span>
+<span id="cb6-1526"><a href="#cb6-1526" aria-label="1526"></a><span class="ss">2. </span>**色の指定（RGB形式）**:</span>
+<span id="cb6-1527"><a href="#cb6-1527" aria-label="1527"></a><span class="ss">   - </span>Pygame では色を <span class="in">`(赤, 緑, 青)`</span> の3つの数値（それぞれ <span class="in">`0`</span>〜<span class="in">`255`</span>）の組み合わせ（**RGB**）で指定します。<span class="in">`(255, 255, 255)`</span> は白色、<span class="in">`(0, 0, 0)`</span> は黒色、<span class="in">`(30, 136, 229)`</span> は鮮やかな青色を表します。</span>
+<span id="cb6-1528"><a href="#cb6-1528" aria-label="1528"></a><span class="ss">3. </span>**毎フレーム `screen.fill()` で背景を塗りつぶす理由**:</span>
+<span id="cb6-1529"><a href="#cb6-1529" aria-label="1529"></a><span class="ss">   - </span>新しい位置に円を描く前に <span class="in">`screen.fill((255, 255, 255))`</span> で画面全体を白く塗りつぶしています。もしこれを行わないと、1フレーム前に描いた円が画面に残り続け、円が移動するのではなく「青い太線」が伸びていくような表示になってしまいます。</span>
+<span id="cb6-1530"><a href="#cb6-1530" aria-label="1530"></a><span class="ss">4. </span>**円の描画と画面への反映**:</span>
+<span id="cb6-1531"><a href="#cb6-1531" aria-label="1531"></a><span class="ss">   - </span><span class="in">`pygame.draw.circle(描画先, 色, (中心x, 中心y), 半径)`</span> で円を描き、最後に <span class="in">`pygame.display.flip()`</span> を呼ぶことで、裏側で描いた絵が実際のウィンドウ画面にパッと反映されます。</span>
+<span id="cb6-1532"><a href="#cb6-1532" aria-label="1532"></a></span>
+<span id="cb6-1533"><a href="#cb6-1533" aria-label="1533"></a>::: {.callout-note icon=false}</span>
+<span id="cb6-1534"><a href="#cb6-1534" aria-label="1534"></a><span class="fu">### 練習問題 07-07：Pygame プログラムの動作と改造</span></span>
+<span id="cb6-1535"><a href="#cb6-1535" aria-label="1535"></a><span class="ss">1. </span>上のプログラムを実行して、青い円が左上から右下へ移動し、右下隅に達すると左上に戻ることを確認してみましょう。</span>
+<span id="cb6-1536"><a href="#cb6-1536" aria-label="1536"></a><span class="ss">2. </span>もしこのプログラムで、円を**「画面の左下隅 $(0, 400)$ からスタートして、右上隅 $(400, 0)$ に向かって一定速度で移動し、右上隅に達したら左下にまた戻る」**ように変更したい場合、初期位置 <span class="in">`x, y`</span> とループ内の座標更新（<span class="in">`x += ...`</span>, <span class="in">`y += ...`</span>）をどのように書き換えればよいでしょうか？</span>
+<span id="cb6-1537"><a href="#cb6-1537" aria-label="1537"></a>:::</span>
 <span id="cb6-1538"><a href="#cb6-1538" aria-label="1538"></a></span>
-<span id="cb6-1539"><a href="#cb6-1539" aria-label="1539"></a><span class="fu">## 対話的な機能拡張：3マス移動問題のアニメーション表示</span></span>
+<span id="cb6-1539"><a href="#cb6-1539" aria-label="1539"></a>---</span>
 <span id="cb6-1540"><a href="#cb6-1540" aria-label="1540"></a></span>
-<span id="cb6-1541"><a href="#cb6-1541" aria-label="1541"></a>Pygame の仕組みが分かったところで、先ほど文字だけで作成した3マス移動問題のシミュレーション（<span class="in">`three_states_sim.py`</span>）を、**vibe coding** によって **Pygame のアニメーションで視覚的に表示するプログラムへと修正** してみましょう。</span>
+<span id="cb6-1541"><a href="#cb6-1541" aria-label="1541"></a><span class="fu">## 対話的な機能拡張：3マス移動問題のアニメーション表示</span></span>
 <span id="cb6-1542"><a href="#cb6-1542" aria-label="1542"></a></span>
-<span id="cb6-1543"><a href="#cb6-1543" aria-label="1543"></a>一度動くプログラムを作ったあと、「文字表示だったものをアニメーション表示に変えてほしい」と自然言語で追加指示を出せるのが vibe coding の大きな魅力です。</span>
+<span id="cb6-1543"><a href="#cb6-1543" aria-label="1543"></a>Pygame の仕組みが分かったところで、先ほど文字だけで作成した3マス移動問題のシミュレーション（<span class="in">`three_states_sim.py`</span>）を、**vibe coding** によって **Pygame のアニメーションで視覚的に表示するプログラムへと修正** してみましょう。</span>
 <span id="cb6-1544"><a href="#cb6-1544" aria-label="1544"></a></span>
-<span id="cb6-1545"><a href="#cb6-1545" aria-label="1545"></a><span class="fu">### 修正するプログラムの仕様</span></span>
+<span id="cb6-1545"><a href="#cb6-1545" aria-label="1545"></a>一度動くプログラムを作ったあと、「文字表示だったものをアニメーション表示に変えてほしい」と自然言語で追加指示を出せるのが vibe coding の大きな魅力です。</span>
 <span id="cb6-1546"><a href="#cb6-1546" aria-label="1546"></a></span>
-<span id="cb6-1547"><a href="#cb6-1547" aria-label="1547"></a>エージェントには、<span class="in">`three_states_sim.py`</span> を以下の仕様でアニメーション対応に修正してもらいます：</span>
+<span id="cb6-1547"><a href="#cb6-1547" aria-label="1547"></a><span class="fu">### 修正するプログラムの仕様</span></span>
 <span id="cb6-1548"><a href="#cb6-1548" aria-label="1548"></a></span>
-<span id="cb6-1549"><a href="#cb6-1549" aria-label="1549"></a><span class="ss">1. </span>**画面レイアウト（3つのマスと壁の描画）**:</span>
-<span id="cb6-1550"><a href="#cb6-1550" aria-label="1550"></a><span class="ss">   - </span>Pygame ウィンドウの中央に、横一列に並んだ3つのマス（左から **状態 $\text{A}$**、**状態 $\text{B}$**、**状態 $\text{C}$（ゴール）**）と、状態 $\text{A}$ の左端にある「壁」を描画する。</span>
-<span id="cb6-1551"><a href="#cb6-1551" aria-label="1551"></a><span class="ss">2. </span>**エージェントの移動アニメーション**:</span>
-<span id="cb6-1552"><a href="#cb6-1552" aria-label="1552"></a><span class="ss">   - </span>エージェントを青い円で表し、1ステップごとに現在のマスから次のマスへ滑らかに動くアニメーションを表示する。</span>
-<span id="cb6-1553"><a href="#cb6-1553" aria-label="1553"></a><span class="ss">   - </span>**移動成功時**: 隣のマスの中央まで円が一定速度でスーッと移動する。</span>
-<span id="cb6-1554"><a href="#cb6-1554" aria-label="1554"></a><span class="ss">   - </span>**スリップ時・壁で留まる時**: 選んだ方向へ少し動こうとしたあと元のマスの中央へ押し戻される（バウンスする）動きをつけることで、「<span class="in">`Right`</span> を選んだけれど滑ったのか」「<span class="in">`Left`</span> を選んで壁に当たったのか」が画面を見るだけで区別できるようにする。</span>
-<span id="cb6-1555"><a href="#cb6-1555" aria-label="1555"></a><span class="ss">3. </span>**経路・報酬・収益 $G_0$ の画面表示と再実行機能**:</span>
-<span id="cb6-1556"><a href="#cb6-1556" aria-label="1556"></a><span class="ss">   - </span>ウィンドウ内に「現在のステップ数」「選んだ行動（<span class="in">`Right`</span> / <span class="in">`Left`</span>）」「移動結果（移動成功／スリップ／壁）と報酬 $R$」「現在までの経路（<span class="in">`A -&gt; B -&gt; ...`</span>）」「割引率 $\gamma = 0.9$ での累積収益 $G_0$」を文字でも表示する。</span>
-<span id="cb6-1557"><a href="#cb6-1557" aria-label="1557"></a><span class="ss">   - </span>状態 $\text{C}$（ゴール）に到達したらエピソード終了とし、キーボードの **スペースキー（または `R` キー）を押すと最初から新しいエピソードを再実行** できるようにする。</span>
-<span id="cb6-1558"><a href="#cb6-1558" aria-label="1558"></a></span>
-<span id="cb6-1559"><a href="#cb6-1559" aria-label="1559"></a><span class="in">```{=html}</span></span>
-<span id="cb6-1560"><a href="#cb6-1560" aria-label="1560"></a><span class="in">&lt;svg viewBox="0 0 700 350" width="100%" height="350" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;"&gt;</span></span>
-<span id="cb6-1561"><a href="#cb6-1561" aria-label="1561"></a><span class="in">  &lt;defs&gt;</span></span>
-<span id="cb6-1562"><a href="#cb6-1562" aria-label="1562"></a><span class="in">    &lt;marker id="anim-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
-<span id="cb6-1563"><a href="#cb6-1563" aria-label="1563"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" /&gt;</span></span>
-<span id="cb6-1564"><a href="#cb6-1564" aria-label="1564"></a><span class="in">    &lt;/marker&gt;</span></span>
-<span id="cb6-1565"><a href="#cb6-1565" aria-label="1565"></a><span class="in">  &lt;/defs&gt;</span></span>
-<span id="cb6-1566"><a href="#cb6-1566" aria-label="1566"></a></span>
-<span id="cb6-1567"><a href="#cb6-1567" aria-label="1567"></a><span class="in">  &lt;!-- Pygame Window Outer Frame --&gt;</span></span>
-<span id="cb6-1568"><a href="#cb6-1568" aria-label="1568"></a><span class="in">  &lt;rect x="40" y="16" width="620" height="318" rx="8" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/&gt;</span></span>
-<span id="cb6-1569"><a href="#cb6-1569" aria-label="1569"></a><span class="in">  &lt;!-- Window Title Bar --&gt;</span></span>
-<span id="cb6-1570"><a href="#cb6-1570" aria-label="1570"></a><span class="in">  &lt;path d="M 40,24 Q 40,16 48,16 L 652,16 Q 660,16 660,24 L 660,42 L 40,42 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/&gt;</span></span>
-<span id="cb6-1571"><a href="#cb6-1571" aria-label="1571"></a><span class="in">  &lt;circle cx="56" cy="29" r="4.5" fill="#ef4444"/&gt;</span></span>
-<span id="cb6-1572"><a href="#cb6-1572" aria-label="1572"></a><span class="in">  &lt;circle cx="70" cy="29" r="4.5" fill="#f59e0b"/&gt;</span></span>
-<span id="cb6-1573"><a href="#cb6-1573" aria-label="1573"></a><span class="in">  &lt;circle cx="84" cy="29" r="4.5" fill="#10b981"/&gt;</span></span>
-<span id="cb6-1574"><a href="#cb6-1574" aria-label="1574"></a><span class="in">  &lt;text x="350" y="34" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155"&gt;3-State RL Simulation (Pygame Animation)&lt;/text&gt;</span></span>
-<span id="cb6-1575"><a href="#cb6-1575" aria-label="1575"></a></span>
-<span id="cb6-1576"><a href="#cb6-1576" aria-label="1576"></a><span class="in">  &lt;!-- Top Info Banner inside Window --&gt;</span></span>
-<span id="cb6-1577"><a href="#cb6-1577" aria-label="1577"></a><span class="in">  &lt;rect x="65" y="56" width="570" height="44" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/&gt;</span></span>
-<span id="cb6-1578"><a href="#cb6-1578" aria-label="1578"></a><span class="in">  &lt;text x="85" y="75" font-size="12" font-weight="bold" fill="#0d47a1"&gt;ステップ 3：状態 A で行動 [Right] を選択 → 移動成功！（報酬 R = -1）&lt;/text&gt;</span></span>
-<span id="cb6-1579"><a href="#cb6-1579" aria-label="1579"></a><span class="in">  &lt;text x="85" y="93" font-size="11" fill="#475569"&gt;方策: Right 50% / Left 50%　｜　環境: 移動成功 80% / スリップ 20%　｜　割引率 γ = 0.9&lt;/text&gt;</span></span>
-<span id="cb6-1580"><a href="#cb6-1580" aria-label="1580"></a></span>
-<span id="cb6-1581"><a href="#cb6-1581" aria-label="1581"></a><span class="in">  &lt;!-- Left Wall --&gt;</span></span>
-<span id="cb6-1582"><a href="#cb6-1582" aria-label="1582"></a><span class="in">  &lt;rect x="102" y="118" width="8" height="124" rx="2" fill="#475569"/&gt;</span></span>
-<span id="cb6-1583"><a href="#cb6-1583" aria-label="1583"></a><span class="in">  &lt;text x="90" y="184" text-anchor="end" font-size="10.5" font-weight="bold" fill="#475569"&gt;壁&lt;/text&gt;</span></span>
-<span id="cb6-1584"><a href="#cb6-1584" aria-label="1584"></a></span>
-<span id="cb6-1585"><a href="#cb6-1585" aria-label="1585"></a><span class="in">  &lt;!-- Cell A --&gt;</span></span>
-<span id="cb6-1586"><a href="#cb6-1586" aria-label="1586"></a><span class="in">  &lt;rect x="110" y="122" width="160" height="116" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/&gt;</span></span>
-<span id="cb6-1587"><a href="#cb6-1587" aria-label="1587"></a><span class="in">  &lt;text x="190" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1"&gt;状態 A&lt;/text&gt;</span></span>
-<span id="cb6-1588"><a href="#cb6-1588" aria-label="1588"></a><span class="in">  &lt;text x="190" y="226" text-anchor="middle" font-size="10.5" fill="#64748b"&gt;スタート位置&lt;/text&gt;</span></span>
-<span id="cb6-1589"><a href="#cb6-1589" aria-label="1589"></a></span>
-<span id="cb6-1590"><a href="#cb6-1590" aria-label="1590"></a><span class="in">  &lt;!-- Cell B --&gt;</span></span>
-<span id="cb6-1591"><a href="#cb6-1591" aria-label="1591"></a><span class="in">  &lt;rect x="270" y="122" width="160" height="116" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/&gt;</span></span>
-<span id="cb6-1592"><a href="#cb6-1592" aria-label="1592"></a><span class="in">  &lt;text x="350" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1"&gt;状態 B&lt;/text&gt;</span></span>
-<span id="cb6-1593"><a href="#cb6-1593" aria-label="1593"></a><span class="in">  &lt;text x="350" y="226" text-anchor="middle" font-size="10.5" fill="#64748b"&gt;中央のマス&lt;/text&gt;</span></span>
-<span id="cb6-1594"><a href="#cb6-1594" aria-label="1594"></a></span>
-<span id="cb6-1595"><a href="#cb6-1595" aria-label="1595"></a><span class="in">  &lt;!-- Cell C (Goal) --&gt;</span></span>
-<span id="cb6-1596"><a href="#cb6-1596" aria-label="1596"></a><span class="in">  &lt;rect x="430" y="122" width="160" height="116" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/&gt;</span></span>
-<span id="cb6-1597"><a href="#cb6-1597" aria-label="1597"></a><span class="in">  &lt;text x="510" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#e65100"&gt;状態 C ★&lt;/text&gt;</span></span>
-<span id="cb6-1598"><a href="#cb6-1598" aria-label="1598"></a><span class="in">  &lt;text x="510" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#bf360c"&gt;GOAL (+10)&lt;/text&gt;</span></span>
-<span id="cb6-1599"><a href="#cb6-1599" aria-label="1599"></a><span class="in">  &lt;text x="510" y="226" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828"&gt;終端状態&lt;/text&gt;</span></span>
-<span id="cb6-1600"><a href="#cb6-1600" aria-label="1600"></a></span>
-<span id="cb6-1601"><a href="#cb6-1601" aria-label="1601"></a><span class="in">  &lt;!-- Animated Agent Circle moving from A to B --&gt;</span></span>
-<span id="cb6-1602"><a href="#cb6-1602" aria-label="1602"></a><span class="in">  &lt;circle cx="190" cy="182" r="18" fill="#bbdefb" stroke="#64b5f6" stroke-width="1.5" stroke-dasharray="4,2"/&gt;</span></span>
-<span id="cb6-1603"><a href="#cb6-1603" aria-label="1603"></a><span class="in">  &lt;circle cx="242" cy="182" r="18" fill="#90caf9" stroke="#42a5f5" stroke-width="1.5" stroke-dasharray="4,2"/&gt;</span></span>
-<span id="cb6-1604"><a href="#cb6-1604" aria-label="1604"></a><span class="in">  &lt;circle cx="298" cy="182" r="19" fill="#1976d2"/&gt;</span></span>
-<span id="cb6-1605"><a href="#cb6-1605" aria-label="1605"></a><span class="in">  &lt;text x="298" y="186" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffffff"&gt;AI&lt;/text&gt;</span></span>
-<span id="cb6-1606"><a href="#cb6-1606" aria-label="1606"></a><span class="in">  &lt;line x1="208" y1="182" x2="272" y2="182" stroke="#0d47a1" stroke-width="2.5" marker-end="url(#anim-arrow-blue)"/&gt;</span></span>
-<span id="cb6-1607"><a href="#cb6-1607" aria-label="1607"></a></span>
-<span id="cb6-1608"><a href="#cb6-1608" aria-label="1608"></a><span class="in">  &lt;!-- Bottom Status Panel inside Window --&gt;</span></span>
-<span id="cb6-1609"><a href="#cb6-1609" aria-label="1609"></a><span class="in">  &lt;rect x="65" y="254" width="570" height="64" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/&gt;</span></span>
-<span id="cb6-1610"><a href="#cb6-1610" aria-label="1610"></a><span class="in">  &lt;text x="85" y="276" font-size="12" font-weight="bold" fill="#1e3a8a"&gt;たどった経路: A → A → A → B（現在 3 ステップ経過）&lt;/text&gt;</span></span>
-<span id="cb6-1611"><a href="#cb6-1611" aria-label="1611"></a><span class="in">  &lt;text x="85" y="298" font-size="12.5" font-weight="bold" fill="#b45309"&gt;現在の累積収益 G&lt;tspan dy="2" font-size="9"&gt;0&lt;/tspan&gt;&lt;tspan dy="-2"&gt; : -2.710&lt;/tspan&gt;&lt;/text&gt;</span></span>
-<span id="cb6-1612"><a href="#cb6-1612" aria-label="1612"></a><span class="in">  &lt;text x="615" y="298" text-anchor="end" font-size="11" font-weight="bold" fill="#475569"&gt;[Space] / [R] キー: 最初からやり直す&lt;/text&gt;</span></span>
-<span id="cb6-1613"><a href="#cb6-1613" aria-label="1613"></a><span class="in">&lt;/svg&gt;</span></span>
-<span id="cb6-1614"><a href="#cb6-1614" aria-label="1614"></a><span class="in">```</span></span>
-<span id="cb6-1615"><a href="#cb6-1615" aria-label="1615"></a></span>
-<span id="cb6-1616"><a href="#cb6-1616" aria-label="1616"></a><span class="fu">### エージェントへの追加指示（プロンプト例）</span></span>
+<span id="cb6-1549"><a href="#cb6-1549" aria-label="1549"></a>エージェントには、<span class="in">`three_states_sim.py`</span> を以下の仕様でアニメーション対応に修正してもらいます：</span>
+<span id="cb6-1550"><a href="#cb6-1550" aria-label="1550"></a></span>
+<span id="cb6-1551"><a href="#cb6-1551" aria-label="1551"></a><span class="ss">1. </span>**画面レイアウト（3つのマスと壁の描画）**:</span>
+<span id="cb6-1552"><a href="#cb6-1552" aria-label="1552"></a><span class="ss">   - </span>Pygame ウィンドウの中央に、横一列に並んだ3つのマス（左から **状態 $\text{A}$**、**状態 $\text{B}$**、**状態 $\text{C}$（ゴール）**）と、状態 $\text{A}$ の左端にある「壁」を描画する。</span>
+<span id="cb6-1553"><a href="#cb6-1553" aria-label="1553"></a><span class="ss">2. </span>**エージェントの移動アニメーション**:</span>
+<span id="cb6-1554"><a href="#cb6-1554" aria-label="1554"></a><span class="ss">   - </span>エージェントを青い円で表し、1ステップごとに現在のマスから次のマスへ滑らかに動くアニメーションを表示する。</span>
+<span id="cb6-1555"><a href="#cb6-1555" aria-label="1555"></a><span class="ss">   - </span>**移動成功時**: 隣のマスの中央まで円が一定速度でスーッと移動する。</span>
+<span id="cb6-1556"><a href="#cb6-1556" aria-label="1556"></a><span class="ss">   - </span>**スリップ時・壁で留まる時**: 選んだ方向へ少し動こうとしたあと元のマスの中央へ押し戻される（バウンスする）動きをつけることで、「<span class="in">`Right`</span> を選んだけれど滑ったのか」「<span class="in">`Left`</span> を選んで壁に当たったのか」が画面を見るだけで区別できるようにする。</span>
+<span id="cb6-1557"><a href="#cb6-1557" aria-label="1557"></a><span class="ss">3. </span>**経路・報酬・収益 $G_0$ の画面表示と再実行機能**:</span>
+<span id="cb6-1558"><a href="#cb6-1558" aria-label="1558"></a><span class="ss">   - </span>ウィンドウ内に「現在のステップ数」「選んだ行動（<span class="in">`Right`</span> / <span class="in">`Left`</span>）」「移動結果（移動成功／スリップ／壁）と報酬 $R$」「現在までの経路（<span class="in">`A -&gt; B -&gt; ...`</span>）」「割引率 $\gamma = 0.9$ での累積収益 $G_0$」を文字でも表示する。</span>
+<span id="cb6-1559"><a href="#cb6-1559" aria-label="1559"></a><span class="ss">   - </span>状態 $\text{C}$（ゴール）に到達したらエピソード終了とし、キーボードの **スペースキー（または `R` キー）を押すと最初から新しいエピソードを再実行** できるようにする。</span>
+<span id="cb6-1560"><a href="#cb6-1560" aria-label="1560"></a></span>
+<span id="cb6-1561"><a href="#cb6-1561" aria-label="1561"></a><span class="in">```{=html}</span></span>
+<span id="cb6-1562"><a href="#cb6-1562" aria-label="1562"></a><span class="in">&lt;svg viewBox="0 0 700 350" width="100%" height="350" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;"&gt;</span></span>
+<span id="cb6-1563"><a href="#cb6-1563" aria-label="1563"></a><span class="in">  &lt;defs&gt;</span></span>
+<span id="cb6-1564"><a href="#cb6-1564" aria-label="1564"></a><span class="in">    &lt;marker id="anim-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"&gt;</span></span>
+<span id="cb6-1565"><a href="#cb6-1565" aria-label="1565"></a><span class="in">      &lt;path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" /&gt;</span></span>
+<span id="cb6-1566"><a href="#cb6-1566" aria-label="1566"></a><span class="in">    &lt;/marker&gt;</span></span>
+<span id="cb6-1567"><a href="#cb6-1567" aria-label="1567"></a><span class="in">  &lt;/defs&gt;</span></span>
+<span id="cb6-1568"><a href="#cb6-1568" aria-label="1568"></a></span>
+<span id="cb6-1569"><a href="#cb6-1569" aria-label="1569"></a><span class="in">  &lt;!-- Pygame Window Outer Frame --&gt;</span></span>
+<span id="cb6-1570"><a href="#cb6-1570" aria-label="1570"></a><span class="in">  &lt;rect x="40" y="16" width="620" height="318" rx="8" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/&gt;</span></span>
+<span id="cb6-1571"><a href="#cb6-1571" aria-label="1571"></a><span class="in">  &lt;!-- Window Title Bar --&gt;</span></span>
+<span id="cb6-1572"><a href="#cb6-1572" aria-label="1572"></a><span class="in">  &lt;path d="M 40,24 Q 40,16 48,16 L 652,16 Q 660,16 660,24 L 660,42 L 40,42 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/&gt;</span></span>
+<span id="cb6-1573"><a href="#cb6-1573" aria-label="1573"></a><span class="in">  &lt;circle cx="56" cy="29" r="4.5" fill="#ef4444"/&gt;</span></span>
+<span id="cb6-1574"><a href="#cb6-1574" aria-label="1574"></a><span class="in">  &lt;circle cx="70" cy="29" r="4.5" fill="#f59e0b"/&gt;</span></span>
+<span id="cb6-1575"><a href="#cb6-1575" aria-label="1575"></a><span class="in">  &lt;circle cx="84" cy="29" r="4.5" fill="#10b981"/&gt;</span></span>
+<span id="cb6-1576"><a href="#cb6-1576" aria-label="1576"></a><span class="in">  &lt;text x="350" y="34" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155"&gt;3-State RL Simulation (Pygame Animation)&lt;/text&gt;</span></span>
+<span id="cb6-1577"><a href="#cb6-1577" aria-label="1577"></a></span>
+<span id="cb6-1578"><a href="#cb6-1578" aria-label="1578"></a><span class="in">  &lt;!-- Top Info Banner inside Window --&gt;</span></span>
+<span id="cb6-1579"><a href="#cb6-1579" aria-label="1579"></a><span class="in">  &lt;rect x="65" y="56" width="570" height="44" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/&gt;</span></span>
+<span id="cb6-1580"><a href="#cb6-1580" aria-label="1580"></a><span class="in">  &lt;text x="85" y="75" font-size="12" font-weight="bold" fill="#0d47a1"&gt;ステップ 3：状態 A で行動 [Right] を選択 → 移動成功！（報酬 R = -1）&lt;/text&gt;</span></span>
+<span id="cb6-1581"><a href="#cb6-1581" aria-label="1581"></a><span class="in">  &lt;text x="85" y="93" font-size="11" fill="#475569"&gt;方策: Right 50% / Left 50%　｜　環境: 移動成功 80% / スリップ 20%　｜　割引率 γ = 0.9&lt;/text&gt;</span></span>
+<span id="cb6-1582"><a href="#cb6-1582" aria-label="1582"></a></span>
+<span id="cb6-1583"><a href="#cb6-1583" aria-label="1583"></a><span class="in">  &lt;!-- Left Wall --&gt;</span></span>
+<span id="cb6-1584"><a href="#cb6-1584" aria-label="1584"></a><span class="in">  &lt;rect x="102" y="118" width="8" height="124" rx="2" fill="#475569"/&gt;</span></span>
+<span id="cb6-1585"><a href="#cb6-1585" aria-label="1585"></a><span class="in">  &lt;text x="90" y="184" text-anchor="end" font-size="10.5" font-weight="bold" fill="#475569"&gt;壁&lt;/text&gt;</span></span>
+<span id="cb6-1586"><a href="#cb6-1586" aria-label="1586"></a></span>
+<span id="cb6-1587"><a href="#cb6-1587" aria-label="1587"></a><span class="in">  &lt;!-- Cell A --&gt;</span></span>
+<span id="cb6-1588"><a href="#cb6-1588" aria-label="1588"></a><span class="in">  &lt;rect x="110" y="122" width="160" height="116" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/&gt;</span></span>
+<span id="cb6-1589"><a href="#cb6-1589" aria-label="1589"></a><span class="in">  &lt;text x="190" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1"&gt;状態 A&lt;/text&gt;</span></span>
+<span id="cb6-1590"><a href="#cb6-1590" aria-label="1590"></a><span class="in">  &lt;text x="190" y="226" text-anchor="middle" font-size="10.5" fill="#64748b"&gt;スタート位置&lt;/text&gt;</span></span>
+<span id="cb6-1591"><a href="#cb6-1591" aria-label="1591"></a></span>
+<span id="cb6-1592"><a href="#cb6-1592" aria-label="1592"></a><span class="in">  &lt;!-- Cell B --&gt;</span></span>
+<span id="cb6-1593"><a href="#cb6-1593" aria-label="1593"></a><span class="in">  &lt;rect x="270" y="122" width="160" height="116" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/&gt;</span></span>
+<span id="cb6-1594"><a href="#cb6-1594" aria-label="1594"></a><span class="in">  &lt;text x="350" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1"&gt;状態 B&lt;/text&gt;</span></span>
+<span id="cb6-1595"><a href="#cb6-1595" aria-label="1595"></a><span class="in">  &lt;text x="350" y="226" text-anchor="middle" font-size="10.5" fill="#64748b"&gt;中央のマス&lt;/text&gt;</span></span>
+<span id="cb6-1596"><a href="#cb6-1596" aria-label="1596"></a></span>
+<span id="cb6-1597"><a href="#cb6-1597" aria-label="1597"></a><span class="in">  &lt;!-- Cell C (Goal) --&gt;</span></span>
+<span id="cb6-1598"><a href="#cb6-1598" aria-label="1598"></a><span class="in">  &lt;rect x="430" y="122" width="160" height="116" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/&gt;</span></span>
+<span id="cb6-1599"><a href="#cb6-1599" aria-label="1599"></a><span class="in">  &lt;text x="510" y="148" text-anchor="middle" font-size="15" font-weight="bold" fill="#e65100"&gt;状態 C ★&lt;/text&gt;</span></span>
+<span id="cb6-1600"><a href="#cb6-1600" aria-label="1600"></a><span class="in">  &lt;text x="510" y="185" text-anchor="middle" font-size="11" font-weight="bold" fill="#bf360c"&gt;GOAL (+10)&lt;/text&gt;</span></span>
+<span id="cb6-1601"><a href="#cb6-1601" aria-label="1601"></a><span class="in">  &lt;text x="510" y="226" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828"&gt;終端状態&lt;/text&gt;</span></span>
+<span id="cb6-1602"><a href="#cb6-1602" aria-label="1602"></a></span>
+<span id="cb6-1603"><a href="#cb6-1603" aria-label="1603"></a><span class="in">  &lt;!-- Animated Agent Circle moving from A to B --&gt;</span></span>
+<span id="cb6-1604"><a href="#cb6-1604" aria-label="1604"></a><span class="in">  &lt;circle cx="190" cy="182" r="18" fill="#bbdefb" stroke="#64b5f6" stroke-width="1.5" stroke-dasharray="4,2"/&gt;</span></span>
+<span id="cb6-1605"><a href="#cb6-1605" aria-label="1605"></a><span class="in">  &lt;circle cx="242" cy="182" r="18" fill="#90caf9" stroke="#42a5f5" stroke-width="1.5" stroke-dasharray="4,2"/&gt;</span></span>
+<span id="cb6-1606"><a href="#cb6-1606" aria-label="1606"></a><span class="in">  &lt;circle cx="298" cy="182" r="19" fill="#1976d2"/&gt;</span></span>
+<span id="cb6-1607"><a href="#cb6-1607" aria-label="1607"></a><span class="in">  &lt;text x="298" y="186" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffffff"&gt;AI&lt;/text&gt;</span></span>
+<span id="cb6-1608"><a href="#cb6-1608" aria-label="1608"></a><span class="in">  &lt;line x1="208" y1="182" x2="272" y2="182" stroke="#0d47a1" stroke-width="2.5" marker-end="url(#anim-arrow-blue)"/&gt;</span></span>
+<span id="cb6-1609"><a href="#cb6-1609" aria-label="1609"></a></span>
+<span id="cb6-1610"><a href="#cb6-1610" aria-label="1610"></a><span class="in">  &lt;!-- Bottom Status Panel inside Window --&gt;</span></span>
+<span id="cb6-1611"><a href="#cb6-1611" aria-label="1611"></a><span class="in">  &lt;rect x="65" y="254" width="570" height="64" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/&gt;</span></span>
+<span id="cb6-1612"><a href="#cb6-1612" aria-label="1612"></a><span class="in">  &lt;text x="85" y="276" font-size="12" font-weight="bold" fill="#1e3a8a"&gt;たどった経路: A → A → A → B（現在 3 ステップ経過）&lt;/text&gt;</span></span>
+<span id="cb6-1613"><a href="#cb6-1613" aria-label="1613"></a><span class="in">  &lt;text x="85" y="298" font-size="12.5" font-weight="bold" fill="#b45309"&gt;現在の累積収益 G&lt;tspan dy="2" font-size="9"&gt;0&lt;/tspan&gt;&lt;tspan dy="-2"&gt; : -2.710&lt;/tspan&gt;&lt;/text&gt;</span></span>
+<span id="cb6-1614"><a href="#cb6-1614" aria-label="1614"></a><span class="in">  &lt;text x="615" y="298" text-anchor="end" font-size="11" font-weight="bold" fill="#475569"&gt;[Space] / [R] キー: 最初からやり直す&lt;/text&gt;</span></span>
+<span id="cb6-1615"><a href="#cb6-1615" aria-label="1615"></a><span class="in">&lt;/svg&gt;</span></span>
+<span id="cb6-1616"><a href="#cb6-1616" aria-label="1616"></a><span class="in">```</span></span>
 <span id="cb6-1617"><a href="#cb6-1617" aria-label="1617"></a></span>
-<span id="cb6-1618"><a href="#cb6-1618" aria-label="1618"></a>Antigravityのチャット欄に、次のように追加の指示を入力して送信します。</span>
+<span id="cb6-1618"><a href="#cb6-1618" aria-label="1618"></a><span class="fu">### エージェントへの追加指示（プロンプト例）</span></span>
 <span id="cb6-1619"><a href="#cb6-1619" aria-label="1619"></a></span>
-<span id="cb6-1620"><a href="#cb6-1620" aria-label="1620"></a>::: {.callout-tip icon=true}</span>
-<span id="cb6-1621"><a href="#cb6-1621" aria-label="1621"></a><span class="fu">### プロンプト入力例</span></span>
-<span id="cb6-1622"><a href="#cb6-1622" aria-label="1622"></a>先ほど作成した <span class="in">`three_states_sim.py`</span> をもとに、Pygame を使ってエージェントの移動と収益をウィンドウ上でアニメーション表示するプログラム <span class="in">`three_states_anim.py`</span> を作成してください（ターミナルへの文字出力もそのまま残してください）。</span>
-<span id="cb6-1623"><a href="#cb6-1623" aria-label="1623"></a></span>
-<span id="cb6-1624"><a href="#cb6-1624" aria-label="1624"></a>【アニメーションと画面表示の要件】</span>
-<span id="cb6-1625"><a href="#cb6-1625" aria-label="1625"></a><span class="ss">1. </span>ウィンドウ内に横一列の3つのマス（状態 A, B, C）と、状態 A の左側の「壁」を描画してください。</span>
-<span id="cb6-1626"><a href="#cb6-1626" aria-label="1626"></a><span class="ss">2. </span>エージェントを青い円で描画し、1ステップごとに次の状態へ滑らかに移動するアニメーションを表示してください。</span>
-<span id="cb6-1627"><a href="#cb6-1627" aria-label="1627"></a><span class="ss">   - </span>移動成功時は、隣のマスの中央まで円を一定速度で移動させます。</span>
-<span id="cb6-1628"><a href="#cb6-1628" aria-label="1628"></a><span class="ss">   - </span>スリップした時や壁に阻まれた時は、選んだ方向へ少し動いてから元のマスの中央へ押し戻されるような動きをつけ、なぜその場に留まったのかが視覚的に分かるようにしてください。</span>
-<span id="cb6-1629"><a href="#cb6-1629" aria-label="1629"></a><span class="ss">3. </span>画面上に「ステップ数」「選んだ行動（Right / Left）」「移動結果（移動成功・スリップ・壁）と報酬」「ここまでの経路（<span class="in">`A -&gt; B -&gt; ...`</span>）」「割引率 <span class="in">`gamma = 0.9`</span> での収益 <span class="in">`G_0`</span>」を表示してください。</span>
-<span id="cb6-1630"><a href="#cb6-1630" aria-label="1630"></a><span class="ss">4. </span>状態 C（ゴール）に到達したらゴール達成メッセージと最終的な収益 <span class="in">`G_0`</span> を表示し、スペースキーまたは <span class="in">`R`</span> キーを押すと新しいエピソードを最初から再実行できるようにしてください。</span>
-<span id="cb6-1631"><a href="#cb6-1631" aria-label="1631"></a><span class="ss">5. </span>Pygame の画面上で日本語が文字化け（豆腐表示）しないよう、macOS（<span class="in">`/System/Library/Fonts/*W3.ttc`</span> や <span class="in">`Arial Unicode.ttf`</span> など）および Windows（メイリオや游ゴシック、MSゴシックなど）の日本語フォントファイルを確実に読み込んで描画してください。</span>
-<span id="cb6-1632"><a href="#cb6-1632" aria-label="1632"></a>:::</span>
-<span id="cb6-1633"><a href="#cb6-1633" aria-label="1633"></a></span>
-<span id="cb6-1634"><a href="#cb6-1634" aria-label="1634"></a><span class="fu">### アニメーションから確認できること</span></span>
+<span id="cb6-1620"><a href="#cb6-1620" aria-label="1620"></a>Antigravityのチャット欄に、次のように追加の指示を入力して送信します。</span>
+<span id="cb6-1621"><a href="#cb6-1621" aria-label="1621"></a></span>
+<span id="cb6-1622"><a href="#cb6-1622" aria-label="1622"></a>::: {.callout-tip icon=true}</span>
+<span id="cb6-1623"><a href="#cb6-1623" aria-label="1623"></a><span class="fu">### プロンプト入力例</span></span>
+<span id="cb6-1624"><a href="#cb6-1624" aria-label="1624"></a>先ほど作成した <span class="in">`three_states_sim.py`</span> をもとに、Pygame を使ってエージェントの移動と収益をウィンドウ上でアニメーション表示するプログラム <span class="in">`three_states_anim.py`</span> を作成してください（ターミナルへの文字出力もそのまま残してください）。</span>
+<span id="cb6-1625"><a href="#cb6-1625" aria-label="1625"></a></span>
+<span id="cb6-1626"><a href="#cb6-1626" aria-label="1626"></a>【アニメーションと画面表示の要件】</span>
+<span id="cb6-1627"><a href="#cb6-1627" aria-label="1627"></a><span class="ss">1. </span>ウィンドウ内に横一列の3つのマス（状態 A, B, C）と、状態 A の左側の「壁」を描画してください。</span>
+<span id="cb6-1628"><a href="#cb6-1628" aria-label="1628"></a><span class="ss">2. </span>エージェントを青い円で描画し、1ステップごとに次の状態へ滑らかに移動するアニメーションを表示してください。</span>
+<span id="cb6-1629"><a href="#cb6-1629" aria-label="1629"></a><span class="ss">   - </span>移動成功時は、隣のマスの中央まで円を一定速度で移動させます。</span>
+<span id="cb6-1630"><a href="#cb6-1630" aria-label="1630"></a><span class="ss">   - </span>スリップした時や壁に阻まれた時は、選んだ方向へ少し動いてから元のマスの中央へ押し戻されるような動きをつけ、なぜその場に留まったのかが視覚的に分かるようにしてください。</span>
+<span id="cb6-1631"><a href="#cb6-1631" aria-label="1631"></a><span class="ss">3. </span>画面上に「ステップ数」「選んだ行動（Right / Left）」「移動結果（移動成功・スリップ・壁）と報酬」「ここまでの経路（<span class="in">`A -&gt; B -&gt; ...`</span>）」「割引率 <span class="in">`gamma = 0.9`</span> での収益 <span class="in">`G_0`</span>」を表示してください。</span>
+<span id="cb6-1632"><a href="#cb6-1632" aria-label="1632"></a><span class="ss">4. </span>状態 C（ゴール）に到達したらゴール達成メッセージと最終的な収益 <span class="in">`G_0`</span> を表示し、スペースキーまたは <span class="in">`R`</span> キーを押すと新しいエピソードを最初から再実行できるようにしてください。</span>
+<span id="cb6-1633"><a href="#cb6-1633" aria-label="1633"></a><span class="ss">5. </span>Pygame の画面上で日本語が文字化け（豆腐表示）しないよう、macOS（<span class="in">`/System/Library/Fonts/*W3.ttc`</span> や <span class="in">`Arial Unicode.ttf`</span> など）および Windows（メイリオや游ゴシック、MSゴシックなど）の日本語フォントファイルを確実に読み込んで描画してください。</span>
+<span id="cb6-1634"><a href="#cb6-1634" aria-label="1634"></a>:::</span>
 <span id="cb6-1635"><a href="#cb6-1635" aria-label="1635"></a></span>
-<span id="cb6-1636"><a href="#cb6-1636" aria-label="1636"></a>修正されたプログラムを実行すると、ウィンドウが開いてエージェント（青い円）がステップごとに動いていきます。スペースキー（または <span class="in">`R`</span> キー）で何度もエピソードをやり直しながら観察すると、次のことが視覚的に実感できます：</span>
+<span id="cb6-1636"><a href="#cb6-1636" aria-label="1636"></a><span class="fu">### アニメーションから確認できること</span></span>
 <span id="cb6-1637"><a href="#cb6-1637" aria-label="1637"></a></span>
-<span id="cb6-1638"><a href="#cb6-1638" aria-label="1638"></a><span class="ss">- </span>**2種類の「その場に留まる動き」の違い**:</span>
-<span id="cb6-1639"><a href="#cb6-1639" aria-label="1639"></a>  文字で <span class="in">`A -&gt; A`</span> とだけ書かれているとどちらも同じに見えますが、アニメーションで見ると**「右（状態 $\text{B}$）へ進もうとして滑って戻されたのか（`Right`＋スリップ）」**、それとも**「左を選んで壁にぶつかって戻されたのか（`Left`）」**が動きの方向で明確に区別できます。</span>
-<span id="cb6-1640"><a href="#cb6-1640" aria-label="1640"></a><span class="ss">- </span>**手数が増えることによる収益 $G_0$ の減少**:</span>
-<span id="cb6-1641"><a href="#cb6-1641" aria-label="1641"></a>  エージェントが途中でスリップしたり、状態 $\text{B}$ から <span class="in">`Left`</span> を選んで状態 $\text{A}$ に逆戻りしたりして時間をかけるほど、$-1$ のペナルティが積み重なり、最後に状態 $\text{C}$ に到達したときの報酬 $+9$ も $\gamma^k$ で大きく割り引かれてしまう様子がリアルタイムに確認できます。</span>
-<span id="cb6-1642"><a href="#cb6-1642" aria-label="1642"></a></span>
-<span id="cb6-1643"><a href="#cb6-1643" aria-label="1643"></a>::: {.callout-note icon=false}</span>
-<span id="cb6-1644"><a href="#cb6-1644" aria-label="1644"></a><span class="fu">### 練習問題 07-08：アニメーションの確認と機能追加</span></span>
-<span id="cb6-1645"><a href="#cb6-1645" aria-label="1645"></a><span class="ss">1. </span>アニメーションを実行し、スペースキー（または <span class="in">`R`</span> キー）で何回かエピソードを繰り返して、最短の2ステップでゴールするケースや、状態 $\text{B}$ から状態 $\text{A}$ へ逆戻りしてしまうケースの動きと収益 $G_0$ を観察してみましょう。</span>
-<span id="cb6-1646"><a href="#cb6-1646" aria-label="1646"></a><span class="ss">2. </span>Antigravityに指示を出して、次のいずれか（または両方）の改造を行ってみましょう：</span>
-<span id="cb6-1647"><a href="#cb6-1647" aria-label="1647"></a><span class="ss">   - </span>キーボードの数字キー（たとえば <span class="in">`1`</span> キーと <span class="in">`2`</span> キー）で、**「50%ずつランダムに選ぶ方策」**と**「常に `Right` を選ぶ方策」**を切り替えて動きや収益の違いを比較できるようにする。</span>
-<span id="cb6-1648"><a href="#cb6-1648" aria-label="1648"></a><span class="ss">   - </span>マスの数を3つ（$\text{A} \sim \text{C}$）から **4つ（$\text{A}, \text{B}, \text{C}, \text{D}$、右端の $\text{D}$ がゴール）** に増やしてアニメーション表示する。</span>
-<span id="cb6-1649"><a href="#cb6-1649" aria-label="1649"></a>:::</span>
-<span id="cb6-1650"><a href="#cb6-1650" aria-label="1650"></a></span>
-<span id="cb6-1651"><a href="#cb6-1651" aria-label="1651"></a>---</span>
+<span id="cb6-1638"><a href="#cb6-1638" aria-label="1638"></a>修正されたプログラムを実行すると、ウィンドウが開いてエージェント（青い円）がステップごとに動いていきます。スペースキー（または <span class="in">`R`</span> キー）で何度もエピソードをやり直しながら観察すると、次のことが視覚的に実感できます：</span>
+<span id="cb6-1639"><a href="#cb6-1639" aria-label="1639"></a></span>
+<span id="cb6-1640"><a href="#cb6-1640" aria-label="1640"></a><span class="ss">- </span>**2種類の「その場に留まる動き」の違い**:</span>
+<span id="cb6-1641"><a href="#cb6-1641" aria-label="1641"></a>  文字で <span class="in">`A -&gt; A`</span> とだけ書かれているとどちらも同じに見えますが、アニメーションで見ると**「右（状態 $\text{B}$）へ進もうとして滑って戻されたのか（`Right`＋スリップ）」**、それとも**「左を選んで壁にぶつかって戻されたのか（`Left`）」**が動きの方向で明確に区別できます。</span>
+<span id="cb6-1642"><a href="#cb6-1642" aria-label="1642"></a><span class="ss">- </span>**手数が増えることによる収益 $G_0$ の減少**:</span>
+<span id="cb6-1643"><a href="#cb6-1643" aria-label="1643"></a>  エージェントが途中でスリップしたり、状態 $\text{B}$ から <span class="in">`Left`</span> を選んで状態 $\text{A}$ に逆戻りしたりして時間をかけるほど、$-1$ のペナルティが積み重なり、最後に状態 $\text{C}$ に到達したときの報酬 $+9$ も $\gamma^k$ で大きく割り引かれてしまう様子がリアルタイムに確認できます。</span>
+<span id="cb6-1644"><a href="#cb6-1644" aria-label="1644"></a></span>
+<span id="cb6-1645"><a href="#cb6-1645" aria-label="1645"></a>::: {.callout-note icon=false}</span>
+<span id="cb6-1646"><a href="#cb6-1646" aria-label="1646"></a><span class="fu">### 練習問題 07-08：アニメーションの確認と機能追加</span></span>
+<span id="cb6-1647"><a href="#cb6-1647" aria-label="1647"></a><span class="ss">1. </span>アニメーションを実行し、スペースキー（または <span class="in">`R`</span> キー）で何回かエピソードを繰り返して、最短の2ステップでゴールするケースや、状態 $\text{B}$ から状態 $\text{A}$ へ逆戻りしてしまうケースの動きと収益 $G_0$ を観察してみましょう。</span>
+<span id="cb6-1648"><a href="#cb6-1648" aria-label="1648"></a><span class="ss">2. </span>Antigravityに指示を出して、次のいずれか（または両方）の改造を行ってみましょう：</span>
+<span id="cb6-1649"><a href="#cb6-1649" aria-label="1649"></a><span class="ss">   - </span>キーボードの数字キー（たとえば <span class="in">`1`</span> キーと <span class="in">`2`</span> キー）で、**「50%ずつランダムに選ぶ方策」**と**「常に `Right` を選ぶ方策」**を切り替えて動きや収益の違いを比較できるようにする。</span>
+<span id="cb6-1650"><a href="#cb6-1650" aria-label="1650"></a><span class="ss">   - </span>マスの数を3つ（$\text{A} \sim \text{C}$）から **4つ（$\text{A}, \text{B}, \text{C}, \text{D}$、右端の $\text{D}$ がゴール）** に増やしてアニメーション表示する。</span>
+<span id="cb6-1651"><a href="#cb6-1651" aria-label="1651"></a>:::</span>
 <span id="cb6-1652"><a href="#cb6-1652" aria-label="1652"></a></span>
-<span id="cb6-1653"><a href="#cb6-1653" aria-label="1653"></a><span class="fu">## まとめ</span></span>
+<span id="cb6-1653"><a href="#cb6-1653" aria-label="1653"></a>---</span>
 <span id="cb6-1654"><a href="#cb6-1654" aria-label="1654"></a></span>
-<span id="cb6-1655"><a href="#cb6-1655" aria-label="1655"></a><span class="ss">- </span>**強化学習のフレームワークとマルコフ性**: 強化学習は「エージェント」と「環境」が状態 $S_t$・行動 $A_t$・報酬 $R_{t+1}$ をやり取りしながら状態を変化させていく枠組みであり、次の状態が生じる確率が直前の状態と行動のみに依存する**マルコフ性**を前提とする。</span>
-<span id="cb6-1656"><a href="#cb6-1656" aria-label="1656"></a><span class="ss">- </span>**状態・行動・報酬**: エージェントが置かれている状況を表す**状態**（エピソード終了となる**終端状態**を含む）、各状態で選べる選択肢である**行動**、および1ステップごとの評価を与える**報酬**の3要素によって環境が定義される。</span>
-<span id="cb6-1657"><a href="#cb6-1657" aria-label="1657"></a><span class="ss">- </span>**方策と収益（割引率 $\gamma$）**: エージェントの行動ルールを**方策 $\pi$**、将来にわたって得られる報酬の累積和を**収益 $G_t$** と呼ぶ。**割引率 $\gamma$**（$0 \le \gamma &lt; 1$）を導入して $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots$ と定義することで、無限に続く経路でも収益が発散せず有限の値として計算・比較できるようになる。</span>
-<span id="cb6-1658"><a href="#cb6-1658" aria-label="1658"></a><span class="ss">- </span>**確率的な状態遷移と確率的な方策**: スリップなどで移動結果が確定しない**確率的な状態遷移**や、探索などのために行動を確率的に選ぶ**確率的な方策 $\pi(a \mid s)$**（およびその両方の組み合わせ）では、「① 方策による行動選択」と「② 環境による状態遷移」の2段階の枝分かれを経て次の状態が決まり、同じ方策でも試行ごとにたどる経路や収益 $G_0$ が確率的に変化する。</span>
-<span id="cb6-1659"><a href="#cb6-1659" aria-label="1659"></a><span class="ss">- </span>**vibe coding と Pygame によるアニメーション可視化**: 3マス移動問題のシミュレーションを vibe coding で構築し、文字による経路・収益の確認から、2Dアニメーションライブラリ **Pygame**（左上隅を原点 $(0, 0)$ とし、メインループで座標更新と再描画を繰り返す仕組み）を用いたアニメーション表示へと拡張することで、エージェントの振る舞いと収益の変化を視覚的に観察した。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb6-1655"><a href="#cb6-1655" aria-label="1655"></a><span class="fu">## まとめ</span></span>
+<span id="cb6-1656"><a href="#cb6-1656" aria-label="1656"></a></span>
+<span id="cb6-1657"><a href="#cb6-1657" aria-label="1657"></a><span class="ss">- </span>**強化学習のフレームワークとマルコフ性**: 強化学習は「エージェント」と「環境」が状態 $S_t$・行動 $A_t$・報酬 $R_{t+1}$ をやり取りしながら状態を変化させていく枠組みであり、次の状態が生じる確率が直前の状態と行動のみに依存する**マルコフ性**を前提とする。</span>
+<span id="cb6-1658"><a href="#cb6-1658" aria-label="1658"></a><span class="ss">- </span>**状態・行動・報酬**: エージェントが置かれている状況を表す**状態**（エピソード終了となる**終端状態**を含む）、各状態で選べる選択肢である**行動**、および1ステップごとの評価を与える**報酬**の3要素によって環境が定義される。</span>
+<span id="cb6-1659"><a href="#cb6-1659" aria-label="1659"></a><span class="ss">- </span>**方策と収益（割引率 $\gamma$）**: エージェントの行動ルールを**方策 $\pi$**、将来にわたって得られる報酬の累積和を**収益 $G_t$** と呼ぶ。**割引率 $\gamma$**（$0 \le \gamma &lt; 1$）を導入して $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots$ と定義することで、無限に続く経路でも収益が発散せず有限の値として計算・比較できるようになる。</span>
+<span id="cb6-1660"><a href="#cb6-1660" aria-label="1660"></a><span class="ss">- </span>**確率的な状態遷移と確率的な方策**: スリップなどで移動結果が確定しない**確率的な状態遷移**や、探索などのために行動を確率的に選ぶ**確率的な方策 $\pi(a \mid s)$**（およびその両方の組み合わせ）では、「① 方策による行動選択」と「② 環境による状態遷移」の2段階の枝分かれを経て次の状態が決まり、同じ方策でも試行ごとにたどる経路や収益 $G_0$ が確率的に変化する。</span>
+<span id="cb6-1661"><a href="#cb6-1661" aria-label="1661"></a><span class="ss">- </span>**vibe coding と Pygame によるアニメーション可視化**: 3マス移動問題のシミュレーションを vibe coding で構築し、文字による経路・収益の確認から、2Dアニメーションライブラリ **Pygame**（左上隅を原点 $(0, 0)$ とし、メインループで座標更新と再描画を繰り返す仕組み）を用いたアニメーション表示へと拡張することで、エージェントの振る舞いと収益の変化を視覚的に観察した。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

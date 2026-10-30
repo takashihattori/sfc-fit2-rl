@@ -216,6 +216,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">強化学習の基礎</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_value_and_monte_carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">価値関数とモンテカルロ法</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -227,12 +233,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./08_rl_cliff_walking.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">強化学習の例(1)</span></span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./09_rl_blackjack.html" class="sidebar-item-text sidebar-link">
@@ -350,13 +350,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><strong>第5章 機械学習</strong>: AIと機械学習の関係、3大分類、機械学習の技術、強化学習の特徴、gitによるバージョン管理</li>
 <li><strong>第6章 多腕バンディット問題</strong>: 「探索と活用のトレードオフ」をシミュレーションで理解する</li>
-<li><strong>第7章 強化学習の基礎</strong>: 状態・行動・報酬・方策・価値関数・マルコフ決定過程(MDP)の基本</li>
+<li><strong>第7章 強化学習の基礎</strong>: 状態・行動・報酬・方策・収益・確率的な状態遷移と方策の基本</li>
+<li><strong>第8章 価値関数とモンテカルロ法</strong>: 状態価値関数・最適方策・行動価値関数とモンテカルロ法による学習</li>
 </ul>
 </section>
 <section id="第3部gymnasiumによる強化学習の実践" class="level3">
 <h3 class="anchored" data-anchor-id="第3部gymnasiumによる強化学習の実践">第3部：Gymnasiumによる強化学習の実践</h3>
 <ul>
-<li><strong>第8章 強化学習の例(1) - Cliff Walking</strong>: Gymnasium入門と状態価値関数</li>
 <li><strong>第9章 強化学習の例(2) - Blackjack</strong>: 行動価値関数とモンテカルロ法による方策評価</li>
 <li><strong>第10章 強化学習の例(3) - Frozen Lake</strong>: TD学習とQ-learningアルゴリズムの実装</li>
 <li><strong>第11章 強化学習の例(4) - Cart Pole</strong>: 連続空間の離散化手法とエージェントの制御</li>
@@ -869,10 +869,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-19"><a href="#cb1-19" aria-label="19"></a><span class="fu">### 第2部：機械学習と強化学習の概念</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-label="20"></a><span class="ss">- </span>**第5章 機械学習**: AIと機械学習の関係、3大分類、機械学習の技術、強化学習の特徴、gitによるバージョン管理</span>
 <span id="cb1-21"><a href="#cb1-21" aria-label="21"></a><span class="ss">- </span>**第6章 多腕バンディット問題**: 「探索と活用のトレードオフ」をシミュレーションで理解する</span>
-<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="ss">- </span>**第7章 強化学習の基礎**: 状態・行動・報酬・方策・価値関数・マルコフ決定過程(MDP)の基本</span>
-<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a><span class="fu">### 第3部：Gymnasiumによる強化学習の実践</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a><span class="ss">- </span>**第8章 強化学習の例(1) - Cliff Walking**: Gymnasium入門と状態価値関数</span>
+<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="ss">- </span>**第7章 強化学習の基礎**: 状態・行動・報酬・方策・収益・確率的な状態遷移と方策の基本</span>
+<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="ss">- </span>**第8章 価値関数とモンテカルロ法**: 状態価値関数・最適方策・行動価値関数とモンテカルロ法による学習</span>
+<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a><span class="fu">### 第3部：Gymnasiumによる強化学習の実践</span></span>
 <span id="cb1-26"><a href="#cb1-26" aria-label="26"></a><span class="ss">- </span>**第9章 強化学習の例(2) - Blackjack**: 行動価値関数とモンテカルロ法による方策評価</span>
 <span id="cb1-27"><a href="#cb1-27" aria-label="27"></a><span class="ss">- </span>**第10章 強化学習の例(3) - Frozen Lake**: TD学習とQ-learningアルゴリズムの実装</span>
 <span id="cb1-28"><a href="#cb1-28" aria-label="28"></a><span class="ss">- </span>**第11章 強化学習の例(4) - Cart Pole**: 連続空間の離散化手法とエージェントの制御</span>
