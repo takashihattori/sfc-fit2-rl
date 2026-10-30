@@ -1138,6 +1138,25 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-label="1"></a><span class="fu"># 強化学習プロジェクト</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-label="2"></a>自律エージェントを作成・学習させるためのプロジェクトです。</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div></li>
 </ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>IDLEを使って <code>README.md</code> を作成・保存する手順
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>IDLEのエディタを使ってMarkdownファイル（<code>.md</code>）を作成する場合は、拡張子が <code>.py</code> にならないよう以下の手順で保存してください：</p>
+<ol type="1">
+<li><strong>新規ファイルの作成</strong>: IDLEのメニューバーから <strong>「File」＞「New File」</strong> を選択し、新しいエディタウィンドウを開きます。</li>
+<li><strong>Markdown記法で記述</strong>: 開いたウィンドウに上記の内容を <strong>Markdown記法</strong>（<code>#</code> で見出しを書くなど）で入力します。</li>
+<li><strong>保存ダイアログを開く</strong>: メニューバーから <strong>「File」＞「Save」</strong>（または <strong>「Save As…」</strong>）を選択します。</li>
+<li><strong>拡張子 <code>.md</code> を指定して保存</strong>: IDLEは標準ではPythonファイル（<code>.py</code>）として保存しようとするため、そのまま保存すると <code>README.py</code> や <code>README.md.py</code> になってしまいます。保存ダイアログの「ファイルの種類（File of type）」を <strong>「All Files（すべてのファイル）」</strong> に変更した上で、ファイル名に拡張子まで含めて <strong><code>README.md</code></strong> と指定して保存してください。</li>
+</ol>
+</div>
+</div>
 <p>ファイルを作成したら、現在のGitの状態を確認してみましょう：</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-label="1"></a><span class="fu">git</span> status</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>出力結果の <code>Untracked files</code>（未追跡のファイル）欄に、赤字などで <code>hello.py</code> と <code>README.md</code> が表示されます。これは「新しいファイルが作成されたが、まだGitの記録対象（ステージングエリア）に載っていない」状態を示しています。</p>
@@ -2473,139 +2492,149 @@ window.Quarto = {
 <span id="cb15-732"><a href="#cb15-732" aria-label="732"></a>  自律エージェントを作成・学習させるためのプロジェクトです。</span>
 <span id="cb15-733"><a href="#cb15-733" aria-label="733"></a>  <span class="in">```</span></span>
 <span id="cb15-734"><a href="#cb15-734" aria-label="734"></a></span>
-<span id="cb15-735"><a href="#cb15-735" aria-label="735"></a>ファイルを作成したら、現在のGitの状態を確認してみましょう：</span>
-<span id="cb15-736"><a href="#cb15-736" aria-label="736"></a></span>
-<span id="cb15-737"><a href="#cb15-737" aria-label="737"></a><span class="in">```bash</span></span>
-<span id="cb15-738"><a href="#cb15-738" aria-label="738"></a><span class="fu">git</span> status</span>
-<span id="cb15-739"><a href="#cb15-739" aria-label="739"></a><span class="in">```</span></span>
-<span id="cb15-740"><a href="#cb15-740" aria-label="740"></a></span>
-<span id="cb15-741"><a href="#cb15-741" aria-label="741"></a>出力結果の <span class="in">`Untracked files`</span>（未追跡のファイル）欄に、赤字などで <span class="in">`hello.py`</span> と <span class="in">`README.md`</span> が表示されます。これは「新しいファイルが作成されたが、まだGitの記録対象（ステージングエリア）に載っていない」状態を示しています。</span>
-<span id="cb15-742"><a href="#cb15-742" aria-label="742"></a></span>
-<span id="cb15-743"><a href="#cb15-743" aria-label="743"></a><span class="fu">#### 最初のコミット</span></span>
-<span id="cb15-744"><a href="#cb15-744" aria-label="744"></a>作成した2つのファイルをステージングエリア（準備台）に載せ、最初のセーブポイント（コミット）を作成します。</span>
-<span id="cb15-745"><a href="#cb15-745" aria-label="745"></a></span>
-<span id="cb15-746"><a href="#cb15-746" aria-label="746"></a><span class="in">```bash</span></span>
-<span id="cb15-747"><a href="#cb15-747" aria-label="747"></a><span class="co"># 1. 作成したファイルをステージングエリアに追加</span></span>
-<span id="cb15-748"><a href="#cb15-748" aria-label="748"></a><span class="fu">git</span> add hello.py README.md</span>
-<span id="cb15-749"><a href="#cb15-749" aria-label="749"></a><span class="co"># （フォルダ内の全変更をまとめて追加する場合は git add . でも可能です）</span></span>
+<span id="cb15-735"><a href="#cb15-735" aria-label="735"></a>::: {.callout-note}</span>
+<span id="cb15-736"><a href="#cb15-736" aria-label="736"></a><span class="fu">### IDLEを使って `README.md` を作成・保存する手順</span></span>
+<span id="cb15-737"><a href="#cb15-737" aria-label="737"></a>IDLEのエディタを使ってMarkdownファイル（<span class="in">`.md`</span>）を作成する場合は、拡張子が <span class="in">`.py`</span> にならないよう以下の手順で保存してください：</span>
+<span id="cb15-738"><a href="#cb15-738" aria-label="738"></a></span>
+<span id="cb15-739"><a href="#cb15-739" aria-label="739"></a><span class="ss">1. </span>**新規ファイルの作成**: IDLEのメニューバーから **「File」＞「New File」** を選択し、新しいエディタウィンドウを開きます。</span>
+<span id="cb15-740"><a href="#cb15-740" aria-label="740"></a><span class="ss">2. </span>**Markdown記法で記述**: 開いたウィンドウに上記の内容を **Markdown記法**（<span class="in">`# `</span> で見出しを書くなど）で入力します。</span>
+<span id="cb15-741"><a href="#cb15-741" aria-label="741"></a><span class="ss">3. </span>**保存ダイアログを開く**: メニューバーから **「File」＞「Save」**（または **「Save As...」**）を選択します。</span>
+<span id="cb15-742"><a href="#cb15-742" aria-label="742"></a><span class="ss">4. </span>**拡張子 `.md` を指定して保存**: IDLEは標準ではPythonファイル（`.py`）として保存しようとするため、そのまま保存すると `README.py` や `README.md.py` になってしまいます。保存ダイアログの「ファイルの種類（File of type）」を **「All Files（すべてのファイル）」** に変更した上で、ファイル名に拡張子まで含めて **`README.md`** と指定して保存してください。</span>
+<span id="cb15-743"><a href="#cb15-743" aria-label="743"></a>:::</span>
+<span id="cb15-744"><a href="#cb15-744" aria-label="744"></a></span>
+<span id="cb15-745"><a href="#cb15-745" aria-label="745"></a>ファイルを作成したら、現在のGitの状態を確認してみましょう：</span>
+<span id="cb15-746"><a href="#cb15-746" aria-label="746"></a></span>
+<span id="cb15-747"><a href="#cb15-747" aria-label="747"></a><span class="in">```bash</span></span>
+<span id="cb15-748"><a href="#cb15-748" aria-label="748"></a><span class="fu">git</span> status</span>
+<span id="cb15-749"><a href="#cb15-749" aria-label="749"></a><span class="in">```</span></span>
 <span id="cb15-750"><a href="#cb15-750" aria-label="750"></a></span>
-<span id="cb15-751"><a href="#cb15-751" aria-label="751"></a><span class="co"># 2. 状態を確認</span></span>
-<span id="cb15-752"><a href="#cb15-752" aria-label="752"></a><span class="fu">git</span> status</span>
-<span id="cb15-753"><a href="#cb15-753" aria-label="753"></a><span class="in">```</span></span>
-<span id="cb15-754"><a href="#cb15-754" aria-label="754"></a></span>
-<span id="cb15-755"><a href="#cb15-755" aria-label="755"></a><span class="in">`Changes to be committed`</span>（コミット予定の変更）として緑色で表示され、セーブの準備が整ったことが分かります。</span>
-<span id="cb15-756"><a href="#cb15-756" aria-label="756"></a></span>
-<span id="cb15-757"><a href="#cb15-757" aria-label="757"></a><span class="in">```bash</span></span>
-<span id="cb15-758"><a href="#cb15-758" aria-label="758"></a><span class="co"># 3. メッセージを添えてコミットを実行</span></span>
-<span id="cb15-759"><a href="#cb15-759" aria-label="759"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"初期作成: hello.pyとREADME.mdを追加"</span></span>
-<span id="cb15-760"><a href="#cb15-760" aria-label="760"></a><span class="in">```</span></span>
-<span id="cb15-761"><a href="#cb15-761" aria-label="761"></a></span>
-<span id="cb15-762"><a href="#cb15-762" aria-label="762"></a>これで、現在の2つのファイルの状態がリポジトリに永久保存されました。</span>
-<span id="cb15-763"><a href="#cb15-763" aria-label="763"></a>履歴を確認してみましょう：</span>
+<span id="cb15-751"><a href="#cb15-751" aria-label="751"></a>出力結果の <span class="in">`Untracked files`</span>（未追跡のファイル）欄に、赤字などで <span class="in">`hello.py`</span> と <span class="in">`README.md`</span> が表示されます。これは「新しいファイルが作成されたが、まだGitの記録対象（ステージングエリア）に載っていない」状態を示しています。</span>
+<span id="cb15-752"><a href="#cb15-752" aria-label="752"></a></span>
+<span id="cb15-753"><a href="#cb15-753" aria-label="753"></a><span class="fu">#### 最初のコミット</span></span>
+<span id="cb15-754"><a href="#cb15-754" aria-label="754"></a>作成した2つのファイルをステージングエリア（準備台）に載せ、最初のセーブポイント（コミット）を作成します。</span>
+<span id="cb15-755"><a href="#cb15-755" aria-label="755"></a></span>
+<span id="cb15-756"><a href="#cb15-756" aria-label="756"></a><span class="in">```bash</span></span>
+<span id="cb15-757"><a href="#cb15-757" aria-label="757"></a><span class="co"># 1. 作成したファイルをステージングエリアに追加</span></span>
+<span id="cb15-758"><a href="#cb15-758" aria-label="758"></a><span class="fu">git</span> add hello.py README.md</span>
+<span id="cb15-759"><a href="#cb15-759" aria-label="759"></a><span class="co"># （フォルダ内の全変更をまとめて追加する場合は git add . でも可能です）</span></span>
+<span id="cb15-760"><a href="#cb15-760" aria-label="760"></a></span>
+<span id="cb15-761"><a href="#cb15-761" aria-label="761"></a><span class="co"># 2. 状態を確認</span></span>
+<span id="cb15-762"><a href="#cb15-762" aria-label="762"></a><span class="fu">git</span> status</span>
+<span id="cb15-763"><a href="#cb15-763" aria-label="763"></a><span class="in">```</span></span>
 <span id="cb15-764"><a href="#cb15-764" aria-label="764"></a></span>
-<span id="cb15-765"><a href="#cb15-765" aria-label="765"></a><span class="in">```bash</span></span>
-<span id="cb15-766"><a href="#cb15-766" aria-label="766"></a><span class="fu">git</span> log <span class="at">--oneline</span></span>
-<span id="cb15-767"><a href="#cb15-767" aria-label="767"></a><span class="in">```</span></span>
-<span id="cb15-768"><a href="#cb15-768" aria-label="768"></a></span>
-<span id="cb15-769"><a href="#cb15-769" aria-label="769"></a>コミットのID番号とともに、指定したメッセージが1件表示されます。</span>
-<span id="cb15-770"><a href="#cb15-770" aria-label="770"></a></span>
-<span id="cb15-771"><a href="#cb15-771" aria-label="771"></a><span class="fu">#### ファイルの修正</span></span>
-<span id="cb15-772"><a href="#cb15-772" aria-label="772"></a>続いて、プログラムに機能を追加し、説明ドキュメントを更新してみましょう。</span>
-<span id="cb15-773"><a href="#cb15-773" aria-label="773"></a></span>
-<span id="cb15-774"><a href="#cb15-774" aria-label="774"></a><span class="ss">- </span>**`hello.py`** を次のように書き換えて保存します：</span>
-<span id="cb15-775"><a href="#cb15-775" aria-label="775"></a>  <span class="in">```python</span></span>
-<span id="cb15-776"><a href="#cb15-776" aria-label="776"></a>  <span class="co"># 動作確認用のスクリプト</span></span>
-<span id="cb15-777"><a href="#cb15-777" aria-label="777"></a>  <span class="kw">def</span> greet(name):</span>
-<span id="cb15-778"><a href="#cb15-778" aria-label="778"></a>      <span class="bu">print</span>(<span class="ss">f"強化学習エージェント </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss"> へようこそ！"</span>)</span>
-<span id="cb15-779"><a href="#cb15-779" aria-label="779"></a></span>
-<span id="cb15-780"><a href="#cb15-780" aria-label="780"></a>  greet(<span class="st">"Antigravity"</span>)</span>
-<span id="cb15-781"><a href="#cb15-781" aria-label="781"></a>  <span class="in">```</span></span>
-<span id="cb15-782"><a href="#cb15-782" aria-label="782"></a></span>
-<span id="cb15-783"><a href="#cb15-783" aria-label="783"></a><span class="ss">- </span>**`README.md`** に実行方法の記述を追記して保存します：</span>
-<span id="cb15-784"><a href="#cb15-784" aria-label="784"></a>  <span class="in">```markdown</span></span>
-<span id="cb15-785"><a href="#cb15-785" aria-label="785"></a>  # 強化学習プロジェクト</span>
-<span id="cb15-786"><a href="#cb15-786" aria-label="786"></a>  自律エージェントを作成・学習させるためのプロジェクトです。</span>
-<span id="cb15-787"><a href="#cb15-787" aria-label="787"></a></span>
-<span id="cb15-788"><a href="#cb15-788" aria-label="788"></a>  ## 実行方法</span>
-<span id="cb15-789"><a href="#cb15-789" aria-label="789"></a>  <span class="in">`python hello.py`</span> を実行してください。</span>
-<span id="cb15-790"><a href="#cb15-790" aria-label="790"></a>  <span class="in">```</span></span>
-<span id="cb15-791"><a href="#cb15-791" aria-label="791"></a></span>
-<span id="cb15-792"><a href="#cb15-792" aria-label="792"></a>ファイルを保存した後、<span class="in">`git status`</span> を実行すると、<span class="in">`modified: hello.py`</span> および <span class="in">`modified: README.md`</span> と表示され、ファイルが変更されたことをGitが自動検知していることが確認できます。</span>
-<span id="cb15-793"><a href="#cb15-793" aria-label="793"></a></span>
-<span id="cb15-794"><a href="#cb15-794" aria-label="794"></a><span class="fu">#### 2回目のコミット</span></span>
-<span id="cb15-795"><a href="#cb15-795" aria-label="795"></a>変更内容を2つ目のセーブポイントとして記録します。</span>
-<span id="cb15-796"><a href="#cb15-796" aria-label="796"></a></span>
-<span id="cb15-797"><a href="#cb15-797" aria-label="797"></a><span class="in">```bash</span></span>
-<span id="cb15-798"><a href="#cb15-798" aria-label="798"></a><span class="co"># 変更したファイルをステージング</span></span>
-<span id="cb15-799"><a href="#cb15-799" aria-label="799"></a><span class="fu">git</span> add .</span>
-<span id="cb15-800"><a href="#cb15-800" aria-label="800"></a></span>
-<span id="cb15-801"><a href="#cb15-801" aria-label="801"></a><span class="co"># 2回目のコミットを実行</span></span>
-<span id="cb15-802"><a href="#cb15-802" aria-label="802"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"挨拶関数を定義し、READMEに実行方法を追記"</span></span>
-<span id="cb15-803"><a href="#cb15-803" aria-label="803"></a><span class="in">```</span></span>
-<span id="cb15-804"><a href="#cb15-804" aria-label="804"></a></span>
-<span id="cb15-805"><a href="#cb15-805" aria-label="805"></a>再度 <span class="in">`git log --oneline`</span> を実行すると、コミット履歴が2件に増え、時系列順に積み重なっていることが確認できます。</span>
+<span id="cb15-765"><a href="#cb15-765" aria-label="765"></a><span class="in">`Changes to be committed`</span>（コミット予定の変更）として緑色で表示され、セーブの準備が整ったことが分かります。</span>
+<span id="cb15-766"><a href="#cb15-766" aria-label="766"></a></span>
+<span id="cb15-767"><a href="#cb15-767" aria-label="767"></a><span class="in">```bash</span></span>
+<span id="cb15-768"><a href="#cb15-768" aria-label="768"></a><span class="co"># 3. メッセージを添えてコミットを実行</span></span>
+<span id="cb15-769"><a href="#cb15-769" aria-label="769"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"初期作成: hello.pyとREADME.mdを追加"</span></span>
+<span id="cb15-770"><a href="#cb15-770" aria-label="770"></a><span class="in">```</span></span>
+<span id="cb15-771"><a href="#cb15-771" aria-label="771"></a></span>
+<span id="cb15-772"><a href="#cb15-772" aria-label="772"></a>これで、現在の2つのファイルの状態がリポジトリに永久保存されました。</span>
+<span id="cb15-773"><a href="#cb15-773" aria-label="773"></a>履歴を確認してみましょう：</span>
+<span id="cb15-774"><a href="#cb15-774" aria-label="774"></a></span>
+<span id="cb15-775"><a href="#cb15-775" aria-label="775"></a><span class="in">```bash</span></span>
+<span id="cb15-776"><a href="#cb15-776" aria-label="776"></a><span class="fu">git</span> log <span class="at">--oneline</span></span>
+<span id="cb15-777"><a href="#cb15-777" aria-label="777"></a><span class="in">```</span></span>
+<span id="cb15-778"><a href="#cb15-778" aria-label="778"></a></span>
+<span id="cb15-779"><a href="#cb15-779" aria-label="779"></a>コミットのID番号とともに、指定したメッセージが1件表示されます。</span>
+<span id="cb15-780"><a href="#cb15-780" aria-label="780"></a></span>
+<span id="cb15-781"><a href="#cb15-781" aria-label="781"></a><span class="fu">#### ファイルの修正</span></span>
+<span id="cb15-782"><a href="#cb15-782" aria-label="782"></a>続いて、プログラムに機能を追加し、説明ドキュメントを更新してみましょう。</span>
+<span id="cb15-783"><a href="#cb15-783" aria-label="783"></a></span>
+<span id="cb15-784"><a href="#cb15-784" aria-label="784"></a><span class="ss">- </span>**`hello.py`** を次のように書き換えて保存します：</span>
+<span id="cb15-785"><a href="#cb15-785" aria-label="785"></a>  <span class="in">```python</span></span>
+<span id="cb15-786"><a href="#cb15-786" aria-label="786"></a>  <span class="co"># 動作確認用のスクリプト</span></span>
+<span id="cb15-787"><a href="#cb15-787" aria-label="787"></a>  <span class="kw">def</span> greet(name):</span>
+<span id="cb15-788"><a href="#cb15-788" aria-label="788"></a>      <span class="bu">print</span>(<span class="ss">f"強化学習エージェント </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss"> へようこそ！"</span>)</span>
+<span id="cb15-789"><a href="#cb15-789" aria-label="789"></a></span>
+<span id="cb15-790"><a href="#cb15-790" aria-label="790"></a>  greet(<span class="st">"Antigravity"</span>)</span>
+<span id="cb15-791"><a href="#cb15-791" aria-label="791"></a>  <span class="in">```</span></span>
+<span id="cb15-792"><a href="#cb15-792" aria-label="792"></a></span>
+<span id="cb15-793"><a href="#cb15-793" aria-label="793"></a><span class="ss">- </span>**`README.md`** に実行方法の記述を追記して保存します：</span>
+<span id="cb15-794"><a href="#cb15-794" aria-label="794"></a>  <span class="in">```markdown</span></span>
+<span id="cb15-795"><a href="#cb15-795" aria-label="795"></a>  # 強化学習プロジェクト</span>
+<span id="cb15-796"><a href="#cb15-796" aria-label="796"></a>  自律エージェントを作成・学習させるためのプロジェクトです。</span>
+<span id="cb15-797"><a href="#cb15-797" aria-label="797"></a></span>
+<span id="cb15-798"><a href="#cb15-798" aria-label="798"></a>  ## 実行方法</span>
+<span id="cb15-799"><a href="#cb15-799" aria-label="799"></a>  <span class="in">`python hello.py`</span> を実行してください。</span>
+<span id="cb15-800"><a href="#cb15-800" aria-label="800"></a>  <span class="in">```</span></span>
+<span id="cb15-801"><a href="#cb15-801" aria-label="801"></a></span>
+<span id="cb15-802"><a href="#cb15-802" aria-label="802"></a>ファイルを保存した後、<span class="in">`git status`</span> を実行すると、<span class="in">`modified: hello.py`</span> および <span class="in">`modified: README.md`</span> と表示され、ファイルが変更されたことをGitが自動検知していることが確認できます。</span>
+<span id="cb15-803"><a href="#cb15-803" aria-label="803"></a></span>
+<span id="cb15-804"><a href="#cb15-804" aria-label="804"></a><span class="fu">#### 2回目のコミット</span></span>
+<span id="cb15-805"><a href="#cb15-805" aria-label="805"></a>変更内容を2つ目のセーブポイントとして記録します。</span>
 <span id="cb15-806"><a href="#cb15-806" aria-label="806"></a></span>
-<span id="cb15-807"><a href="#cb15-807" aria-label="807"></a><span class="fu">#### diffの確認（差分の確認）</span></span>
-<span id="cb15-808"><a href="#cb15-808" aria-label="808"></a>Gitの大きな強みは、「過去と現在」や「作業中の修正内容」の差分（どこを書き換えたか）を正確に比較できることです。</span>
-<span id="cb15-809"><a href="#cb15-809" aria-label="809"></a></span>
-<span id="cb15-810"><a href="#cb15-810" aria-label="810"></a><span class="ss">1. </span>**コミット間の差分を確認する**:</span>
-<span id="cb15-811"><a href="#cb15-811" aria-label="811"></a>   直前のコミット（1つ前）と最新のコミットの間でどのような変更が行われたかを確認するには、以下を実行します：</span>
-<span id="cb15-812"><a href="#cb15-812" aria-label="812"></a>   <span class="in">```bash</span></span>
-<span id="cb15-813"><a href="#cb15-813" aria-label="813"></a>   <span class="fu">git</span> diff HEAD~1 HEAD</span>
-<span id="cb15-814"><a href="#cb15-814" aria-label="814"></a>   <span class="in">```</span></span>
-<span id="cb15-815"><a href="#cb15-815" aria-label="815"></a>   追加された行が緑色（<span class="in">`+`</span>）、削除された行が赤色（<span class="in">`-`</span>）で表示され、変更内容が一目で分かります。</span>
-<span id="cb15-816"><a href="#cb15-816" aria-label="816"></a><span class="ss">2. </span>**作業中の差分を確認する**:</span>
-<span id="cb15-817"><a href="#cb15-817" aria-label="817"></a>   ファイルを編集した直後（まだ <span class="in">`git add`</span> や <span class="in">`git commit`</span> をしていない段階）に <span class="in">`git diff`</span> を実行すると、最後のコミットからの変更点を確認できます。coding agentがファイルを修正した直後にこのコマンドを実行すれば、エージェントが「どのファイルのどこを変更したのか」を確実に把握できます。</span>
-<span id="cb15-818"><a href="#cb15-818" aria-label="818"></a></span>
-<span id="cb15-819"><a href="#cb15-819" aria-label="819"></a><span class="fu">#### 前の状態に戻す（変更の取り消し・ロールバック）</span></span>
-<span id="cb15-820"><a href="#cb15-820" aria-label="820"></a>試行錯誤中に誤ったコードを書いてしまいプログラムが動かなくなったり、ファイルを壊してしまった場合でも、直前のセーブポイントの状態に一瞬で復元できます。</span>
-<span id="cb15-821"><a href="#cb15-821" aria-label="821"></a></span>
-<span id="cb15-822"><a href="#cb15-822" aria-label="822"></a>例えば、<span class="in">`hello.py`</span> の中身を適当にいじって壊してみたり、誤って削除してしまったとします。</span>
-<span id="cb15-823"><a href="#cb15-823" aria-label="823"></a></span>
-<span id="cb15-824"><a href="#cb15-824" aria-label="824"></a>まだコミットしていない作業ツリーの変更を取り消し、直前のコミット状態に元通り復元するには、以下のコマンドを実行します：</span>
-<span id="cb15-825"><a href="#cb15-825" aria-label="825"></a></span>
-<span id="cb15-826"><a href="#cb15-826" aria-label="826"></a><span class="in">```bash</span></span>
-<span id="cb15-827"><a href="#cb15-827" aria-label="827"></a><span class="fu">git</span> restore hello.py</span>
-<span id="cb15-828"><a href="#cb15-828" aria-label="828"></a><span class="in">```</span></span>
-<span id="cb15-829"><a href="#cb15-829" aria-label="829"></a>（フォルダ全体の変更をまとめて元に戻したい場合は <span class="in">`git restore .`</span>）</span>
-<span id="cb15-830"><a href="#cb15-830" aria-label="830"></a></span>
-<span id="cb15-831"><a href="#cb15-831" aria-label="831"></a>エディタで <span class="in">`hello.py`</span> を開き直すと、誤った変更が綺麗に取り消され、直前の正常に動作していた状態に復元されていることが確認できます。</span>
-<span id="cb15-832"><a href="#cb15-832" aria-label="832"></a></span>
-<span id="cb15-833"><a href="#cb15-833" aria-label="833"></a>::: {.callout-tip}</span>
-<span id="cb15-834"><a href="#cb15-834" aria-label="834"></a><span class="fu">### 過去の特定のコミットの状態に戻したい場合</span></span>
-<span id="cb15-835"><a href="#cb15-835" aria-label="835"></a>もし「直前」ではなく「2つ前」など過去の特定のコミットの状態を確認したり戻したりしたい場合は、<span class="in">`git restore --source=HEAD~1 hello.py`</span> のように特定のコミットを指定して復元するか、<span class="in">`git checkout コミットID`</span> などを使って過去の時点を閲覧・切り替えることができます。</span>
-<span id="cb15-836"><a href="#cb15-836" aria-label="836"></a>:::</span>
-<span id="cb15-837"><a href="#cb15-837" aria-label="837"></a></span>
-<span id="cb15-838"><a href="#cb15-838" aria-label="838"></a>::: {.callout-note icon=false}</span>
-<span id="cb15-839"><a href="#cb15-839" aria-label="839"></a><span class="fu">### 練習問題 05-04：変更の取り消し</span></span>
-<span id="cb15-840"><a href="#cb15-840" aria-label="840"></a>次の操作を実行してください。</span>
-<span id="cb15-841"><a href="#cb15-841" aria-label="841"></a></span>
-<span id="cb15-842"><a href="#cb15-842" aria-label="842"></a><span class="ss">1. </span><span class="in">`hello.py`</span> の最初の行にデタラメな文字列を入力して保存し、実行するとエラーが出ることを確認してください。</span>
-<span id="cb15-843"><a href="#cb15-843" aria-label="843"></a><span class="ss">2. </span>最後のコミットと、現在のファイル内容の差分を表示してください。</span>
-<span id="cb15-844"><a href="#cb15-844" aria-label="844"></a><span class="ss">3. </span><span class="in">`hello.py`</span> を最後のコミットの状態に復元し、実行するとエラーが出ずに実行されることを確認してください。</span>
-<span id="cb15-845"><a href="#cb15-845" aria-label="845"></a>:::</span>
-<span id="cb15-846"><a href="#cb15-846" aria-label="846"></a></span>
-<span id="cb15-847"><a href="#cb15-847" aria-label="847"></a>::: {.callout-note icon=false}</span>
-<span id="cb15-848"><a href="#cb15-848" aria-label="848"></a><span class="fu">### 練習問題 05-05：コミット</span></span>
-<span id="cb15-849"><a href="#cb15-849" aria-label="849"></a>次の操作を実行してください。</span>
-<span id="cb15-850"><a href="#cb15-850" aria-label="850"></a></span>
-<span id="cb15-851"><a href="#cb15-851" aria-label="851"></a><span class="ss">1. </span><span class="in">`hello.py`</span> を修正し、キーボードから名前を入力して「〇〇へようこそ」と表示するようにしてください。</span>
-<span id="cb15-852"><a href="#cb15-852" aria-label="852"></a><span class="ss">2. </span><span class="in">`Readme.md`</span> の説明をそれに合わせて修正してください。</span>
-<span id="cb15-853"><a href="#cb15-853" aria-label="853"></a><span class="ss">3. </span>変更点をステージング、コミットしてください。</span>
-<span id="cb15-854"><a href="#cb15-854" aria-label="854"></a><span class="ss">4. </span>コミット履歴を確認してください。</span>
-<span id="cb15-855"><a href="#cb15-855" aria-label="855"></a><span class="ss">5. </span>最後のコミットと、その一つ前のコミットの差分を表示してください。</span>
-<span id="cb15-856"><a href="#cb15-856" aria-label="856"></a>:::</span>
-<span id="cb15-857"><a href="#cb15-857" aria-label="857"></a></span>
-<span id="cb15-858"><a href="#cb15-858" aria-label="858"></a>次回以降のvibe codingでは、エージェントに変更を依頼する前後にこれらのコマンドを活用し、安全かつ計画的に強化学習プログラムを構築していきましょう。</span>
-<span id="cb15-859"><a href="#cb15-859" aria-label="859"></a></span>
-<span id="cb15-860"><a href="#cb15-860" aria-label="860"></a>---</span>
-<span id="cb15-861"><a href="#cb15-861" aria-label="861"></a></span>
-<span id="cb15-862"><a href="#cb15-862" aria-label="862"></a><span class="fu">## まとめ</span></span>
-<span id="cb15-863"><a href="#cb15-863" aria-label="863"></a></span>
-<span id="cb15-864"><a href="#cb15-864" aria-label="864"></a><span class="ss">- </span>**人工知能と機械学習**: 機械学習はAIの一分野であり、従来のルール記述型から、データからルール（モデル）を自律獲得するアプローチへ進化した。</span>
-<span id="cb15-865"><a href="#cb15-865" aria-label="865"></a><span class="ss">- </span>**機械学習の3分類**: 教師あり（与えられた正解を基に学習）、教師なし（データに内在する構造を発見）、強化学習（試行錯誤と報酬最大化）。</span>
-<span id="cb15-866"><a href="#cb15-866" aria-label="866"></a><span class="ss">- </span>**強化学習の独自性と発展**: 生物の学習（犬の「お手」など）に根ざした試行錯誤の仕組みであり、AlphaGoやAlphaZeroのように人間の模倣を超えて自律的に最適戦略を発見できる。</span>
-<span id="cb15-867"><a href="#cb15-867" aria-label="867"></a><span class="ss">- </span>**バージョン管理の重要性**: Antigravityによるvibe codingでは、gitを活用することで変更の把握と安全なロールバックが可能になる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb15-807"><a href="#cb15-807" aria-label="807"></a><span class="in">```bash</span></span>
+<span id="cb15-808"><a href="#cb15-808" aria-label="808"></a><span class="co"># 変更したファイルをステージング</span></span>
+<span id="cb15-809"><a href="#cb15-809" aria-label="809"></a><span class="fu">git</span> add .</span>
+<span id="cb15-810"><a href="#cb15-810" aria-label="810"></a></span>
+<span id="cb15-811"><a href="#cb15-811" aria-label="811"></a><span class="co"># 2回目のコミットを実行</span></span>
+<span id="cb15-812"><a href="#cb15-812" aria-label="812"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"挨拶関数を定義し、READMEに実行方法を追記"</span></span>
+<span id="cb15-813"><a href="#cb15-813" aria-label="813"></a><span class="in">```</span></span>
+<span id="cb15-814"><a href="#cb15-814" aria-label="814"></a></span>
+<span id="cb15-815"><a href="#cb15-815" aria-label="815"></a>再度 <span class="in">`git log --oneline`</span> を実行すると、コミット履歴が2件に増え、時系列順に積み重なっていることが確認できます。</span>
+<span id="cb15-816"><a href="#cb15-816" aria-label="816"></a></span>
+<span id="cb15-817"><a href="#cb15-817" aria-label="817"></a><span class="fu">#### diffの確認（差分の確認）</span></span>
+<span id="cb15-818"><a href="#cb15-818" aria-label="818"></a>Gitの大きな強みは、「過去と現在」や「作業中の修正内容」の差分（どこを書き換えたか）を正確に比較できることです。</span>
+<span id="cb15-819"><a href="#cb15-819" aria-label="819"></a></span>
+<span id="cb15-820"><a href="#cb15-820" aria-label="820"></a><span class="ss">1. </span>**コミット間の差分を確認する**:</span>
+<span id="cb15-821"><a href="#cb15-821" aria-label="821"></a>   直前のコミット（1つ前）と最新のコミットの間でどのような変更が行われたかを確認するには、以下を実行します：</span>
+<span id="cb15-822"><a href="#cb15-822" aria-label="822"></a>   <span class="in">```bash</span></span>
+<span id="cb15-823"><a href="#cb15-823" aria-label="823"></a>   <span class="fu">git</span> diff HEAD~1 HEAD</span>
+<span id="cb15-824"><a href="#cb15-824" aria-label="824"></a>   <span class="in">```</span></span>
+<span id="cb15-825"><a href="#cb15-825" aria-label="825"></a>   追加された行が緑色（<span class="in">`+`</span>）、削除された行が赤色（<span class="in">`-`</span>）で表示され、変更内容が一目で分かります。</span>
+<span id="cb15-826"><a href="#cb15-826" aria-label="826"></a><span class="ss">2. </span>**作業中の差分を確認する**:</span>
+<span id="cb15-827"><a href="#cb15-827" aria-label="827"></a>   ファイルを編集した直後（まだ <span class="in">`git add`</span> や <span class="in">`git commit`</span> をしていない段階）に <span class="in">`git diff`</span> を実行すると、最後のコミットからの変更点を確認できます。coding agentがファイルを修正した直後にこのコマンドを実行すれば、エージェントが「どのファイルのどこを変更したのか」を確実に把握できます。</span>
+<span id="cb15-828"><a href="#cb15-828" aria-label="828"></a></span>
+<span id="cb15-829"><a href="#cb15-829" aria-label="829"></a><span class="fu">#### 前の状態に戻す（変更の取り消し・ロールバック）</span></span>
+<span id="cb15-830"><a href="#cb15-830" aria-label="830"></a>試行錯誤中に誤ったコードを書いてしまいプログラムが動かなくなったり、ファイルを壊してしまった場合でも、直前のセーブポイントの状態に一瞬で復元できます。</span>
+<span id="cb15-831"><a href="#cb15-831" aria-label="831"></a></span>
+<span id="cb15-832"><a href="#cb15-832" aria-label="832"></a>例えば、<span class="in">`hello.py`</span> の中身を適当にいじって壊してみたり、誤って削除してしまったとします。</span>
+<span id="cb15-833"><a href="#cb15-833" aria-label="833"></a></span>
+<span id="cb15-834"><a href="#cb15-834" aria-label="834"></a>まだコミットしていない作業ツリーの変更を取り消し、直前のコミット状態に元通り復元するには、以下のコマンドを実行します：</span>
+<span id="cb15-835"><a href="#cb15-835" aria-label="835"></a></span>
+<span id="cb15-836"><a href="#cb15-836" aria-label="836"></a><span class="in">```bash</span></span>
+<span id="cb15-837"><a href="#cb15-837" aria-label="837"></a><span class="fu">git</span> restore hello.py</span>
+<span id="cb15-838"><a href="#cb15-838" aria-label="838"></a><span class="in">```</span></span>
+<span id="cb15-839"><a href="#cb15-839" aria-label="839"></a>（フォルダ全体の変更をまとめて元に戻したい場合は <span class="in">`git restore .`</span>）</span>
+<span id="cb15-840"><a href="#cb15-840" aria-label="840"></a></span>
+<span id="cb15-841"><a href="#cb15-841" aria-label="841"></a>エディタで <span class="in">`hello.py`</span> を開き直すと、誤った変更が綺麗に取り消され、直前の正常に動作していた状態に復元されていることが確認できます。</span>
+<span id="cb15-842"><a href="#cb15-842" aria-label="842"></a></span>
+<span id="cb15-843"><a href="#cb15-843" aria-label="843"></a>::: {.callout-tip}</span>
+<span id="cb15-844"><a href="#cb15-844" aria-label="844"></a><span class="fu">### 過去の特定のコミットの状態に戻したい場合</span></span>
+<span id="cb15-845"><a href="#cb15-845" aria-label="845"></a>もし「直前」ではなく「2つ前」など過去の特定のコミットの状態を確認したり戻したりしたい場合は、<span class="in">`git restore --source=HEAD~1 hello.py`</span> のように特定のコミットを指定して復元するか、<span class="in">`git checkout コミットID`</span> などを使って過去の時点を閲覧・切り替えることができます。</span>
+<span id="cb15-846"><a href="#cb15-846" aria-label="846"></a>:::</span>
+<span id="cb15-847"><a href="#cb15-847" aria-label="847"></a></span>
+<span id="cb15-848"><a href="#cb15-848" aria-label="848"></a>::: {.callout-note icon=false}</span>
+<span id="cb15-849"><a href="#cb15-849" aria-label="849"></a><span class="fu">### 練習問題 05-04：変更の取り消し</span></span>
+<span id="cb15-850"><a href="#cb15-850" aria-label="850"></a>次の操作を実行してください。</span>
+<span id="cb15-851"><a href="#cb15-851" aria-label="851"></a></span>
+<span id="cb15-852"><a href="#cb15-852" aria-label="852"></a><span class="ss">1. </span><span class="in">`hello.py`</span> の最初の行にデタラメな文字列を入力して保存し、実行するとエラーが出ることを確認してください。</span>
+<span id="cb15-853"><a href="#cb15-853" aria-label="853"></a><span class="ss">2. </span>最後のコミットと、現在のファイル内容の差分を表示してください。</span>
+<span id="cb15-854"><a href="#cb15-854" aria-label="854"></a><span class="ss">3. </span><span class="in">`hello.py`</span> を最後のコミットの状態に復元し、実行するとエラーが出ずに実行されることを確認してください。</span>
+<span id="cb15-855"><a href="#cb15-855" aria-label="855"></a>:::</span>
+<span id="cb15-856"><a href="#cb15-856" aria-label="856"></a></span>
+<span id="cb15-857"><a href="#cb15-857" aria-label="857"></a>::: {.callout-note icon=false}</span>
+<span id="cb15-858"><a href="#cb15-858" aria-label="858"></a><span class="fu">### 練習問題 05-05：コミット</span></span>
+<span id="cb15-859"><a href="#cb15-859" aria-label="859"></a>次の操作を実行してください。</span>
+<span id="cb15-860"><a href="#cb15-860" aria-label="860"></a></span>
+<span id="cb15-861"><a href="#cb15-861" aria-label="861"></a><span class="ss">1. </span><span class="in">`hello.py`</span> を修正し、キーボードから名前を入力して「〇〇へようこそ」と表示するようにしてください。</span>
+<span id="cb15-862"><a href="#cb15-862" aria-label="862"></a><span class="ss">2. </span><span class="in">`Readme.md`</span> の説明をそれに合わせて修正してください。</span>
+<span id="cb15-863"><a href="#cb15-863" aria-label="863"></a><span class="ss">3. </span>変更点をステージング、コミットしてください。</span>
+<span id="cb15-864"><a href="#cb15-864" aria-label="864"></a><span class="ss">4. </span>コミット履歴を確認してください。</span>
+<span id="cb15-865"><a href="#cb15-865" aria-label="865"></a><span class="ss">5. </span>最後のコミットと、その一つ前のコミットの差分を表示してください。</span>
+<span id="cb15-866"><a href="#cb15-866" aria-label="866"></a>:::</span>
+<span id="cb15-867"><a href="#cb15-867" aria-label="867"></a></span>
+<span id="cb15-868"><a href="#cb15-868" aria-label="868"></a>次回以降のvibe codingでは、エージェントに変更を依頼する前後にこれらのコマンドを活用し、安全かつ計画的に強化学習プログラムを構築していきましょう。</span>
+<span id="cb15-869"><a href="#cb15-869" aria-label="869"></a></span>
+<span id="cb15-870"><a href="#cb15-870" aria-label="870"></a>---</span>
+<span id="cb15-871"><a href="#cb15-871" aria-label="871"></a></span>
+<span id="cb15-872"><a href="#cb15-872" aria-label="872"></a><span class="fu">## まとめ</span></span>
+<span id="cb15-873"><a href="#cb15-873" aria-label="873"></a></span>
+<span id="cb15-874"><a href="#cb15-874" aria-label="874"></a><span class="ss">- </span>**人工知能と機械学習**: 機械学習はAIの一分野であり、従来のルール記述型から、データからルール（モデル）を自律獲得するアプローチへ進化した。</span>
+<span id="cb15-875"><a href="#cb15-875" aria-label="875"></a><span class="ss">- </span>**機械学習の3分類**: 教師あり（与えられた正解を基に学習）、教師なし（データに内在する構造を発見）、強化学習（試行錯誤と報酬最大化）。</span>
+<span id="cb15-876"><a href="#cb15-876" aria-label="876"></a><span class="ss">- </span>**強化学習の独自性と発展**: 生物の学習（犬の「お手」など）に根ざした試行錯誤の仕組みであり、AlphaGoやAlphaZeroのように人間の模倣を超えて自律的に最適戦略を発見できる。</span>
+<span id="cb15-877"><a href="#cb15-877" aria-label="877"></a><span class="ss">- </span>**バージョン管理の重要性**: Antigravityによるvibe codingでは、gitを活用することで変更の把握と安全なロールバックが可能になる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
