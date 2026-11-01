@@ -1,0 +1,840 @@
+# 価値関数とモンテカルロ法
+
+## 状態価値関数（State-Value Function）
+
+前章では、3マスの移動問題を例に、エージェントが1回のエピソード（スタートからゴールまで）で獲得する割引累積報酬である**収益 $G_t$** を学びました。
+
+$$
+G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
+$$
+
+しかし、収益 $G_t$ は「どの状態からスタートしたか」や「どの方策 $\pi$ に従って行動したか」によって変わります。さらに、環境の状態遷移やエージェントの方策が**確率的**である場合には、まったく同じ状態から同じ方策でスタートしても、**試行（エピソード）ごとにたどる経路や収益 $G_t$ がばらつく**ことを見ました。
+
+そこで強化学習では、1回ごとの偶然の結果ではなく、**「ある方策 $\pi$ に従ったとき、状態 $s$ からスタートすると平均して（期待値として）どれくらいの収益が得られるか」**をもって、その状態の「良さ（価値）」を評価します。これを**状態価値関数（State-Value Function）**と呼び、**$V^\pi(s)$** で表します。
+
+$$
+V^\pi(s) = \mathbb{E}_\pi \left[ G_t \;\middle|\; S_t = s \right]
+$$
+
+- **記号の意味**:
+  - **$s$**: 評価したい状態（3マスの問題では $\text{A}, \text{B}, \text{C}$ のいずれか）。
+  - **$\pi$**: エージェントが従う方策（どの行動を選ぶかのルール）。状態価値は**どの方策 $\pi$ に従うかによって変わる**ため、右上に $\pi$ を付けて区別します。
+  - **$\mathbb{E}_\pi [ G_t \mid S_t = s ]$**: 時刻 $t$ に状態 $s$（$S_t = s$）にいて、そこから方策 $\pi$ に従って行動し続けたときに得られる収益 $G_t$ の**期待値（平均値）**を表します。
+  - **終端状態の価値**: ゴールである状態 $\text{C}$ のように、到達した時点でエピソードが終了する**終端状態**では、そこから先に行動も報酬も発生しないため、どの方策に対しても常に **$V^\pi(\text{C}) = 0$** と定義します。
+
+### 決定的な環境における状態価値関数
+
+まずは直感的に理解するため、前章の前半で扱った**「選んだ方向へ100%確実に移動できる決定的な環境」**で状態価値関数 $V^\pi(s)$ を計算してみましょう。
+
+- **環境のルール（復習）**:
+  - 横一列に並んだ3つのマス **$\text{A}, \text{B}, \text{C}$**（$\text{A}$ の左には壁、$\text{C}$ は到達でエピソード終了のゴール）。
+  - 行動は **`Right`** と **`Left`** の2つ。
+  - 報酬は **1回の行動につき $-1$**、**状態 $\text{C}$ に到達したとき $+10$**（$\text{B}$ から $\text{C}$ へ到達するステップの報酬は $-1 + 10 = +9$）。
+  - 割引率は **$\gamma = 0.9$**。
+
+環境も方策も決定的である場合、各状態からたどる経路はただ1通りに決まるため、状態価値 $V^\pi(s)$ は「その状態からスタートしたときの収益 $G_t$ そのもの」になります。代表的な2つの方策で比べてみましょう。
+
+```{=html}
+<svg viewBox="0 0 720 390" width="100%" height="390" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="sv-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="sv-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="sv-arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c62828" />
+    </marker>
+  </defs>
+
+  <!-- ==================== CASE 1: POLICY 1 (Right, Right) ==================== -->
+  <text x="24" y="25" font-size="13" font-weight="bold" fill="#0d47a1">【方策①】状態 A, B ともに Right を選ぶ方策：π₁(A) = Right, π₁(B) = Right</text>
+
+  <!-- Left Wall 1 -->
+  <rect x="82" y="72" width="6" height="104" rx="2" fill="#475569"/>
+
+  <!-- Cell A (Policy 1) -->
+  <rect x="88" y="76" width="175" height="96" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.5"/>
+  <text x="175" y="99" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">状態 A</text>
+  <rect x="113" y="109" width="125" height="32" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="175" y="130" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">V<tspan dy="-5" font-size="9">π₁</tspan><tspan dy="5">(A) = 7.1</tspan></text>
+  <text x="175" y="160" text-anchor="middle" font-size="10.5" fill="#1565c0">-1 + 0.9 × V(B) = 7.1</text>
+
+  <!-- Cell B (Policy 1) -->
+  <rect x="263" y="76" width="175" height="96" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+  <text x="350" y="99" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b5e20">状態 B</text>
+  <rect x="288" y="109" width="125" height="32" rx="6" fill="#ffffff" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="350" y="130" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b5e20">V<tspan dy="-5" font-size="9">π₁</tspan><tspan dy="5">(B) = 9.0</tspan></text>
+  <text x="350" y="160" text-anchor="middle" font-size="10.5" fill="#2e7d32">1手でゴール（報酬 +9）</text>
+
+  <!-- Cell C (Policy 1) -->
+  <rect x="438" y="76" width="175" height="96" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="525" y="99" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <rect x="463" y="109" width="125" height="32" rx="6" fill="#ffffff" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="525" y="130" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">V<tspan dy="-5" font-size="9">π₁</tspan><tspan dy="5">(C) = 0</tspan></text>
+  <text x="525" y="160" text-anchor="middle" font-size="10.5" fill="#bf360c">終端状態（これ以降報酬なし）</text>
+
+  <!-- Arrows for Policy 1 -->
+  <path d="M 225,76 Q 263,52 300,72" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#sv-arrow-blue)"/>
+  <text x="263" y="51" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">Right (R = -1)</text>
+
+  <path d="M 400,76 Q 438,52 475,72" fill="none" stroke="#e65100" stroke-width="2.5" marker-end="url(#sv-arrow-orange)"/>
+  <text x="438" y="51" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Right (R = +9)</text>
+
+  <!-- Divider -->
+  <line x1="24" y1="194" x2="696" y2="194" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+  <!-- ==================== CASE 2: POLICY 3 (Left, Right) ==================== -->
+  <text x="24" y="220" font-size="13" font-weight="bold" fill="#c62828">【方策③】状態 A では Left、状態 B では Right を選ぶ方策：π₃(A) = Left, π₃(B) = Right</text>
+
+  <!-- Left Wall 2 -->
+  <rect x="82" y="267" width="6" height="104" rx="2" fill="#475569"/>
+
+  <!-- Cell A (Policy 3) -->
+  <rect x="88" y="271" width="175" height="96" fill="#ffebee" stroke="#c62828" stroke-width="2.5"/>
+  <text x="175" y="294" text-anchor="middle" font-size="14" font-weight="bold" fill="#b71c1c">状態 A</text>
+  <rect x="108" y="304" width="135" height="32" rx="6" fill="#ffffff" stroke="#c62828" stroke-width="1.5"/>
+  <text x="175" y="325" text-anchor="middle" font-size="14" font-weight="bold" fill="#c62828">V<tspan dy="-5" font-size="9">π₃</tspan><tspan dy="5">(A) = -10.0</tspan></text>
+  <text x="175" y="355" text-anchor="middle" font-size="10.5" fill="#b71c1c">壁に当たり続け R=-1 が無限継続</text>
+
+  <!-- Cell B (Policy 3) -->
+  <rect x="263" y="271" width="175" height="96" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+  <text x="350" y="294" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b5e20">状態 B</text>
+  <rect x="288" y="304" width="125" height="32" rx="6" fill="#ffffff" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="350" y="325" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b5e20">V<tspan dy="-5" font-size="9">π₃</tspan><tspan dy="5">(B) = 9.0</tspan></text>
+  <text x="350" y="355" text-anchor="middle" font-size="10.5" fill="#2e7d32">B からなら1手でゴール</text>
+
+  <!-- Cell C (Policy 3) -->
+  <rect x="438" y="271" width="175" height="96" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="525" y="294" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <rect x="463" y="304" width="125" height="32" rx="6" fill="#ffffff" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="525" y="325" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">V<tspan dy="-5" font-size="9">π₃</tspan><tspan dy="5">(C) = 0</tspan></text>
+  <text x="525" y="355" text-anchor="middle" font-size="10.5" fill="#bf360c">終端状態</text>
+
+  <!-- Arrows for Policy 3 -->
+  <path d="M 82,301 C 36,287 36,351 76,337" fill="none" stroke="#c62828" stroke-width="2.2" stroke-dasharray="4,3" marker-end="url(#sv-arrow-red)"/>
+  <text x="45" y="279" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Left (R = -1)</text>
+
+  <path d="M 400,271 Q 438,247 475,267" fill="none" stroke="#e65100" stroke-width="2.5" marker-end="url(#sv-arrow-orange)"/>
+  <text x="438" y="246" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Right (R = +9)</text>
+</svg>
+```
+
+#### 1. 方策①（$\pi_1(\text{A}) = \text{Right},\; \pi_1(\text{B}) = \text{Right}$）の状態価値
+どの状態でも `Right` を選ぶ方策 $\pi_1$ のもとで、各状態からスタートしたときの価値を求めます。
+
+- **状態 $\text{B}$ の価値 $V^{\pi_1}(\text{B})$**：
+  状態 $\text{B}$ からスタート（$S_0 = \text{B}$）すると、`Right` を選んで1ステップで状態 $\text{C}$ に到達し、報酬 $R_1 = -1 + 10 = +9$ を得て終了します。したがって、
+  $$
+  V^{\pi_1}(\text{B}) = +9.0
+  $$
+- **状態 $\text{A}$ の価値 $V^{\pi_1}(\text{A})$**：
+  状態 $\text{A}$ からスタート（$S_0 = \text{A}$）すると、1ステップ目に `Right` で報酬 $R_1 = -1$ を得て状態 $\text{B}$ へ進み、2ステップ目に状態 $\text{B}$ から `Right` で報酬 $R_2 = +9$ を得て終了します。したがって、
+  $$
+  V^{\pi_1}(\text{A}) = R_1 + \gamma R_2 = (-1) + 0.9 \times 9.0 = \mathbf{7.1}
+  $$
+
+::: {.callout-tip icon=true}
+### 隣り合う状態の価値のつながり（再帰的な関係）
+上の計算式をよく見ると、状態 $\text{A}$ の2ステップ目以降の報酬 $R_2 = 9.0$ は、移動先である**状態 $\text{B}$ の価値 $V^{\pi_1}(\text{B}) = 9.0$** そのものです。つまり、
+$$
+V^{\pi_1}(\text{A}) = \underbrace{-1}_{\text{直後の報酬}} + \gamma \times \underbrace{V^{\pi_1}(\text{B})}_{\text{次の状態の価値}} = -1 + 0.9 \times 9.0 = 7.1
+$$
+という関係が成り立っています。ゴールに近い状態 $\text{B}$ の価値が **$9.0$** と高く、そこから1ステップ離れた状態 $\text{A}$ の価値は、移動コスト（$-1$）と割引率（$\gamma = 0.9$）の分だけ低い **$7.1$** になります。このように「現在の状態の価値」と「次の状態の価値」を結ぶ関係式を、強化学習では**ベルマン方程式（Bellman Equation）**と呼びます。
+:::
+
+#### 2. 方策③（$\pi_3(\text{A}) = \text{Left},\; \pi_3(\text{B}) = \text{Right}$）の状態価値
+次に、「状態 $\text{A}$ では `Left`、状態 $\text{B}$ では `Right`」を選ぶ方策 $\pi_3$ の場合を見てみましょう。
+
+- **状態 $\text{B}$ の価値 $V^{\pi_3}(\text{B})$**：
+  状態 $\text{B}$ からスタートすれば、この方策でも `Right` を選んで1ステップで状態 $\text{C}$ に到達するため、状態 $\text{A}$ で何を選ぶかに関係なく価値は同じです：
+  $$
+  V^{\pi_3}(\text{B}) = +9.0
+  $$
+- **状態 $\text{A}$ の価値 $V^{\pi_3}(\text{A})$**：
+  状態 $\text{A}$ からスタートすると、`Left` を選んで壁に阻まれ、報酬 $-1$ を得て状態 $\text{A}$ に留まり続けます。前章で計算したとおり、毎ステップ $-1$ が無限に続くため、
+  $$
+  V^{\pi_3}(\text{A}) = (-1) + 0.9 \times (-1) + 0.9^2 \times (-1) + \dots = \frac{-1}{1 - 0.9} = \mathbf{-10.0}
+  $$
+  となります（再帰的な関係式 $V^{\pi_3}(\text{A}) = -1 + 0.9\, V^{\pi_3}(\text{A})$ を解いても同じ結果が得られます）。
+
+::: {.callout-note icon=false}
+### 練習問題 08-01：決定的な環境での状態価値の計算
+決定的な環境（割引率 $\gamma = 0.9$）において、残りの2つの決定的方策について状態価値 $V^\pi(\text{A})$ と $V^\pi(\text{B})$ を求めてみましょう。
+
+1. **方策②（状態 $\text{A}, \text{B}$ ともに `Left` を選ぶ：$\pi_2(\text{A}) = \text{Left},\; \pi_2(\text{B}) = \text{Left}$）** のとき、$V^{\pi_2}(\text{A})$ と $V^{\pi_2}(\text{B})$ はそれぞれいくらになりますか？
+2. **方策④（状態 $\text{A}$ では `Right`、状態 $\text{B}$ では `Left` を選ぶ：$\pi_4(\text{A}) = \text{Right},\; \pi_4(\text{B}) = \text{Left}$）** のとき、状態 $\text{A}$ や状態 $\text{B}$ からスタートしたエージェントはどのように動き続けますか？また、このときの $V^{\pi_4}(\text{A})$ と $V^{\pi_4}(\text{B})$ はそれぞれいくらになりますか？
+:::
+
+### 確率的な環境・方策における状態価値関数（期待値）
+
+次に、前章の後半で扱った**「20%の確率でスリップしてその場に留まり、80%の確率で意図した方向へ移動できる環境」**や**「確率的な方策」**の場合を考えてみましょう。
+
+環境や方策に確率的な要素があると、同じ状態 $s$ からスタートしても、エピソードごとにたどる経路と収益 $G_t$ が変わります。このとき、状態価値 $V^\pi(s)$ は**「起こりうるすべての経路について、（その経路をたどる確率）$\times$（その経路で得られる収益）を足し合わせた期待値」**となります。
+
+```{=html}
+<svg viewBox="0 0 720 270" width="100%" height="270" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="ev-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="ev-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2e7d32" />
+    </marker>
+  </defs>
+
+  <text x="360" y="24" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1e293b">【20%スリップ環境 × 方策①（常に Right）】状態 A の価値 V(A) は全経路の収益の「期待値（平均）」</text>
+
+  <!-- Start State Node -->
+  <rect x="20" y="98" width="115" height="84" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.5"/>
+  <text x="77" y="125" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d47a1">状態 A</text>
+  <text x="77" y="146" text-anchor="middle" font-size="10.5" fill="#1565c0">スタート (S₀ = A)</text>
+  <text x="77" y="166" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">方策: 常に Right</text>
+
+  <!-- Branch 1: 2 steps -->
+  <path d="M 135,120 Q 172,65 213,65" fill="none" stroke="#1976d2" stroke-width="2.2" marker-end="url(#ev-arrow-blue)"/>
+  <rect x="220" y="42" width="275" height="44" rx="6" fill="#ffffff" stroke="#90caf9" stroke-width="1.5"/>
+  <text x="232" y="60" font-size="10.5" font-weight="bold" fill="#0d47a1">経路1: A → B → C（2手・スリップ0回）</text>
+  <text x="232" y="77" font-size="10" fill="#334155">確率: <tspan font-weight="bold" fill="#0d47a1">64.0%</tspan> (0.64)　｜　収益 G₀ = <tspan font-weight="bold" fill="#2e7d32">7.10</tspan></text>
+
+  <!-- Branch 2: 3 steps -->
+  <line x1="135" y1="140" x2="213" y2="140" stroke="#1976d2" stroke-width="2.2" marker-end="url(#ev-arrow-blue)"/>
+  <rect x="220" y="118" width="275" height="44" rx="6" fill="#ffffff" stroke="#90caf9" stroke-width="1.5"/>
+  <text x="232" y="136" font-size="10.5" font-weight="bold" fill="#0d47a1">経路2・3: A→A→B→C / A→B→B→C（3手）</text>
+  <text x="232" y="153" font-size="10" fill="#334155">確率: 計 <tspan font-weight="bold" fill="#0d47a1">25.6%</tspan> (0.256) ｜ 収益 G₀ = <tspan font-weight="bold" fill="#2e7d32">5.39</tspan></text>
+
+  <!-- Branch 3: 4+ steps -->
+  <path d="M 135,160 Q 172,215 213,215" fill="none" stroke="#1976d2" stroke-width="2.2" marker-end="url(#ev-arrow-blue)"/>
+  <rect x="220" y="194" width="275" height="44" rx="6" fill="#ffffff" stroke="#90caf9" stroke-width="1.5"/>
+  <text x="232" y="212" font-size="10.5" font-weight="bold" fill="#0d47a1">経路4〜: 2回以上スリップ（4手以上）</text>
+  <text x="232" y="229" font-size="10" fill="#334155">確率: 計 <tspan font-weight="bold" fill="#0d47a1">10.4%</tspan> (0.104) ｜ 収益 G₀ = <tspan font-weight="bold" fill="#2e7d32">3.851, …</tspan></text>
+
+  <!-- Convergence to Expected Value -->
+  <path d="M 495,65 Q 528,65 545,120" fill="none" stroke="#2e7d32" stroke-width="2" marker-end="url(#ev-arrow-green)"/>
+  <line x1="495" y1="140" x2="545" y2="140" stroke="#2e7d32" stroke-width="2" marker-end="url(#ev-arrow-green)"/>
+  <path d="M 495,215 Q 528,215 545,160" fill="none" stroke="#2e7d32" stroke-width="2" marker-end="url(#ev-arrow-green)"/>
+
+  <!-- Expected Value Box -->
+  <rect x="552" y="82" width="150" height="116" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+  <text x="627" y="108" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1b5e20">確率 × 収益 の総和</text>
+  <text x="627" y="126" text-anchor="middle" font-size="10.5" fill="#2e7d32">（期待値 E[G₀]）</text>
+  <rect x="564" y="138" width="126" height="34" rx="6" fill="#ffffff" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="627" y="160" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1b5e20">V<tspan dy="-5" font-size="8.5">π₁</tspan><tspan dy="5">(A) ≈ 6.28</tspan></text>
+  <text x="627" y="188" text-anchor="middle" font-size="9.5" fill="#1b5e20">※ 滑らない環境 (7.10) より低下</text>
+</svg>
+```
+
+たとえば、20%の確率でスリップする環境において**方策①（常に `Right`）**に従い、状態 $\text{A}$ からスタートしたとします（前章の練習問題 07-03 で確認したケースです）：
+
+- **2ステップでゴール（$\text{A} \to \text{B} \to \text{C}$）**：確率 $0.8 \times 0.8 = 0.64$（$64\%$）、収益 $G_0 = 7.1$
+- **3ステップでゴール（$\text{A} \to \text{A} \to \text{B} \to \text{C}$ または $\text{A} \to \text{B} \to \text{B} \to \text{C}$）**：確率 $0.128 + 0.128 = 0.256$（$25.6\%$）、収益 $G_0 = 5.39$
+- **4ステップ以上でゴール**：残り $10.4\%$、収益 $G_0 = 3.851, 2.466, \dots$
+
+これらすべての経路について「確率 $\times$ 収益」を足し合わせると、状態 $\text{A}$ と状態 $\text{B}$ の価値は次のようになります：
+
+$$
+V^{\pi_1}(\text{A}) = 0.64 \times 7.1 + 0.256 \times 5.39 + \dots \approx \mathbf{6.28}, \qquad V^{\pi_1}(\text{B}) \approx \mathbf{8.54}
+$$
+
+滑らない決定的な環境では $V^{\pi_1}(\text{A}) = 7.10,\; V^{\pi_1}(\text{B}) = 9.00$ でしたが、20%の確率でスリップする環境では余計なステップ（報酬 $-1$ と割引）がかかることがあるため、期待値である状態価値はそれぞれ **$6.28$** と **$8.54$** に下がっています。
+
+また、エージェントが**「各状態で 50%ずつランダムに `Right` または `Left` を選ぶ確率的方策（$\pi_{\text{rand}}$）」**に従った場合も同様に期待値を計算でき、左へ逆戻りしてしまう確率が加わるため、状態価値はさらに低くなります（決定的な環境で $V^{\pi_{\text{rand}}}(\text{A}) \approx 2.30,\; V^{\pi_{\text{rand}}}(\text{B}) \approx 5.04$、20%スリップ環境では $V^{\pi_{\text{rand}}}(\text{A}) \approx 0.13,\; V^{\pi_{\text{rand}}}(\text{B}) \approx 3.72$）。
+
+::: {.callout-tip icon=true}
+### 補足：確率的な環境での状態価値を方程式で求める方法
+無限個の経路を1つずつ足し合わせなくても、先ほどの「現在の状態の価値 ＝ 直後の報酬 ＋ $\gamma \times$ 次の状態の価値」という関係を期待値に広げることで、1次方程式として正確に計算できます。
+
+- **状態 $\text{B}$ で `Right` を選んだとき**：80%（$0.8$）で報酬 $+9$ を得て終了（状態 $\text{C}$ の価値 $0$）し、20%（$0.2$）でスリップして報酬 $-1$ を得て再び状態 $\text{B}$ に留まるため、
+  $$
+  V^{\pi_1}(\text{B}) = 0.8 \times 9 + 0.2 \times \left(-1 + 0.9\, V^{\pi_1}(\text{B})\right)
+  $$
+  これを整理すると $0.82\, V^{\pi_1}(\text{B}) = 7.0$ となり、**$V^{\pi_1}(\text{B}) = \dfrac{7.0}{0.82} \approx 8.54$** が得られます。
+- **状態 $\text{A}$ で `Right` を選んだとき**：直後の報酬は移動成功でもスリップでも $-1$ であり、次の状態は 80% で状態 $\text{B}$、20% で状態 $\text{A}$ になるため、
+  $$
+  V^{\pi_1}(\text{A}) = -1 + 0.9 \times \left(0.8\, V^{\pi_1}(\text{B}) + 0.2\, V^{\pi_1}(\text{A})\right)
+  $$
+  これに $V^{\pi_1}(\text{B}) \approx 8.54$ を代入して解くと、**$V^{\pi_1}(\text{A}) \approx 6.28$** が求まります。
+:::
+
+---
+
+## 最適方策と最適状態価値関数
+
+状態価値関数 $V^\pi(s)$ を使うと、異なる方策どうしの優劣を数値として明確に比較することができます。
+
+先ほど計算した「決定的な環境（$\gamma = 0.9$）」における4つの決定的方策（方策①〜④）と、ランダム方策の状態価値を一覧表にまとめて比較してみましょう。
+
+| 方策 $\pi$ | 状態 $\text{A}$ での行動 | 状態 $\text{B}$ での行動 | $V^\pi(\text{A})$ | $V^\pi(\text{B})$ | $V^\pi(\text{C})$ | 振る舞いの特徴 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **方策①（$\pi_1$）** | **`Right`** | **`Right`** | **$7.10$** | **$9.00$** | $0$ | どの状態からも最短手数でゴールへ進む |
+| **方策②（$\pi_2$）** | `Left` | `Left` | $-10.00$ | $-10.00$ | $0$ | 左へ進み続け、壁に当たり続けて終わらない |
+| **方策③（$\pi_3$）** | `Left` | `Right` | $-10.00$ | **$9.00$** | $0$ | $\text{B}$ からはゴールするが、$\text{A}$ からは壁に当たり続ける |
+| **方策④（$\pi_4$）** | `Right` | `Left` | $-10.00$ | $-10.00$ | $0$ | $\text{A}$ と $\text{B}$ の間を永久に往復し続けて終わらない |
+| **ランダム（$\pi_{\text{rand}}$）** | `Right`/`Left` 50% | `Right`/`Left` 50% | $2.30$ | $5.04$ | $0$ | 寄り道や逆戻りをしながらも、いずれゴールする |
+
+### 最適方策 $\pi^*$ と最適状態価値関数 $V^*(s)$
+
+上の表を見比べると、**方策①（状態 $\text{A}, \text{B}$ ともに `Right` を選ぶ方策）** は、状態 $\text{A}$ においても状態 $\text{B}$ においても、他のすべての方策以上の状態価値を達成しています。
+
+このように、**すべての状態 $s$ において状態価値 $V^\pi(s)$ を最大化する最も優れた方策**を**最適方策（Optimal Policy）**と呼び、右上にアスタリスク（$*$）を付けて **$\pi^*$**（パイ・スター）と表します。
+
+また、最適方策 $\pi^*$ に従ったときの状態価値関数を**最適状態価値関数（Optimal State-Value Function）**と呼び、**$V^*(s)$** で表します：
+
+$$
+V^*(s) = \max_{\pi} V^\pi(s) \quad (\text{すべての状態 } s \text{ について})
+$$
+
+- **3マスの移動問題における最適方策 $\pi^*$**:
+  決定的な環境でも、20%でスリップする確率的な環境でも、最適方策は「状態 $\text{A}, \text{B}$ ともに `Right` を選ぶ方策（方策①）」です：
+  $$
+  \pi^*(\text{A}) = \text{Right}, \qquad \pi^*(\text{B}) = \text{Right}
+  $$
+- **最適状態価値関数 $V^*(s)$ の値**:
+  - 決定的な環境（スリップなし）：**$V^*(\text{A}) = 7.10,\quad V^*(\text{B}) = 9.00,\quad V^*(\text{C}) = 0$**
+  - 確率的な環境（20%スリップ）：**$V^*(\text{A}) \approx 6.28,\quad V^*(\text{B}) \approx 8.54,\quad V^*(\text{C}) = 0$**
+
+**強化学習の最終的なゴールは、試行錯誤を通じてこの「最適方策 $\pi^*$」を見つけ出すこと**にあります。
+
+::: {.callout-note icon=false}
+### 練習問題 08-02：最適方策と状態価値の比較
+上の表（決定的な環境、$\gamma = 0.9$）を見て、次の問いに答えてみましょう。
+
+1. **方策③（$\pi_3(\text{A}) = \text{Left},\; \pi_3(\text{B}) = \text{Right}$）** は、状態 $\text{B}$ における価値が $V^{\pi_3}(\text{B}) = 9.00$ であり、最適方策 $\pi^*$ と同じ最高値を達成しています。それにもかかわらず、方策③が「最適方策」とは呼べないのはなぜですか？
+2. もし環境のルールが少し変わり、**「左端の壁にぶつかると、ペナルティとして通常の行動コスト $-1$ に加えてさらに $-5$（合計 $-6$）の報酬が与えられる」**ようになったとします。このとき、最適方策 $\pi^*$ に従ったときの最適状態価値 $V^*(\text{A})$ と $V^*(\text{B})$ は元の値（$7.10$ と $9.00$）から変化するでしょうか？理由とともに答えてみましょう。
+:::
+
+---
+
+## 行動価値関数（Action-Value Function）
+
+### なぜ「状態価値 $V(s)$」だけでは行動を選べないのか？
+
+最適状態価値が $V^*(\text{A}) = 7.10,\; V^*(\text{B}) = 9.00$ であることが分かれば、「状態 $\text{A}$ よりも状態 $\text{B}$ の方がゴールに近くて価値が高い」ということが分かります。
+
+しかし、ここでエージェントの視点に立って考えてみましょう。学習を始めたばかりのエージェントは、**「`Right` と `Left` のどちらを選べば状態 $\text{B}$ に移動できるのか」「どちらを選んだら壁にぶつかるのか」という環境のルール（構造）を事前には知りません**。そのため、各状態の価値 $V(s)$ だけを知っていても、「いま状態 $\text{A}$ にいるとき、`Right` と `Left` のどちらのボタンを押せばよいか」を直接判断することができないのです。
+
+そこで必要になるのが、状態 $s$ だけでなく**「状態 $s$ において行動 $a$ を選ぶこと自体の価値」**を直接評価する関数です。
+
+### 行動価値関数 $Q^\pi(s, a)$（Q値）の定義
+
+ある方策 $\pi$ のもとで、**「現在の状態 $S_t = s$ において、まず最初の1手として行動 $A_t = a$ を実行し、その次のステップ（$t+1$）以降は方策 $\pi$ に従って行動し続けたときに得られる収益 $G_t$ の期待値」**を**行動価値関数（Action-Value Function）**と呼び、**$Q^\pi(s, a)$** で表します（アルファベットの $Q$ は Quality に由来し、通称 **Q値** や **Q関数** と呼ばれます）。
+
+$$
+Q^\pi(s, a) = \mathbb{E}_\pi \left[ G_t \;\middle|\; S_t = s,\; A_t = a \right]
+$$
+
+- **状態価値 $V^\pi(s)$ との決定的な違い**:
+  - **状態価値 $V^\pi(s)$** は、最初の1手目から方策 $\pi$ に従って行動を選びます。
+  - **行動価値 $Q^\pi(s, a)$** は、**最初の1手目だけは（方策 $\pi$ が何であれ）指定された行動 $a$ を強制的に選び**、2手目以降（移動先の状態 $S_{t+1}$ に着いたあと）から方策 $\pi$ に従います。
+
+特に、最適方策 $\pi^*$ のもとでの行動価値関数を**最適行動価値関数 $Q^*(s, a)$** と呼びます。これを使えば、「もし状態 $s$ で行動 $a$ を選んだら、そのあと最善を尽くしたときにどれだけ稼げるか」を各行動ごとに直接比較できます。
+
+### 3マスの移動問題（決定的な環境）での $Q^*(s, a)$ の計算
+
+決定的な環境（$\gamma = 0.9$）において、**最適方策 $\pi^*$（状態 $\text{A}, \text{B}$ ともに `Right` を選ぶ：$V^*(\text{A}) = 7.10,\; V^*(\text{B}) = 9.00$）** のもとでの行動価値 $Q^*(s, a)$ を、4つの「状態と行動のペア $(s, a)$」すべてについて計算してみましょう。
+
+```{=html}
+<svg viewBox="0 0 740 370" width="100%" height="370" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="qv-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="qv-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="qv-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <text x="370" y="24" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1e293b">【最適行動価値 Q*(s, a) の構造】最初の1手は指定した行動 a をとり、2手目以降は最適方策 π*（V*）に従う</text>
+
+  <!-- Left Wall -->
+  <rect x="102" y="128" width="6" height="114" rx="2" fill="#475569"/>
+
+  <!-- ==================== CELL A ==================== -->
+  <rect x="108" y="132" width="190" height="106" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="203" y="156" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">状態 A（V* = 7.10）</text>
+
+  <!-- Q*(A, Left) inside Cell A -->
+  <rect x="118" y="168" width="80" height="56" rx="5" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="158" y="187" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#475569">◀ Left</text>
+  <text x="158" y="210" text-anchor="middle" font-size="13" font-weight="bold" fill="#334155">5.39</text>
+
+  <!-- Q*(A, Right) inside Cell A -->
+  <rect x="208" y="168" width="80" height="56" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="248" y="187" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">Right ▶</text>
+  <text x="248" y="210" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#0d47a1">7.10 ★</text>
+
+  <!-- ==================== CELL B ==================== -->
+  <rect x="298" y="132" width="190" height="106" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="393" y="156" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">状態 B（V* = 9.00）</text>
+
+  <!-- Q*(B, Left) inside Cell B -->
+  <rect x="308" y="168" width="80" height="56" rx="5" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="348" y="187" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#475569">◀ Left</text>
+  <text x="348" y="210" text-anchor="middle" font-size="13" font-weight="bold" fill="#334155">5.39</text>
+
+  <!-- Q*(B, Right) inside Cell B -->
+  <rect x="398" y="168" width="80" height="56" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="438" y="187" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">Right ▶</text>
+  <text x="438" y="210" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#e65100">9.00 ★</text>
+
+  <!-- ==================== CELL C ==================== -->
+  <rect x="488" y="132" width="155" height="106" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/>
+  <text x="565" y="160" text-anchor="middle" font-size="15" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <text x="565" y="188" text-anchor="middle" font-size="12" font-weight="bold" fill="#bf360c">GOAL (+10)</text>
+  <text x="565" y="215" text-anchor="middle" font-size="11" fill="#c62828">終端状態 (V* = 0)</text>
+
+  <!-- ==================== TOP CALLOUTS: ACTION RIGHT ==================== -->
+  <!-- Q*(A, Right) -->
+  <path d="M 248,132 Q 300,78 355,126" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#qv-arrow-blue)"/>
+  <rect x="165" y="42" width="215" height="46" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="272" y="60" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">Q*(A, Right) = 7.10</text>
+  <text x="272" y="78" text-anchor="middle" font-size="10" fill="#1565c0">R=-1 で B へ進み、+ 0.9×V*(B) = 7.10</text>
+
+  <!-- Q*(B, Right) -->
+  <path d="M 438,132 Q 490,78 540,126" fill="none" stroke="#e65100" stroke-width="2.8" marker-end="url(#qv-arrow-orange)"/>
+  <rect x="405" y="42" width="215" height="46" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <text x="512" y="60" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Q*(B, Right) = 9.00</text>
+  <text x="512" y="78" text-anchor="middle" font-size="10" fill="#bf360c">1手で C 到達！ 報酬 R = -1 + 10 = +9.00</text>
+
+  <!-- ==================== BOTTOM CALLOUTS: ACTION LEFT ==================== -->
+  <!-- Q*(A, Left) -->
+  <path d="M 102,168 C 48,152 48,220 96,204" fill="none" stroke="#475569" stroke-width="2.2" stroke-dasharray="4,3" marker-end="url(#qv-arrow-slate)"/>
+  <rect x="24" y="276" width="248" height="62" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="148" y="295" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">Q*(A, Left) = 5.39</text>
+  <text x="148" y="313" text-anchor="middle" font-size="10" fill="#475569">1手目は壁で A に留まり (R=-1)、</text>
+  <text x="148" y="328" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">2手目以降は π* で B→C へ：-1 + 0.9×V*(A) = 5.39</text>
+
+  <!-- Q*(B, Left) -->
+  <path d="M 348,238 Q 290,275 235,244" fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#qv-arrow-slate)"/>
+  <rect x="295" y="276" width="265" height="62" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="427" y="295" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">Q*(B, Left) = 5.39</text>
+  <text x="427" y="313" text-anchor="middle" font-size="10" fill="#475569">1手目は Left で A に戻るが (R=-1)、</text>
+  <text x="427" y="328" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">2手目以降は π* で A→B→C：-1 + 0.9×V*(A) = 5.39</text>
+</svg>
+```
+
+1. **状態 $\text{B}$ で `Right` を選んだとき：$Q^*(\text{B}, \text{Right})$**
+   - 1ステップでゴール（状態 $\text{C}$）に到達し、報酬 $+9$ を得てエピソード終了となります。
+   $$
+   Q^*(\text{B}, \text{Right}) = \mathbf{9.00}
+   $$
+
+2. **状態 $\text{B}$ で `Left` を選んだとき：$Q^*(\text{B}, \text{Left})$**
+   - **最初の1手目**は指定された `Left` を実行するため、報酬 $-1$ を得て左の状態 $\text{A}$ へ戻ります。
+   - **2手目以降**は最適方策 $\pi^*$（常に `Right`）に従うため、状態 $\text{A}$ から $\text{A} \to \text{B} \to \text{C}$ と進んで価値 $V^*(\text{A}) = 7.10$ を獲得します（全体では $\text{B} \xrightarrow{\text{Left}} \text{A} \xrightarrow{\text{Right}} \text{B} \xrightarrow{\text{Right}} \text{C}$ の3ステップ）。したがって、
+   $$
+   Q^*(\text{B}, \text{Left}) = -1 + \gamma V^*(\text{A}) = -1 + 0.9 \times 7.10 = -1 + 6.39 = \mathbf{5.39}
+   $$
+
+3. **状態 $\text{A}$ で `Right` を選んだとき：$Q^*(\text{A}, \text{Right})$**
+   - 1手目に `Right` を選んで報酬 $-1$ を得て状態 $\text{B}$ へ進み、2手目以降は最適方策 $\pi^*$ に従って $V^*(\text{B}) = 9.00$ を獲得します：
+   $$
+   Q^*(\text{A}, \text{Right}) = -1 + \gamma V^*(\text{B}) = -1 + 0.9 \times 9.00 = \mathbf{7.10}
+   $$
+
+4. **状態 $\text{A}$ で `Left` を選んだとき：$Q^*(\text{A}, \text{Left})$**
+   - **最初の1手目**は指定された `Left` を実行するため、壁に阻まれて報酬 $-1$ を得て状態 $\text{A}$ に留まります。
+   - **2手目以降**は最適方策 $\pi^*$（常に `Right`）に切り替わるため、状態 $\text{A}$ から $V^*(\text{A}) = 7.10$ を獲得します（全体では $\text{A} \xrightarrow{\text{Left}} \text{A} \xrightarrow{\text{Right}} \text{B} \xrightarrow{\text{Right}} \text{C}$ の3ステップ）。したがって、
+   $$
+   Q^*(\text{A}, \text{Left}) = -1 + \gamma V^*(\text{A}) = -1 + 0.9 \times 7.10 = \mathbf{5.39}
+   $$
+   （※ ずっと `Left` を選び続けるわけではないため、$-10.0$ にはならず、1手分のロスがある $5.39$ になる点に注意してください！）
+
+### Qテーブル（Q-table）による最適行動の決定
+
+このようにして求めた行動価値 $Q(s, a)$ を、縦軸に「状態 $s$」、横軸に「行動 $a$」をとった表にまとめたものを **Qテーブル（Q-table）** と呼びます。
+
+| 状態 $s$ ＼ 行動 $a$ | `Left` の価値 $Q^*(s, \text{Left})$ | `Right` の価値 $Q^*(s, \text{Right})$ | 最大値 $\max_a Q^*(s, a) = V^*(s)$ | 選ぶべき最適行動 $\pi^*(s)$ |
+| :---: | :---: | :---: | :---: | :---: |
+| **状態 $\text{A}$** | $5.39$ | **$7.10$** | **$7.10$** | **`Right`**（$7.10 > 5.39$） |
+| **状態 $\text{B}$** | $5.39$ | **$9.00$** | **$9.00$** | **`Right`**（$9.00 > 5.39$） |
+
+Qテーブルの最大の強みは、**環境のルールを知らなくても、各状態の行を見て「数値（Q値）が最も大きい行動」を選ぶだけで、ただちに最適方策 $\pi^*(s)$ が決まる**という点です：
+
+- **状態 $\text{A}$ にいるとき**：$Q^*(\text{A}, \text{Left}) = 5.39$ と $Q^*(\text{A}, \text{Right}) = 7.10$ を比べ、大きい方の **`Right`** を選べばよい。
+- **状態 $\text{B}$ にいるとき**：$Q^*(\text{B}, \text{Left}) = 5.39$ と $Q^*(\text{B}, \text{Right}) = 9.00$ を比べ、大きい方の **`Right`** を選べばよい。
+- また、各状態において最も高い行動価値（$\max_a Q^*(s, a)$）は、そのままその状態の**最適状態価値 $V^*(s)$** に一致します。
+
+::: {.callout-tip icon=true}
+### 20%でスリップする確率的な環境での Qテーブル
+20%の確率でスリップする環境（$\gamma = 0.9$）でも同様に最適行動価値 $Q^*(s, a)$ を計算すると、次の表のようになります：
+
+| 状態 $s$ ＼ 行動 $a$ | `Left` の価値 $Q^*(s, \text{Left})$ | `Right` の価値 $Q^*(s, \text{Right})$ | 最適状態価値 $V^*(s)$ | 最適行動 $\pi^*(s)$ |
+| :---: | :---: | :---: | :---: | :---: |
+| **状態 $\text{A}$** | $4.65$ | **$6.28$** | **$6.28$** | **`Right`** |
+| **状態 $\text{B}$** | $5.06$ | **$8.54$** | **$8.54$** | **`Right`** |
+
+スリップの影響で全体的に数値は少しずつ下がりますが、状態 $\text{A}$ でも状態 $\text{B}$ でも「`Right` の Q値の方が `Left` より高い」という大小関係は変わらないため、やはりどちらの状態でも **`Right`** を選ぶのが最適であることが一目で分かります。
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 08-03：行動価値関数 $Q^\pi(s, a)$ を使った方策の改善
+決定的な環境（$\gamma = 0.9$）において、エージェントが最初は**方策③（$\pi_3(\text{A}) = \text{Left},\; \pi_3(\text{B}) = \text{Right}$）**に従っていたとします。前節で求めたとおり、この方策の状態価値は **$V^{\pi_3}(\text{A}) = -10.0,\; V^{\pi_3}(\text{B}) = 9.0$** です。
+
+1. 状態 $\text{A}$ において、**最初の1手だけ `Right` を選び**、2手目以降は方策③に従ったときの行動価値 **$Q^{\pi_3}(\text{A}, \text{Right})$** はいくらになりますか？また、最初の1手に `Left` を選び、2手目以降も方策③に従ったときの行動価値 **$Q^{\pi_3}(\text{A}, \text{Left})$** はいくらになりますか？
+2. 1で求めた $Q^{\pi_3}(\text{A}, \text{Right})$ と $Q^{\pi_3}(\text{A}, \text{Left})$ を比較すると、方策③の「状態 $\text{A}$ で `Left` を選ぶ」というルールをどのように変更（改善）すれば、より良い方策になることが分かりますか？
+:::
+
+---
+
+## モンテカルロ法（Monte Carlo Method）
+
+### 環境のルールを知らないときにどうやって価値を求めるか？
+
+ここまでは、私たちが「`Right` を選ぶと80%で右のマスへ進み、20%でスリップする」「状態 $\text{C}$ に到達すると $+10$ もらえる」という**環境の内部ルール（状態遷移確率や報酬の仕組み）をすべて知っている前提**で、方程式や確率の式を使って状態価値 $V(s)$ や行動価値 $Q(s, a)$ を計算してきました。
+
+しかし、実際の強化学習では、エージェントは環境のルールを事前に教えてもらえません。確率の式を立てることができない状況で、エージェントはどうやって $V(s)$ や $Q(s, a)$ の値を知ればよいのでしょうか？
+
+その最もシンプルかつ強力な方法が、**「実際に何度もエピソードを最初から最後までプレイ（試行）してみて、各状態や行動のあとで実際に得られた収益 $G_t$ の平均値を計算する」**というアプローチです。このように、実際に試行（サンプリング）を繰り返して得られた結果の平均から期待値を推定する手法を**モンテカルロ法（Monte Carlo Method）**と呼びます。
+
+::: {.callout-tip icon=true}
+### 多腕バンディット問題との共通点
+第6回の多腕バンディット問題では、各スロットマシンの真の当たり確率を知らないプレイヤーが、「実際にレバーを何回も引いてみて、得られたコイン枚数の平均値」から各マシンの価値を推定しました。**モンテカルロ法は、まさにこの「実際に試して平均をとる」という考え方を、複数ステップ続くエピソード問題へと広げたもの**です。
+:::
+
+### モンテカルロ法による価値推定の3ステップ
+
+モンテカルロ法では、次の **①〜③** を1エピソードごとに繰り返すことで、状態価値 $V(s)$ や行動価値 $Q(s, a)$ を少しずつ正確な値へと近づけていきます。
+
+```{=html}
+<svg viewBox="0 0 740 340" width="100%" height="340" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="mc-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="mc-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="mc-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2e7d32" />
+    </marker>
+  </defs>
+
+  <!-- ==================== STEP 1: EPISODE TRAJECTORY ==================== -->
+  <text x="20" y="25" font-size="12.5" font-weight="bold" fill="#0d47a1">① 1エピソードを最後まで実行し、「状態 S_t・行動 A_t・報酬 R_{t+1}」の履歴を記録する</text>
+
+  <!-- t = 0: S0 = A -->
+  <rect x="20" y="38" width="120" height="58" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="80" y="60" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">t = 0 : S₀ = A</text>
+  <text x="80" y="80" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1565c0">A₀ = Right</text>
+
+  <line x1="140" y1="67" x2="202" y2="67" stroke="#1976d2" stroke-width="2.2" marker-end="url(#mc-arrow-blue)"/>
+  <text x="171" y="55" text-anchor="middle" font-size="9.5" fill="#7b1fa2">スリップ</text>
+  <text x="171" y="83" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">R₁ = -1</text>
+
+  <!-- t = 1: S1 = A -->
+  <rect x="210" y="38" width="120" height="58" rx="6" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="270" y="60" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">t = 1 : S₁ = A</text>
+  <text x="270" y="80" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1565c0">A₁ = Right</text>
+
+  <line x1="330" y1="67" x2="392" y2="67" stroke="#1976d2" stroke-width="2.2" marker-end="url(#mc-arrow-blue)"/>
+  <text x="361" y="55" text-anchor="middle" font-size="9.5" fill="#0d47a1">移動成功</text>
+  <text x="361" y="83" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">R₂ = -1</text>
+
+  <!-- t = 2: S2 = B -->
+  <rect x="400" y="38" width="120" height="58" rx="6" fill="#ffffff" stroke="#1976d2" stroke-width="2"/>
+  <text x="460" y="60" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">t = 2 : S₂ = B</text>
+  <text x="460" y="80" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1565c0">A₂ = Right</text>
+
+  <line x1="520" y1="67" x2="582" y2="67" stroke="#e65100" stroke-width="2.5" marker-end="url(#mc-arrow-orange)"/>
+  <text x="551" y="55" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">ゴール！</text>
+  <text x="551" y="83" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#2e7d32">R₃ = +9</text>
+
+  <!-- t = 3: S3 = C -->
+  <rect x="590" y="38" width="125" height="58" rx="6" fill="#fff8e1" stroke="#f57c00" stroke-width="2.5"/>
+  <text x="652" y="60" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">t = 3 : S₃ = C ★</text>
+  <text x="652" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">エピソード終了</text>
+
+  <!-- ==================== STEP 2: BACKWARD RETURN CALCULATION ==================== -->
+  <text x="20" y="128" font-size="12.5" font-weight="bold" fill="#e65100">② ゴール直前から「逆向き（後ろから前）」に各ステップの収益 G_t を計算する（γ = 0.9）</text>
+
+  <!-- G2 box -->
+  <rect x="400" y="142" width="145" height="56" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="472" y="163" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">G₂ = +9.00</text>
+  <text x="472" y="184" text-anchor="middle" font-size="10" fill="#bf360c">G₂ = R₃ = +9.0</text>
+
+  <!-- Backward arrow G2 -> G1 -->
+  <line x1="400" y1="170" x2="353" y2="170" stroke="#e65100" stroke-width="2.2" marker-end="url(#mc-arrow-orange)"/>
+  <text x="376" y="160" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">×0.9 - 1</text>
+
+  <!-- G1 box -->
+  <rect x="200" y="142" width="145" height="56" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="272" y="163" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">G₁ = +7.10</text>
+  <text x="272" y="184" text-anchor="middle" font-size="10" fill="#bf360c">R₂ + 0.9×G₂ = -1 + 8.1</text>
+
+  <!-- Backward arrow G1 -> G0 -->
+  <line x1="200" y1="170" x2="153" y2="170" stroke="#e65100" stroke-width="2.2" marker-end="url(#mc-arrow-orange)"/>
+  <text x="176" y="160" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">×0.9 - 1</text>
+
+  <!-- G0 box -->
+  <rect x="20" y="142" width="125" height="56" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="82" y="163" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">G₀ = +5.39</text>
+  <text x="82" y="184" text-anchor="middle" font-size="9.5" fill="#bf360c">R₁ + 0.9×G₁ = -1 + 6.39</text>
+
+  <!-- ==================== STEP 3: UPDATE SAMPLE AVERAGES ==================== -->
+  <line x1="20" y1="215" x2="720" y2="215" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <text x="20" y="240" font-size="12.5" font-weight="bold" fill="#1b5e20">③ 各状態・行動で得られた収益 G_t を蓄積し、その「平均値」として V(s) や Q(s, a) を更新する</text>
+
+  <rect x="20" y="252" width="340" height="72" rx="6" fill="#e8f5e9" stroke="#66bb6a" stroke-width="1.8"/>
+  <text x="190" y="274" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">【状態 A で Right】の記録に G₀ = 5.39（G₁ = 7.10）を追加</text>
+  <text x="190" y="295" text-anchor="middle" font-size="10.5" fill="#2e7d32">これまでの記録: [ 7.10, 3.85, 7.10, <tspan font-weight="bold" fill="#c62828">5.39</tspan>, … ]</text>
+  <text x="190" y="314" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">⇒ 記録の平均値を計算して Q(A, Right) や V(A) を更新！</text>
+
+  <rect x="380" y="252" width="340" height="72" rx="6" fill="#e8f5e9" stroke="#66bb6a" stroke-width="1.8"/>
+  <text x="550" y="274" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">【状態 B で Right】の記録に G₂ = 9.00 を追加</text>
+  <text x="550" y="295" text-anchor="middle" font-size="10.5" fill="#2e7d32">これまでの記録: [ 9.00, 7.10, 9.00, <tspan font-weight="bold" fill="#c62828">9.00</tspan>, … ]</text>
+  <text x="550" y="314" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">⇒ エピソードを繰り返すほど真の期待値へ収束！</text>
+</svg>
+```
+
+#### ① 1エピソードを最後まで実行し、履歴を記録する
+まず、現在の方策に従って初期状態 $\text{A}$ からゴールである状態 $\text{C}$ に到達するまで実際に1エピソードをプレイし、通過した**「状態 $S_t$・選んだ行動 $A_t$・得られた報酬 $R_{t+1}$」**の列を記録します。
+
+たとえば、上の図のように3ステップでゴールした次の履歴が得られたとします：
+
+- **$t = 0$**：状態 $S_0 = \text{A}$ で行動 $A_0 = \text{Right}$ を選択 $\to$ スリップして状態 $S_1 = \text{A}$ に留まり、報酬 **$R_1 = -1$**
+- **$t = 1$**：状態 $S_1 = \text{A}$ で行動 $A_1 = \text{Right}$ を選択 $\to$ 移動に成功して状態 $S_2 = \text{B}$ へ進み、報酬 **$R_2 = -1$**
+- **$t = 2$**：状態 $S_2 = \text{B}$ で行動 $A_2 = \text{Right}$ を選択 $\to$ 移動に成功して状態 $S_3 = \text{C}$（ゴール）へ到達し、報酬 **$R_3 = +9$** で終了
+
+#### ② 各ステップ $t$ からの収益 $G_t$ を逆向きに計算する
+エピソードが終了したら、そのエピソードで通過した各ステップ $t$ の時点からゴールまでに得られた収益 $G_t$ を計算します。
+
+このとき、**ゴール直前の最後のステップからスタートに向かって逆向き（後ろから前）に計算する**と、式 $G_t = R_{t+1} + \gamma G_{t+1}$ を使って簡単に求めることができます（割引率 $\gamma = 0.9$）：
+
+1. **最後のステップ $t = 2$（$S_2 = \text{B},\; A_2 = \text{Right}$）の収益 $G_2$**：
+   直後に報酬 $R_3 = +9$ を得て終了したため、
+   $$
+   G_2 = R_3 = \mathbf{+9.00}
+   $$
+2. **1つ前のステップ $t = 1$（$S_1 = \text{A},\; A_1 = \text{Right}$）の収益 $G_1$**：
+   直後の報酬 $R_2 = -1$ に、次のステップの収益 $G_2 = 9.00$ を $\gamma = 0.9$ 倍して足し合わせます：
+   $$
+   G_1 = R_2 + \gamma G_2 = (-1) + 0.9 \times 9.00 = \mathbf{7.10}
+   $$
+3. **最初のステップ $t = 0$（$S_0 = \text{A},\; A_0 = \text{Right}$）の収益 $G_0$**：
+   直後の報酬 $R_1 = -1$ に、$G_1 = 7.10$ を $\gamma = 0.9$ 倍して足し合わせます：
+   $$
+   G_0 = R_1 + \gamma G_1 = (-1) + 0.9 \times 7.10 = -1 + 6.39 = \mathbf{5.39}
+   $$
+
+#### ③ 得られた収益の平均値をとって $V(s)$ や $Q(s, a)$ を更新する
+計算した収益 $G_t$ を、それぞれの状態 $S_t$（または状態と行動のペア $(S_t, A_t)$）の記録リストに追加し、**これまでに得られた収益の平均値（標本平均）**を計算して推定値を更新します：
+
+$$
+V(s) = \frac{\text{状態 } s \text{ から得られた収益 } G_t \text{ の合計}}{\text{状態 } s \text{ を訪問して記録した回数}}, \qquad
+Q(s, a) = \frac{\text{状態 } s \text{ で行動 } a \text{ を選んで得られた収益 } G_t \text{ の合計}}{\text{状態 } s \text{ で行動 } a \text{ を選んで記録した回数}}
+$$
+
+1回や2回のエピソードだけでは、たまたまスリップしたかどうかで平均値が大きくブレますが、エピソードを何十回・何百回と繰り返すにつれて、平均値は本来の理論的な期待値（真の $V^\pi(s)$ や $Q^\pi(s, a)$）へとピタリと収束していきます。
+
+::: {.callout-tip icon=true}
+### 同じエピソード内で同じ状態・行動を複数回通った場合は？
+上の例では、$t = 0$ と $t = 1$ の2回とも同じ「状態 $\text{A}$ で行動 `Right`」を通っています。このように1回のエピソードの中で同じ状態（または同じ状態・行動ペア）を複数回訪問したときの記録方法には、次の2通りがあります：
+
+- **初回訪問モンテカルロ法（First-visit MC）**：1回のエピソードにつき、その状態（または $(s, a)$）に**最初に訪れた1回目（上の例では $t = 0$ の $G_0 = 5.39$）だけ**を記録して平均に加える方法。
+- **毎回訪問モンテカルロ法（Every-visit MC）**：エピソード内で訪れた**すべての回（上の例では $t = 0$ の $G_0 = 5.39$ と $t = 1$ の $G_1 = 7.10$ の両方）**を記録して平均に加える方法。
+
+どちらの方法を使っても、エピソードをたくさん繰り返せば同じ真の価値関数に収束することが知られています。
+:::
+
+### モンテカルロ法による最適方策の学習（$\varepsilon$-greedy 法との組み合わせ）
+
+特定の方策の価値を調べるだけでなく、**エージェントがゼロから自力で最適方策 $\pi^*$ を見つけ出す**には、このモンテカルロ法による行動価値 $Q(s, a)$ の推定と、第6回で学んだ **$\varepsilon$-greedy（イプシロン・グリーディ）法** を組み合わせます。
+
+1. **初期状態**：最初はどの行動が良いかまったく分からないため、すべての行動価値を $Q(s, a) = 0$ に初期化します。
+2. **$\varepsilon$-greedy 法による行動選択**：
+   エピソードを実行する際、各状態 $s$ で次のように行動を選びます（たとえば $\varepsilon = 0.2$）：
+   - **探索（確率 $\varepsilon = 20\%$）**：`Left` と `Right` をランダムに選ぶ。これにより、`Left` と `Right` の両方の行動が何度も試され、すべての $Q(s, a)$ が正しく推定されます。
+   - **活用（確率 $1 - \varepsilon = 80\%$）**：その時点で推定値が高い方の行動（$Q(s, \text{Right})$ と $Q(s, \text{Left})$ のうち大きい方）を選ぶ。
+3. **エピソード終了ごとの更新**：
+   ゴールに到達するたびに収益 $G_t$ を計算して $Q(s, a)$ の平均値を更新します。すると次第に「状態 $\text{A}$ でも状態 $\text{B}$ でも `Right` の方が $Q$ 値が高い」ということが明確になり、エージェントは自動的に `Right` を最適行動として選ぶようになります！
+
+::: {.callout-note icon=false}
+### 練習問題 08-04：モンテカルロ法による収益と平均値の計算
+割引率を $\gamma = 0.9$ とします。
+
+1. あるエピソードで、状態 $\text{A}$ からスタートして次の3ステップでゴールしたとします：
+   - $t = 0$：状態 $S_0 = \text{A}$ で行動 $A_0 = \text{Left}$ を選択 $\to$ 壁で状態 $S_1 = \text{A}$ に留まり、報酬 **$R_1 = -1$**
+   - $t = 1$：状態 $S_1 = \text{A}$ で行動 $A_1 = \text{Right}$ を選択 $\to$ 状態 $S_2 = \text{B}$ へ移動し、報酬 **$R_2 = -1$**
+   - $t = 2$：状態 $S_2 = \text{B}$ で行動 $A_2 = \text{Right}$ を選択 $\to$ 状態 $S_3 = \text{C}$ に到達し、報酬 **$R_3 = +9$** で終了
+   このとき、ゴール直前から逆向きに計算すると、各ステップの収益 **$G_2,\; G_1,\; G_0$** はそれぞれいくらになりますか？
+2. これまでに何エピソードか実行し、「状態 $\text{B}$ で行動 `Right`」を選んだときの収益 $G_t$ が **4回** 記録され、その値が **$9.00,\; 7.10,\; 9.00,\; 8.50$** だったとします。この4回の記録からモンテカルロ法で推定される行動価値 **$Q(\text{B}, \text{Right})$**（4回の平均値）はいくらになりますか？
+:::
+
+---
+
+## vibe coding：モンテカルロ法の視覚化プログラムの作成
+
+それでは、前章で作成した3マス移動問題の Pygame アニメーション（`three_states_anim.py`）を発展させ、**モンテカルロ法によってエピソードを繰り返すうちに状態価値 $V(s)$ と行動価値 $Q(s, a)$ が少しずつ更新され、最適方策が見つかっていく様子を視覚的に表示するプログラム**を **vibe coding** で作成しましょう。
+
+### 作成するプログラムの仕様
+
+Antigravity（coding agent）には、以下の要件を満たす視覚化プログラム `three_states_mc.py` を作成してもらいます：
+
+1. **環境とエージェントの設定**:
+   - 横一列の3つのマス（状態 $\text{A}, \text{B}, \text{C}$）と左端の壁（報酬は行動ごとに $-1$、$\text{C}$ 到達時に $+10$、割引率 $\gamma = 0.9$）。
+   - 環境の状態遷移は「移動成功 80%、スリップ 20%」とする。
+   - エージェントの方策は、キーボード操作で **①「ランダム方策（50%ずつ `Right` / `Left`）」** と **②「$\varepsilon$-greedy 方策（$\varepsilon = 0.2$ でランダム、$80\%$ で現在の $Q(s, a)$ が大きい方の行動を選択）」** を切り替えられるようにする。
+   - 初期段階で `Left` ばかり選んで時間がかかりすぎないよう、1エピソードの最大ステップ数（例：50ステップ）を設ける。
+2. **各マス内の価値関数 $V(s)$ と行動価値 $Q(s, a)$ の視覚的表示**:
+   - 状態 $\text{A}$ と状態 $\text{B}$ のそれぞれのマスの中に、モンテカルロ法（毎回訪問または初回訪問）で推定された現在の **状態価値 $V(s)$（および訪問回数 $N(s)$）** を大きく表示する。
+   - さらにマス内の下部（左右）に、**`Left` の行動価値 $Q(s, \text{Left})$** と **`Right` の行動価値 $Q(s, \text{Right})$**（および各行動の選択回数）、さらに値の大きさを表す**カラーバー（ゲージ）**を描画する。
+   - $Q(s, \text{Left})$ と $Q(s, \text{Right})$ を比較し、現在より価値が高いと推定されている方向（推奨行動）に**目立つ矢印（`▶` または `◀`）やハイライト枠**を表示する。
+3. **エピソード実行と高速学習機能**:
+   - 1ステップずつエージェント（青い円）がアニメーション移動し、ゴール（状態 $\text{C}$）に到達するたびに各ステップの収益 $G_t$ が逆向きに計算され、マス内の $V(s)$ と $Q(s, a)$ の数値・バーがリアルタイムに更新される。
+   - 1エピソードずつじっくり観察するだけでなく、キーボード操作で **「自動で次々とエピソードを繰り返すモード（Auto Run）」** や **「アニメーションを省略して一気に100エピソード学習を進めるボタン／キー」** を用意し、試行回数を増やしたときに推定値が理論値へ収束する様子をすぐに確認できるようにする。
+
+```{=html}
+<svg viewBox="0 0 740 420" width="100%" height="420" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <!-- Pygame Window Outer Frame -->
+  <rect x="20" y="14" width="700" height="392" rx="8" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/>
+  <!-- Window Title Bar -->
+  <path d="M 20,22 Q 20,14 28,14 L 712,14 Q 720,14 720,22 L 720,40 L 20,40 Z" fill="#e2e8f0" stroke="#334155" stroke-width="1.5"/>
+  <circle cx="36" cy="27" r="4.5" fill="#ef4444"/>
+  <circle cx="50" cy="27" r="4.5" fill="#f59e0b"/>
+  <circle cx="64" cy="27" r="4.5" fill="#10b981"/>
+  <text x="370" y="32" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">Monte Carlo RL Visualizer (3-State Grid)</text>
+
+  <!-- Top Info Banner -->
+  <rect x="40" y="50" width="660" height="48" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="58" y="70" font-size="12" font-weight="bold" fill="#0d47a1">エピソード数: 42 回完了 ｜ 現在の方策: ε-greedy (ε=0.2) ｜ 自動連続実行: ON</text>
+  <text x="58" y="88" font-size="10.5" fill="#475569">直前のエピソード履歴: A(Right) → B(Right) → C [2ステップ / G₀ = 7.10, G₁ = 9.00 で平均値を更新！]</text>
+
+  <!-- Left Wall -->
+  <rect x="56" y="112" width="8" height="205" rx="2" fill="#475569"/>
+  <text x="46" y="218" text-anchor="end" font-size="10.5" font-weight="bold" fill="#475569">壁</text>
+
+  <!-- ==================== CELL A ==================== -->
+  <rect x="64" y="116" width="215" height="197" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="171" y="138" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">状態 A</text>
+
+  <!-- V(A) Badge -->
+  <rect x="82" y="146" width="178" height="28" rx="5" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+  <text x="171" y="164" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1e3a8a">状態価値 V(A) = 5.42 <tspan font-size="9.5" font-weight="normal" fill="#475569">(N=58)</tspan></text>
+
+  <!-- Agent Circle in Cell A -->
+  <circle cx="128" cy="200" r="18" fill="#1976d2"/>
+  <text x="128" y="204" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#ffffff">AI</text>
+
+  <!-- Recommended Policy Arrow in Cell A -->
+  <rect x="160" y="186" width="102" height="26" rx="13" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="211" y="203" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">推奨: Right ▶</text>
+
+  <!-- Q(A, Left) Sub-card -->
+  <rect x="74" y="228" width="94" height="75" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="121" y="244" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">◀ Left (N=12)</text>
+  <text x="121" y="264" text-anchor="middle" font-size="13" font-weight="bold" fill="#334155">Q = 3.81</text>
+  <!-- Bar for Left -->
+  <rect x="84" y="275" width="74" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="84" y="275" width="32" height="8" rx="4" fill="#94a3b8"/>
+  <text x="121" y="296" text-anchor="middle" font-size="8.5" fill="#64748b">理論値(最適): 4.65</text>
+
+  <!-- Q(A, Right) Sub-card (Highlighted as Best) -->
+  <rect x="175" y="228" width="94" height="75" rx="5" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="222" y="244" text-anchor="middle" font-size="10" font-weight="bold" fill="#15803d">Right ▶ (N=46)</text>
+  <text x="222" y="264" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Q = 5.84 ★</text>
+  <!-- Bar for Right -->
+  <rect x="185" y="275" width="74" height="8" rx="4" fill="#dcfce7"/>
+  <rect x="185" y="275" width="54" height="8" rx="4" fill="#16a34a"/>
+  <text x="222" y="296" text-anchor="middle" font-size="8.5" fill="#15803d">理論値(最適): 6.28</text>
+
+  <!-- ==================== CELL B ==================== -->
+  <rect x="279" y="116" width="215" height="197" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <text x="386" y="138" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">状態 B</text>
+
+  <!-- V(B) Badge -->
+  <rect x="297" y="146" width="178" height="28" rx="5" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+  <text x="386" y="164" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1e3a8a">状態価値 V(B) = 7.96 <tspan font-size="9.5" font-weight="normal" fill="#475569">(N=51)</tspan></text>
+
+  <!-- Recommended Policy Arrow in Cell B -->
+  <rect x="330" y="185" width="112" height="28" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="386" y="203" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#15803d">推奨行動: Right ▶</text>
+
+  <!-- Q(B, Left) Sub-card -->
+  <rect x="289" y="228" width="94" height="75" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="336" y="244" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">◀ Left (N=9)</text>
+  <text x="336" y="264" text-anchor="middle" font-size="13" font-weight="bold" fill="#334155">Q = 4.42</text>
+  <!-- Bar for Left -->
+  <rect x="299" y="275" width="74" height="8" rx="4" fill="#e2e8f0"/>
+  <rect x="299" y="275" width="36" height="8" rx="4" fill="#94a3b8"/>
+  <text x="336" y="296" text-anchor="middle" font-size="8.5" fill="#64748b">理論値(最適): 5.06</text>
+
+  <!-- Q(B, Right) Sub-card (Highlighted as Best) -->
+  <rect x="390" y="228" width="94" height="75" rx="5" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="437" y="244" text-anchor="middle" font-size="10" font-weight="bold" fill="#15803d">Right ▶ (N=42)</text>
+  <text x="437" y="264" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">Q = 8.48 ★</text>
+  <!-- Bar for Right -->
+  <rect x="400" y="275" width="74" height="8" rx="4" fill="#dcfce7"/>
+  <rect x="400" y="275" width="68" height="8" rx="4" fill="#16a34a"/>
+  <text x="437" y="296" text-anchor="middle" font-size="8.5" fill="#15803d">理論値(最適): 8.54</text>
+
+  <!-- ==================== CELL C (GOAL) ==================== -->
+  <rect x="494" y="116" width="190" height="197" rx="8" fill="#fff8e1" stroke="#f57c00" stroke-width="3"/>
+  <text x="589" y="142" text-anchor="middle" font-size="15" font-weight="bold" fill="#e65100">状態 C ★</text>
+  <rect x="524" y="160" width="130" height="30" rx="15" fill="#ffecb3" stroke="#ffa000" stroke-width="1.2"/>
+  <text x="589" y="180" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#bf360c">GOAL (報酬 +10)</text>
+  <text x="589" y="220" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">V(C) = 0.00</text>
+  <text x="589" y="245" text-anchor="middle" font-size="10.5" fill="#c62828">（終端状態・行動なし）</text>
+
+  <!-- Bottom Control Panel -->
+  <rect x="40" y="328" width="660" height="62" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="58" y="350" font-size="11.5" font-weight="bold" fill="#1e3a8a">【キーボード操作】[Space]: 1エピソード実行 ｜ [A]: 自動連続実行 ON/OFF ｜ [F]: 一気に+100エピソード高速学習</text>
+  <text x="58" y="372" font-size="11.5" font-weight="bold" fill="#475569">[1]: ランダム方策 (50%/50%) ｜ [2]: ε-greedy方策 (ε=0.2) ｜ [R]: 学習データを0にリセット</text>
+</svg>
+```
+
+### エージェントへの指示（プロンプト例）
+
+Antigravityのチャット欄に、次のように指示（プロンプト）を入力して送信します。
+
+::: {.callout-tip icon=true}
+### プロンプト入力例
+第7回で作成した `three_states_anim.py` を発展させ、3マス移動問題（状態 A, B, C）においてモンテカルロ法で状態価値関数 `V(s)` と行動価値関数 `Q(s, a)` を推定し、学習が進む様子を Pygame で視覚的に表示するプログラム `three_states_mc.py` を作成してください。
+
+【環境とモンテカルロ法の仕様】
+1. 初期状態は A、状態 C に到達するとエピソード終了（報酬は行動1回につき `-1`、C 到達時に `+10` で合計 `+9`、割引率 `gamma = 0.9`）。
+2. 状態遷移は 80% の確率で選んだ方向へ移動、20% の確率でスリップしてその場に留まる（A の左には壁があり、A で Left を選んだ場合は 100% A に留まる）。1エピソードが長引きすぎないよう最大ステップ数を 50 ステップとします。
+3. エピソード終了時に、記録した履歴 `(S_t, A_t, R_{t+1})` から逆向きに各ステップの収益 `G_t` を計算し、各状態の `V(s)` と各状態・行動ペアの `Q(s, a)` の標本平均（および訪問回数 `N`）を更新してください。
+
+【画面表示と操作機能の要件】
+1. 状態 A と状態 B のそれぞれのマスの中に、現在の推定値 `V(s)`（と訪問回数）を表示し、さらにマスの下部左右に `Q(s, Left)` と `Q(s, Right)` の推定値・選択回数・値の大きさを表すゲージ（バー）を描画してください。
+2. 各状態で `Q(s, Left)` と `Q(s, Right)` を比較し、値が高い方の行動（推奨行動）を緑色の枠や矢印（`推奨: Right ▶` など）で強調表示してください。
+3. 以下のキーボード操作を実装してください：
+   - `[Space]` キー：1エピソードをアニメーション付きで実行する。
+   - `[A]` キー：エピソードを自動で連続実行するモード（Auto Run）の ON/OFF 切り替え。
+   - `[F]` キー：アニメーションを省略して一気に 100 エピソード分のモンテカルロ学習を進め、収束結果をすぐ確認できるようにする。
+   - `[1]` キー / `[2]` キー：方策を「① ランダム方策（50%ずつ）」と「② ε-greedy方策（ε = 0.2、80%でQ値が高い行動を選択）」に切り替える（切り替え時に学習データをリセットしてよい）。
+   - `[R]` キー：累積エピソード数と学習データ（V, Q, N）をすべて 0 にリセットする。
+4. 日本語フォントが文字化けしないよう、`three_states_anim.py` と同じ日本語フォント読み込み関数を使用してください。
+:::
+
+### 視覚化プログラムから確認できること
+
+作成されたプログラムを実行し、キーボードで操作しながら観察すると、モンテカルロ法の重要な性質が視覚的に実感できます：
+
+1. **エピソードごとの値の揺らぎと収束**:
+   最初の数エピソード（`N` が小さいうち）は、たまたまスリップが続いたり `Left` を選んだりすると、推定値 $V(s)$ や $Q(s, a)$ が大きく上下します。しかし、`[A]` キーで連続実行したり `[F]` キーで100エピソードずつ進めたりして試行回数 `N` が増えると、平均値が安定した数値へと落ち着いていきます。
+2. **「ランダム方策」と「$\varepsilon$-greedy 方策」での収束値の違い**:
+   - **`[1]` キー（ランダム方策）**で何百エピソードも学習させると、2手目以降も 50% の確率で `Left` に逆戻りする前提での価値になるため、$V(\text{A}) \approx 0.13,\; V(\text{B}) \approx 3.72$ といった低い値に収束します。しかし、それでも各マス内の行動価値を比べると **$Q(\text{A}, \text{Right}) > Q(\text{A}, \text{Left})$** かつ **$Q(\text{B}, \text{Right}) > Q(\text{B}, \text{Left})$** となり、どちらのマスでも推奨行動が **`Right ▶`** になることが分かります。
+   - **`[2]` キー（$\varepsilon$-greedy 方策）**に切り替えて学習させると、エージェントは学習の途中で「`Right` の方が $Q$ 値が高い」と気づいて 80% の確率で `Right` を選ぶようになります。その結果、2手目以降も主に `Right` を選ぶようになり、状態価値や行動価値自体も最適方策の理論値（$V^*(\text{A}) \approx 6.28,\; V^*(\text{B}) \approx 8.54$ に近い値）へと大きく上昇します。
+
+::: {.callout-note icon=false}
+### 練習問題 08-05：モンテカルロ法プログラムの実行と実験
+1. 作成したプログラムを実行し、**「① ランダム方策」** と **「② $\varepsilon$-greedy 方策」** のそれぞれで `[F]` キーを押して数百エピソード学習させたとき、状態 $\text{A}, \text{B}$ の状態価値 $V(s)$ や行動価値 $Q(s, a)$、および推奨行動がどのようになるかを確認・比較してみましょう。
+2. Antigravityに追加の指示を出して、次のいずれか（または両方）の改造を行ってみましょう：
+   - キーボードの **`[S]` キー** を押すと、環境の**「スリップ確率 20%」と「スリップ確率 0%（決定的な環境）」を切り替えられる**ようにし、スリップなしの環境で `[F]` キーを押したときに $Q(\text{A}, \text{Right}) \approx 7.10,\; Q(\text{B}, \text{Right}) \approx 9.00$ へ収束するか確かめる。
+   - マスの数を **4つ（$\text{A}, \text{B}, \text{C}, \text{D}$、右端の $\text{D}$ がゴール）** に増やし、すべてのマスでモンテカルロ法によって最適行動 `Right` が学習されるか確かめる。
+:::
+
+---
+
+## まとめ
+
+- **状態価値関数 $V^\pi(s)$**: ある方策 $\pi$ に従ったとき、状態 $s$ からスタートして得られる収益 $G_t$ の**期待値（平均値）**であり、$V^\pi(s) = \mathbb{E}_\pi [G_t \mid S_t = s]$ で定義される（終端状態では常に $0$）。隣り合う状態の間には「現在の状態の価値 ＝ 直後の報酬 ＋ $\gamma \times$ 次の状態の価値」という再帰的な関係が成り立つ。
+- **最適方策 $\pi^*$ と最適状態価値関数 $V^*(s)$**: すべての状態において状態価値を最大化する方策を**最適方策 $\pi^*$**、そのときの状態価値を**最適状態価値関数 $V^*(s)$** と呼ぶ。3マス移動問題では、決定的な環境でも確率的な環境でも、すべての状態で `Right` を選ぶ方策が最適方策となる。
+- **行動価値関数 $Q^\pi(s, a)$（Q値）**: 状態 $s$ で**最初の1手として行動 $a$ を選び**、2手目以降は方策 $\pi$ に従ったときの収益の期待値であり、$Q^\pi(s, a) = \mathbb{E}_\pi [G_t \mid S_t = s, A_t = a]$ で定義される。状態と行動の表（**Qテーブル**）を作れば、環境のルールを知らなくても各状態で $Q(s, a)$ が最大となる行動を選ぶだけで最適行動を決定できる。
+- **モンテカルロ法（Monte Carlo Method）**: 環境の遷移確率などの内部ルールを知らない状況で、実際にエピソードを最後まで繰り返し実行（サンプリング）し、ゴールから逆向きに計算した収益 $G_t$ の**標本平均**をとることで $V(s)$ や $Q(s, a)$ を推定する手法。**$\varepsilon$-greedy 法**と組み合わせることで、探索と活用を行いながら自律的に最適方策を獲得できる。
