@@ -1352,14 +1352,14 @@ Q_n &amp;= \frac{n-1}{n} Q_{n-1} + \frac{1}{n} R_n \\
 <span id="cb7-12"><a href="#cb7-12" aria-label="12"></a>plt.grid(<span class="va">True</span>)                  <span class="co"># 目盛り線（グリッド）を表示</span></span>
 <span id="cb7-13"><a href="#cb7-13" aria-label="13"></a></span>
 <span id="cb7-14"><a href="#cb7-14" aria-label="14"></a><span class="co"># 3. グラフの表示（または画像ファイルとして保存）</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-label="15"></a>plt.show()                      <span class="co"># 画面にウィンドウを開いて表示</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-label="16"></a><span class="co"># plt.savefig("graph.png")      # 画像ファイルとして保存する場合はこちら</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-15"><a href="#cb7-15" aria-label="15"></a><span class="co"># plt.savefig("graph.png")      # 画像として保存する場合は plt.show() の前に実行する</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-label="16"></a>plt.show()                      <span class="co"># 画面にウィンドウを開いて表示</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>基本的な流れは次の4ステップです：</p>
 <ol type="1">
 <li><strong>インポート</strong>: <code>import matplotlib.pyplot as plt</code> で描画モジュールを <code>plt</code> という短い別名で読み込みます。</li>
 <li><strong>データの用意</strong>: 横軸のリスト <code>x</code> と縦軸のリスト <code>y</code> を用意します。</li>
 <li><strong>グラフの装飾</strong>: <code>plt.plot(x, y)</code> で線を引いた後、<code>xlabel()</code> や <code>title()</code> で説明を追加します。</li>
-<li><strong>出力</strong>: <code>plt.show()</code> で画面に表示するか、<code>plt.savefig()</code> で画像ファイルとして保存します。</li>
+<li><strong>出力</strong>: <code>plt.show()</code> で画面に表示するか、<code>plt.savefig()</code> で画像ファイルとして保存します（※ <code>plt.show()</code> でウィンドウを閉じると描画データがリセットされるため、保存も行う場合は必ず <code>plt.show()</code> の前に <code>plt.savefig()</code> を書きます）。</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2793,8 +2793,8 @@ Q_n &amp;= \frac{n-1}{n} Q_{n-1} + \frac{1}{n} R_n \\
 <span id="cb9-839"><a href="#cb9-839" aria-label="839"></a>plt.grid(<span class="va">True</span>)                  <span class="co"># 目盛り線（グリッド）を表示</span></span>
 <span id="cb9-840"><a href="#cb9-840" aria-label="840"></a></span>
 <span id="cb9-841"><a href="#cb9-841" aria-label="841"></a><span class="co"># 3. グラフの表示（または画像ファイルとして保存）</span></span>
-<span id="cb9-842"><a href="#cb9-842" aria-label="842"></a>plt.show()                      <span class="co"># 画面にウィンドウを開いて表示</span></span>
-<span id="cb9-843"><a href="#cb9-843" aria-label="843"></a><span class="co"># plt.savefig("graph.png")      # 画像ファイルとして保存する場合はこちら</span></span>
+<span id="cb9-842"><a href="#cb9-842" aria-label="842"></a><span class="co"># plt.savefig("graph.png")      # 画像として保存する場合は plt.show() の前に実行する</span></span>
+<span id="cb9-843"><a href="#cb9-843" aria-label="843"></a>plt.show()                      <span class="co"># 画面にウィンドウを開いて表示</span></span>
 <span id="cb9-844"><a href="#cb9-844" aria-label="844"></a><span class="in">```</span></span>
 <span id="cb9-845"><a href="#cb9-845" aria-label="845"></a></span>
 <span id="cb9-846"><a href="#cb9-846" aria-label="846"></a>基本的な流れは次の4ステップです：</span>
@@ -2802,7 +2802,7 @@ Q_n &amp;= \frac{n-1}{n} Q_{n-1} + \frac{1}{n} R_n \\
 <span id="cb9-848"><a href="#cb9-848" aria-label="848"></a><span class="ss">1. </span>**インポート**: <span class="in">`import matplotlib.pyplot as plt`</span> で描画モジュールを <span class="in">`plt`</span> という短い別名で読み込みます。</span>
 <span id="cb9-849"><a href="#cb9-849" aria-label="849"></a><span class="ss">2. </span>**データの用意**: 横軸のリスト <span class="in">`x`</span> と縦軸のリスト <span class="in">`y`</span> を用意します。</span>
 <span id="cb9-850"><a href="#cb9-850" aria-label="850"></a><span class="ss">3. </span>**グラフの装飾**: <span class="in">`plt.plot(x, y)`</span> で線を引いた後、<span class="in">`xlabel()`</span> や <span class="in">`title()`</span> で説明を追加します。</span>
-<span id="cb9-851"><a href="#cb9-851" aria-label="851"></a><span class="ss">4. </span>**出力**: <span class="in">`plt.show()`</span> で画面に表示するか、<span class="in">`plt.savefig()`</span> で画像ファイルとして保存します。</span>
+<span id="cb9-851"><a href="#cb9-851" aria-label="851"></a><span class="ss">4. </span>**出力**: <span class="in">`plt.show()`</span> で画面に表示するか、<span class="in">`plt.savefig()`</span> で画像ファイルとして保存します（※ <span class="in">`plt.show()`</span> でウィンドウを閉じると描画データがリセットされるため、保存も行う場合は必ず <span class="in">`plt.show()`</span> の前に <span class="in">`plt.savefig()`</span> を書きます）。</span>
 <span id="cb9-852"><a href="#cb9-852" aria-label="852"></a></span>
 <span id="cb9-853"><a href="#cb9-853" aria-label="853"></a>::: {.callout-note}</span>
 <span id="cb9-854"><a href="#cb9-854" aria-label="854"></a><span class="fu">### コラム：`[val ** 2 for val in x]` とは？（リスト内包表記）</span></span>
