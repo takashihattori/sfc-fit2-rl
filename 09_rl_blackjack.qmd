@@ -1,135 +1,1586 @@
-# 強化学習の例(2)
+# GymnasiumとBlackjack環境
 
-## 本章のねらい
-トランプゲーム「Blackjack（ブラックジャック）」の環境を通じて、状態だけでなく「その状態でどの行動を取るべきか」を直接評価する**行動価値関数 $Q(s, a)$** を学びます。また、シミュレーションで最後までゲームをプレイして得られた結果から平均値を計算して学ぶ**モンテカルロ法（Monte Carlo Method）**の基本を理解します。
+## 強化学習ライブラリ Gymnasium とは？
 
----
+第7回・第8回では、「横一列に並んだ3つのマス（状態 A, B, C）」という小さな環境を使って、状態・行動・報酬・方策・価値関数・モンテカルロ法の基礎を学びました。
 
-## Blackjack（ブラックジャック）のゲーム概要
+しかし、トランプゲームや迷路、ロボットの制御、さらにはビデオゲームなど、より本格的で多様な課題に強化学習を適用しようとすると、毎回ゼロから環境のプログラムを作るのは大変です。また、世界中の研究者や開発者が「どの強化学習アルゴリズムが優れているか」を公平に比較するためには、**共通のルールと規格で作られた標準的な実験環境（ベンチマーク）**が必要になります。
 
-プレイヤーとディーラーが手札の合計値を競うゲームです。
+そこで、Pythonで強化学習の実験を行うための世界標準の外部ライブラリとして広く使われているのが **Gymnasium（ジムナジウム）** です（かつて OpenAI が開発した「OpenAI Gym」の後継ライブラリであり、現在は非営利団体の Farama Foundation によって開発・維持されています）。
 
-- **目的**: 手札の合計を「21」を超えない範囲で、できるだけ21に近づける。
-- **カードの数え方**: 2〜10は額面通り、絵札（J, Q, K）は10、エース（A）は1または11（プレイヤーがバストしないように有利に数える＝「Usable Ace」）。
-- **選択肢（行動）**:
-  - `0`: **Stick（スタンド）**：これ以上引かずに手札を確定する。
-  - `1`: **Hit（ヒット）**：もう1枚引く。合計が21を超えると「Bust（バースト）」で即敗北。
-- **勝敗と報酬**:
-  - 勝利: $+1$
-  - 引き分け: $0$
-  - 敗北: $-1$
+### Gymnasium の2つの大きな特徴
 
----
+1. **多彩な実験環境が最初から揃っている**:
+   - 本章で扱うトランプゲーム「**Blackjack（ブラックジャック）**」や、次章以降で扱う棒を倒さないように台車を制御する「**Cart Pole（倒立振子）**」、月面着陸船を制御する「**Lunar Lander**」や「**Car Racing**」など、難易度の異なる多数の実験環境がパッケージ内にあらかじめ用意されています。
+2. **すべての環境が「共通のインターフェース（操作手順）」で統一されている**:
+   - カードゲームであっても物理シミュレーションであっても、エージェントと環境がやり取りするための命令（環境の初期化、行動の実行、結果の受け取りなど）が**すべて同じ形式**に統一されています。
+   - そのため、一度 Gymnasium の使い方を覚えれば、**環境の名前を書き換えるだけで、まったく異なるゲームや制御問題に対して同じ強化学習の仕組みをそのまま適用する**ことができます（第10回からの「ミニプロジェクト」では、この Gymnasium の規格に合わせて「自作のゲーム環境」も作成します）。
 
-## Gymnasium の Blackjack 環境
+```{=html}
+<svg viewBox="0 0 740 320" width="100%" height="320" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="gym-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="gym-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2e7d32" />
+    </marker>
+    <marker id="gym-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+  </defs>
 
-Gymnasium では `Blackjack-v1` として提供されています。
+  <text x="370" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">【Gymnasium の共通インターフェース】環境の名前を変えるだけで多様な課題に同じ仕組みで挑戦できる</text>
 
-```python
-import gymnasium as gym
+  <!-- Agent Box -->
+  <rect x="28" y="100" width="165" height="125" rx="10" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.5"/>
+  <text x="110" y="132" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d47a1">エージェント (AI)</text>
+  <text x="110" y="156" text-anchor="middle" font-size="11" fill="#1565c0">・ランダム方策</text>
+  <text x="110" y="176" text-anchor="middle" font-size="11" fill="#1565c0">・モンテカルロ法</text>
+  <text x="110" y="196" text-anchor="middle" font-size="11" fill="#1565c0">・Q-learning など</text>
 
-env = gym.make("Blackjack-v1")
-state, info = env.reset()
+  <!-- Reset Arrow (Top Left) -->
+  <path d="M 355,95 Q 270,42 185,92" fill="none" stroke="#e65100" stroke-width="2.2" stroke-dasharray="5,3" marker-end="url(#gym-arrow-orange)"/>
+  <rect x="188" y="38" width="162" height="36" rx="5" fill="#fff3e0" stroke="#ffb74d" stroke-width="1.2"/>
+  <text x="269" y="54" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#e65100">① 初期化: env.reset()</text>
+  <text x="269" y="68" text-anchor="middle" font-size="9.5" fill="#bf360c">初期状態 state を受け取る</text>
 
-print("初期状態:", state)
-# 状態はタプル形式: (プレイヤーの合計手札, ディーラーの表向きカード, 使えるAceがあるか)
-# 例: (14, 10, False)
+  <!-- Action Arrow (Agent -> Env) -->
+  <path d="M 193,132 L 348,132" fill="none" stroke="#1976d2" stroke-width="2.8" marker-end="url(#gym-arrow-blue)"/>
+  <rect x="205" y="96" width="135" height="28" rx="5" fill="#ffffff" stroke="#90caf9" stroke-width="1.2"/>
+  <text x="272" y="114" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">② 行動: env.step(action)</text>
+
+  <!-- Observation/Reward Arrow (Env -> Agent) -->
+  <path d="M 355,195 L 200,195" fill="none" stroke="#2e7d32" stroke-width="2.8" marker-end="url(#gym-arrow-green)"/>
+  <rect x="198" y="206" width="152" height="58" rx="5" fill="#e8f5e9" stroke="#81c784" stroke-width="1.2"/>
+  <text x="274" y="223" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">③ 結果の返却（5つの値）</text>
+  <text x="274" y="239" text-anchor="middle" font-size="9.5" fill="#2e7d32">next_state（次状態）, reward（報酬）</text>
+  <text x="274" y="254" text-anchor="middle" font-size="9.5" fill="#2e7d32">terminated, truncated, info</text>
+
+  <!-- Gymnasium Environment Container -->
+  <rect x="358" y="62" width="354" height="232" rx="10" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+  <rect x="358" y="62" width="354" height="34" rx="8" fill="#334155"/>
+  <text x="535" y="84" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#ffffff">Gymnasium 環境：env = gym.make("環境名")</text>
+
+  <!-- Pluggable Env Cards -->
+  <rect x="374" y="108" width="152" height="76" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+  <text x="450" y="128" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#b91c1c">"Blackjack-v1"</text>
+  <text x="450" y="146" text-anchor="middle" font-size="10" fill="#7f1d1d">トランプの21点勝負</text>
+  <text x="450" y="164" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#dc2626">★ 第9回（本章）で使用</text>
+
+  <rect x="542" y="108" width="154" height="76" rx="6" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="619" y="128" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#15803d">"CartPole-v1"</text>
+  <text x="619" y="146" text-anchor="middle" font-size="10" fill="#14532d">台車の上の棒のバランス制御</text>
+  <text x="619" y="164" text-anchor="middle" font-size="9.5" fill="#16a34a">第10回〜第12回で使用</text>
+
+  <rect x="374" y="198" width="152" height="76" rx="6" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="450" y="218" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1d4ed8">"LunarLander-v3" 等</text>
+  <text x="450" y="236" text-anchor="middle" font-size="10" fill="#1e3a8a">月面着陸・カーレースの制御</text>
+  <text x="450" y="254" text-anchor="middle" font-size="9.5" fill="#3b82f6">第13回で使用</text>
+
+  <rect x="542" y="198" width="154" height="76" rx="6" fill="#faf5ff" stroke="#c084fc" stroke-width="1.5"/>
+  <text x="619" y="218" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#7e22ce">自作ゲーム環境</text>
+  <text x="619" y="236" text-anchor="middle" font-size="10" fill="#581c87">ミニプロジェクトのAI育成</text>
+  <text x="619" y="254" text-anchor="middle" font-size="9.5" fill="#9333ea">第10回〜第14回で作成</text>
+</svg>
 ```
 
-状態空間 $S$ は、
-1. プレイヤーの現在の点数（通常 12〜21 の10通り、11以下は確実に引くため）
-2. ディーラーの見えているカード（1〜10 の10通り）
-3. 使用可能なAceの有無（True/False の2通り）
-の直積であり、$10 \times 10 \times 2 = 200$ 通り程度の離散状態で表現されます。
+### Gymnasium の基本的な仕組み（環境とのやり取り）
+
+Gymnasium を使ったプログラムでは、どの環境であっても以下の流れで1エピソードを実行します：
+
+1. **環境の作成（`gym.make("環境名")`）**:
+   指定した名前の環境オブジェクト（`env`）を作ります。環境には、どのような状態を取りうるかを表す**状態空間（`observation_space`）**と、どのような行動を選べるかを表す**行動空間（`action_space`）**が定義されており、`env.action_space.sample()` を呼ぶだけで「選べる行動の中からランダムに1つ」を簡単に取り出すことができます。
+2. **エピソードの開始・初期化（`env.reset()`）**:
+   新しいエピソードを始めるために環境を初期状態にリセットし、**初期状態 `state`**（と補足情報 `info`）を受け取ります。
+3. **1ステップの実行（`env.step(action)`）**:
+   エージェントが選んだ行動 `action` を環境に渡して時間を1ステップ進めます。すると環境から次の**5つの情報**が返ってきます：
+
+| `env.step(action)` の返り値 | 意味と役割 |
+| :--- | :--- |
+| **`next_state`** | 行動を実行した結果として遷移した**次の状態**（$S_{t+1}$）。 |
+| **`reward`** | その1ステップの行動によって得られた**報酬**（$R_{t+1}$、数値）。 |
+| **`terminated`** | ゴール到達や勝敗確定、ゲームオーバーなど、**本来のルールによってエピソードが終了したか**を表す真偽値（`True` または `False`）。 |
+| **`truncated`** | 本来の勝敗とは別に、「制限時間（最大ステップ数）に達したため強制的に打ち切られたか」を表す真偽値（`True` または `False`）。 |
+| **`info`** | デバッグや分析用の補足情報が入った辞書（通常の学習では使わなくてよい）。 |
+
+エージェントは、`terminated` または `truncated` のいずれかが `True` になるまで `env.step(action)` を繰り返し、エピソードが終了したら再び `env.reset()` で次のエピソードを開始します。
 
 ---
 
-## なぜ行動価値関数 $Q(s, a)$ が必要なのか？
+### Gymnasium のインストールと確認
 
-前章の「状態価値関数 $V(s)$」は、「自分の手札が18である状態が良いか悪いか」を教えてくれます。
-しかし、いざ自分がプレイする時には「**手札18のときに、Hitすべきか？それともStickすべきか？**」という具体的な行動の選択肢ごとの良さを知る必要があります。
+第6回（Matplotlib）や第7回（Pygame）と同じく、OS標準のターミナルアプリ（Windows は「コマンドプロンプト」または「PowerShell」、macOS は「ターミナル」）を開き、パッケージ管理ツール **`pip`** を使って Gymnasium をインストールしましょう。一度インストールすれば、次回以降はそのまま使い続けることができます。
 
-これが**行動価値関数 $Q(s, a)$** です：
-- $Q((18, 7, \text{False}), \text{Stick})$: 手札18でStickした場合の期待勝率
-- $Q((18, 7, \text{False}), \text{Hit})$: 手札18でHitした場合の期待勝率
+1. `pip install` でインストールする
 
-もし $Q(s, \text{Stick}) > Q(s, \text{Hit})$ であれば、迷わず Stick を選べばよいわけです。
+   - **Windows の場合**:
+	 ```bash
+	 pip install gymnasium
+	 ```
+	 （※ もし `pip` が見つからないというエラーが出る場合は、`py -m pip install gymnasium` または `python -m pip install gymnasium` を実行してください）
+
+   - **macOS の場合**:
+	 ```bash
+	 pip3 install gymnasium
+	 ```
+	 （※ または `python3 -m pip install gymnasium` を実行してください）
+
+2. `pip list` で確認する
+
+   インストールが完了したら、`pip list`（macOS は `pip3 list`）を実行し、表示されるパッケージ一覧の中に **`gymnasium`** が含まれていれば導入は成功です。
+
+::: {.callout-tip icon=true}
+### 画面描画やグラフ作成に必要なライブラリについて
+Gymnasium の環境をウィンドウに描画したり、学習結果をグラフにまとめたりする際には、`pygame-ce`（第7回で導入）や `matplotlib`・`numpy`（第6回で導入）が利用されます。すでにこれまでの授業でインストール済みであれば、追加の作業なしでそのまま使うことができます。
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 09-01：Gymnasium の基本操作の確認
+Gymnasium の仕組みについて、次の問いに答えてみましょう。
+
+1. 新しいエピソードを開始して初期状態を受け取るために呼び出す命令と、選んだ行動を環境に伝えて1ステップ進めるために呼び出す命令は、それぞれ何ですか？
+2. 1ステップ進めたときに返ってくる2つの終了判定フラグ **`terminated`** と **`truncated`** は、それぞれどのような理由でエピソードが終わったときに `True` になりますか？
+:::
 
 ---
 
-## モンテカルロ法による価値推定
+## Blackjack（ブラックジャック）環境
 
-**モンテカルロ法**とは、「実際にゲームを最後までプレイし、勝ったか負けたか（収益 $G$）を記録して、その平均値を取る」という非常にシンプルかつ強力な学習法です。
+本章では、Gymnasium に収録されている代表的な環境の1つである **`"Blackjack-v1"`（ブラックジャック）** を題材として、強化学習エージェントを育てていきます。まずはブラックジャックのゲームルールと、この環境における「状態・行動・報酬」の定義を確認しましょう。
 
-### アルゴリズムの流れ
-1. ある方策（例: $\epsilon$-greedy方策）に従って、ゲーム開始から終了までの1エピソードをサンプリングする。
-   - 履歴: $(S_0, A_0, R_1), (S_1, A_1, R_2), \dots, (S_T, A_T, R_{T+1})$
-2. 最終報酬 $G$ を算出する（Blackjackでは割引なし $\gamma=1$ で終端報酬のみ）。
-3. 登場した各ペア $(S_t, A_t)$ に対して、これまでの平均値を更新する：
-   $$ Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \Big( G - Q(S_t, A_t) \Big) $$
+### ブラックジャックのゲームルール
+
+ブラックジャックは、**プレイヤー（エージェント）**と**ディーラー（親・環境側）**が、配られたトランプの**「手札の合計点数を、21 を超えない範囲でいかに 21 に近づけるか」**を競うカードゲームです。
+
+```{=html}
+<svg viewBox="0 0 740 400" width="100%" height="400" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="bj-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="bj-arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c62828" />
+    </marker>
+    <marker id="bj-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2e7d32" />
+    </marker>
+  </defs>
+
+  <!-- ==================== TOP: CARD POINT RULES ==================== -->
+  <rect x="20" y="16" width="700" height="86" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="38" y="38" font-size="12.5" font-weight="bold" fill="#1e293b">【カードの数え方】目標：手札の合計を「21」を超えない範囲で 21 に近づける（22以上でバースト＝即負け）</text>
+
+  <!-- Card 2-10 -->
+  <rect x="38" y="48" width="185" height="42" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="130" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">数字カード（2 〜 10）</text>
+  <text x="130" y="82" text-anchor="middle" font-size="10" fill="#475569">書かれた数字そのままの点数</text>
+
+  <!-- Card J, Q, K -->
+  <rect x="238" y="48" width="185" height="42" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+  <text x="330" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e3a8a">絵札（J, Q, K）</text>
+  <text x="330" y="82" text-anchor="middle" font-size="10" fill="#1d4ed8">すべて「10点」として数える</text>
+
+  <!-- Card Ace -->
+  <rect x="438" y="48" width="265" height="42" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="570" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#b45309">エース（A）：「11点」または「1点」</text>
+  <text x="570" y="82" text-anchor="middle" font-size="9.5" fill="#92400e">21を超えない限り11点として数える（使えるエース）</text>
+
+  <!-- ==================== BOTTOM: GAME FLOW ==================== -->
+  <text x="24" y="126" font-size="12.5" font-weight="bold" fill="#0d47a1">【1エピソード（1ゲーム）の進行フロー】</text>
+
+  <!-- Step 1: Initial Deal & Player Choice -->
+  <rect x="20" y="172" width="175" height="122" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="107" y="194" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">① プレイヤーのターン</text>
+  <text x="107" y="214" text-anchor="middle" font-size="10" fill="#1e3a8a">・自分の手札（2枚〜）の合計</text>
+  <text x="107" y="231" text-anchor="middle" font-size="10" fill="#1e3a8a">・ディーラーの表カード1枚</text>
+  <text x="107" y="248" text-anchor="middle" font-size="10" fill="#1e3a8a">を見て行動を1つ選択：</text>
+  <rect x="34" y="258" width="146" height="24" rx="4" fill="#ffffff" stroke="#1976d2" stroke-width="1.2"/>
+  <text x="107" y="274" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">Hit (1) か Stick (0) か？</text>
+
+  <!-- Branch A: Hit (1) -->
+  <path d="M 195,206 L 265,206" fill="none" stroke="#c62828" stroke-width="2.4" marker-end="url(#bj-arrow-red)"/>
+  <text x="230" y="198" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">Hit (1)</text>
+  <text x="230" y="221" text-anchor="middle" font-size="9" fill="#b71c1c">1枚引く</text>
+
+  <rect x="272" y="172" width="190" height="72" rx="8" fill="#fff1f2" stroke="#e11d48" stroke-width="1.8"/>
+  <text x="367" y="193" text-anchor="middle" font-size="11" font-weight="bold" fill="#9f1239">カードを1枚追加</text>
+  <text x="367" y="212" text-anchor="middle" font-size="10" fill="#be123c">・21以下：報酬 0 で①へ戻る</text>
+  <text x="367" y="229" text-anchor="middle" font-size="10" font-weight="bold" fill="#e11d48">・22以上：バーストで即負け！</text>
+
+  <!-- Loop back arrow for <= 21 -->
+  <path d="M 295,172 Q 215,140 135,166" fill="none" stroke="#1976d2" stroke-width="1.8" stroke-dasharray="4,3" marker-end="url(#bj-arrow-blue)"/>
+  <text x="215" y="146" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0d47a1">合計 21 以下なら続けて選択</text>
+
+  <!-- Arrow from Bust to Lose -->
+  <path d="M 462,208 L 524,208" fill="none" stroke="#c62828" stroke-width="2.2" marker-end="url(#bj-arrow-red)"/>
+  <text x="493" y="200" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">22以上</text>
+
+  <!-- Branch B: Stick (0) -->
+  <path d="M 195,265 Q 230,305 265,305" fill="none" stroke="#2e7d32" stroke-width="2.4" marker-end="url(#bj-arrow-green)"/>
+  <text x="225" y="305" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">Stick (0)</text>
+  <text x="225" y="320" text-anchor="middle" font-size="9" fill="#2e7d32">引かずに勝負</text>
+
+  <rect x="272" y="266" width="190" height="84" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.8"/>
+  <text x="367" y="288" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1b5e20">② ディーラーのターン</text>
+  <text x="367" y="307" text-anchor="middle" font-size="10" fill="#14532d">伏せカードを開き、</text>
+  <text x="367" y="323" text-anchor="middle" font-size="10" font-weight="bold" fill="#1b5e20">合計が 17 以上になるまで</text>
+  <text x="367" y="339" text-anchor="middle" font-size="10" fill="#14532d">機械的にカードを引き続ける</text>
+
+  <path d="M 462,308 L 524,308" fill="none" stroke="#2e7d32" stroke-width="2.2" marker-end="url(#bj-arrow-green)"/>
+  <text x="493" y="300" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1b5e20">点数比較</text>
+
+  <!-- Step 3: Terminal Rewards -->
+  <rect x="532" y="170" width="188" height="184" rx="8" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+  <text x="626" y="192" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">③ 勝敗判定と最終報酬</text>
+
+  <rect x="546" y="202" width="160" height="40" rx="5" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="626" y="219" text-anchor="middle" font-size="11" font-weight="bold" fill="#b91c1c">負け：報酬 -1.0</text>
+  <text x="626" y="234" text-anchor="middle" font-size="9" fill="#7f1d1d">自分がバースト / 相手より低得点</text>
+
+  <rect x="546" y="250" width="160" height="40" rx="5" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="626" y="267" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">引き分け：報酬 0.0</text>
+  <text x="626" y="282" text-anchor="middle" font-size="9" fill="#475569">プレイヤーとディーラーが同点</text>
+
+  <rect x="546" y="298" width="160" height="44" rx="5" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="626" y="316" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">勝ち：報酬 +1.0</text>
+  <text x="626" y="332" text-anchor="middle" font-size="9" fill="#14532d">相手がバースト / 相手より高得点</text>
+
+  <text x="370" y="382" text-anchor="middle" font-size="10.5" fill="#475569">※ 山札は無限にあるものとして扱われ、カードを引くたびにランダム（一様確率）に次のカードが出現する</text>
+</svg>
+```
+
+1. **カードの数え方と「使えるエース（Usable Ace）」**:
+   - **`2` 〜 `10` のカード**：書かれている数字そのままの点数（2点〜10点）。
+   - **絵札（`J`, `Q`, `K`）**：すべて **10点** として数えます（そのため、山札の中には「10点になるカード（10, J, Q, K）」が他の数字の4倍多く含まれています）。
+   - **エース（`A`）**：状況に応じて **11点** または **1点** の都合の良い方として数えることができます。
+     - 手札にエースがあり、それを **11点として数えても手札の合計が 21 を超えない状態** のことを **「使えるエース（Usable Ace）がある」** と呼びます。
+     - たとえば、手札が `A` と `6` なら、エースを 11点と数えて合計 **17点（使えるエースあり）** になります。もしこの状態からもう1枚引いて `8` が出たとしても、17 + 8 = 25 で即バーストにはならず、**エースを 11点から 1点に数え直すことで合計 1 + 6 + 8 = 15点（使えるエースなし）として生き残る**ことができます。
+
+2. **プレイヤーの選択（`Hit` と `Stick`）**:
+   - ゲーム開始時、プレイヤーとディーラーに2枚ずつカードが配られます。プレイヤーは自分の2枚のカードすべてを見ることができますが、**ディーラーのカードは1枚だけが表向き（見える状態）**で、もう1枚は裏向きに伏せられています。
+   - プレイヤーは自分のターンで次の2つの行動から1つを選びます：
+     - **`Hit`（ヒット）**：カードをもう1枚引きます。引いた結果、合計が **21 を超えてしまったら「バースト（Bust）」となり、ディーラーのカードを待つことなくその瞬間にプレイヤーの負けが確定**します。21以下であれば、再び `Hit` か `Stick` かを選ぶことができます。
+     - **`Stick`（スティック／スタンド）**：これ以上カードを引かずに現在の合計点数で勝負します。`Stick` を選ぶとプレイヤーのターンは終了し、ディーラーのターンに移ります。
+
+3. **ディーラーの自動ルールと勝敗判定**:
+   - プレイヤーが `Stick` を選ぶと、ディーラーは伏せていたカードを表にし、**「手札の合計が 17 以上になるまで機械的にカードを引き続け、17 以上になったら止める」**という固定ルールに従ってカードを引きます。
+   - ディーラーが 21 を超えてバーストするか、21 以下どうしでプレイヤーの合計点数の方が大きければ **プレイヤーの勝ち**、同点なら **引き分け**、ディーラーの合計点数の方が大きければ **プレイヤーの負け** となります。
+
+### まずは体験してみよう
+
+実際にカードを引いて、ブラックジャックのルールと駆け引きを体験してみましょう。「**Hit（もう1枚引く）**」と「**Stick（引かずに勝負）**」のボタンを押して、10回ほどプレイしてみてください。
+
+```{=html}
+<div id="bj-widget" class="bj-container">
+  <div class="bj-dashboard">
+    <div class="bj-status-card">
+      <div class="bj-status-title">プレイ回数</div>
+      <div class="bj-status-value"><span id="bj-games-count">0</span> <span class="bj-unit">回</span></div>
+    </div>
+    <div class="bj-status-card">
+      <div class="bj-status-title">戦績（勝 / 分 / 負）</div>
+      <div class="bj-status-value bj-record-value">
+        <span id="bj-wins" style="color:#15803d;">0</span>勝
+        <span id="bj-draws" style="color:#475569;">0</span>分
+        <span id="bj-losses" style="color:#b91c1c;">0</span>敗
+        <span id="bj-winrate" class="bj-unit">（勝率 -）</span>
+      </div>
+    </div>
+    <div class="bj-status-card bj-reward-card">
+      <div class="bj-status-title">平均報酬（勝ち+1 / 負け-1）</div>
+      <div class="bj-status-value"><span id="bj-avg-reward">0.00</span> <span id="bj-total-reward" class="bj-unit">（計 0）</span></div>
+    </div>
+    <div class="bj-action-area">
+      <button id="bj-reset-stats-btn" class="bj-btn-secondary" type="button">戦績をリセット</button>
+    </div>
+  </div>
+
+  <div id="bj-message" class="bj-alert-info">
+    あなたのターンです。「Hit（もう1枚引く）」か「Stick（引かずに勝負）」を選んでください。
+  </div>
+
+  <div class="bj-table">
+    <!-- ディーラーエリア -->
+    <div class="bj-hand-section">
+      <div class="bj-hand-header">
+        <span class="bj-role-badge bj-dealer-badge">ディーラー（親・17以上まで引く）</span>
+        <span id="bj-dealer-score" class="bj-score-text">表カード: - 点</span>
+      </div>
+      <div id="bj-dealer-cards" class="bj-cards-row"></div>
+    </div>
+
+    <hr class="bj-table-divider">
+
+    <!-- プレイヤーエリア -->
+    <div class="bj-hand-section">
+      <div class="bj-hand-header">
+        <span class="bj-role-badge bj-player-badge">プレイヤー（あなた）</span>
+        <span id="bj-player-score" class="bj-score-text">合計: - 点</span>
+        <span id="bj-usable-ace-badge" class="bj-ace-badge">使えるエース: なし</span>
+      </div>
+      <div id="bj-player-cards" class="bj-cards-row"></div>
+    </div>
+  </div>
+
+  <!-- 操作ボタン -->
+  <div class="bj-controls">
+    <button id="bj-hit-btn" class="bj-btn bj-btn-hit" type="button">🃏 Hit（もう1枚引く）</button>
+    <button id="bj-stick-btn" class="bj-btn bj-btn-stick" type="button">🛑 Stick（引かずに勝負）</button>
+    <button id="bj-next-btn" class="bj-btn bj-btn-next" type="button" disabled>🔄 次のゲーム（カードを配る）</button>
+  </div>
+</div>
+
+<style>
+.bj-container {
+  margin: 1.5em 0 2em 0;
+  padding: 1.25em;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.bj-dashboard {
+  display: flex;
+  gap: 0.8em;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1em;
+}
+.bj-status-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.45em 0.9em;
+  min-width: 110px;
+}
+.bj-reward-card {
+  background: #fefce8;
+  border-color: #fde047;
+}
+.bj-status-title {
+  font-size: 0.78em;
+  color: #64748b;
+  font-weight: bold;
+}
+.bj-status-value {
+  font-size: 1.25em;
+  font-weight: 800;
+  color: #1e293b;
+}
+.bj-record-value {
+  font-size: 1.1em;
+}
+.bj-unit {
+  font-size: 0.75em;
+  font-weight: normal;
+  color: #64748b;
+}
+.bj-action-area {
+  margin-left: auto;
+}
+.bj-btn-secondary {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #94a3b8;
+  padding: 0.45em 0.9em;
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.bj-btn-secondary:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+.bj-alert-info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  padding: 0.65em 1em;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 600;
+  margin-bottom: 1em;
+  line-height: 1.5;
+}
+.bj-table {
+  background: #065f46;
+  border: 3px solid #047857;
+  border-radius: 12px;
+  padding: 1.1em 1.25em;
+  color: #ffffff;
+  margin-bottom: 1em;
+}
+.bj-hand-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65em;
+}
+.bj-hand-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  flex-wrap: wrap;
+}
+.bj-role-badge {
+  font-size: 0.85em;
+  font-weight: bold;
+  padding: 0.25em 0.7em;
+  border-radius: 6px;
+}
+.bj-dealer-badge {
+  background: #064e3b;
+  color: #a7f3d0;
+  border: 1px solid #059669;
+}
+.bj-player-badge {
+  background: #1e3a8a;
+  color: #dbeafe;
+  border: 1px solid #3b82f6;
+}
+.bj-score-text {
+  font-size: 1.05em;
+  font-weight: 800;
+  color: #fde047;
+}
+.bj-ace-badge {
+  font-size: 0.8em;
+  font-weight: bold;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+}
+.bj-ace-active {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #f59e0b;
+}
+.bj-cards-row {
+  display: flex;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  min-height: 76px;
+  align-items: center;
+}
+.bj-card {
+  width: 54px;
+  height: 74px;
+  background: #ffffff;
+  border: 2px solid #1e293b;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  font-weight: 800;
+}
+.bj-card-red {
+  color: #dc2626;
+}
+.bj-card-black {
+  color: #1e293b;
+}
+.bj-card-suit {
+  font-size: 0.9em;
+  line-height: 1;
+}
+.bj-card-rank {
+  font-size: 1.2em;
+  line-height: 1.15;
+}
+.bj-card-point {
+  font-size: 0.65em;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.bj-card-hidden {
+  background: repeating-linear-gradient(
+    45deg,
+    #1e3a8a,
+    #1e3a8a 6px,
+    #1d4ed8 6px,
+    #1d4ed8 12px
+  );
+  border-color: #93c5fd;
+  color: #ffffff;
+  font-size: 1.4em;
+}
+.bj-table-divider {
+  border: none;
+  border-top: 1.5px dashed #059669;
+  margin: 0.9em 0;
+}
+.bj-controls {
+  display: flex;
+  gap: 0.75em;
+  flex-wrap: wrap;
+}
+.bj-btn {
+  flex: 1;
+  min-width: 160px;
+  padding: 0.7em 1em;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.98em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease, background 0.15s ease;
+}
+.bj-btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+.bj-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.bj-btn:disabled {
+  background: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}
+.bj-btn-hit {
+  background: #ea580c;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(234, 88, 12, 0.25);
+}
+.bj-btn-stick {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+}
+.bj-btn-next {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(22, 163, 74, 0.25);
+}
+</style>
+
+<script>
+(function() {
+  const SUITS = [
+    { symbol: "♠", color: "black" },
+    { symbol: "♥", color: "red" },
+    { symbol: "♦", color: "red" },
+    { symbol: "♣", color: "black" }
+  ];
+  const RANKS = [
+    { label: "A", value: 1 },
+    { label: "2", value: 2 },
+    { label: "3", value: 3 },
+    { label: "4", value: 4 },
+    { label: "5", value: 5 },
+    { label: "6", value: 6 },
+    { label: "7", value: 7 },
+    { label: "8", value: 8 },
+    { label: "9", value: 9 },
+    { label: "10", value: 10 },
+    { label: "J", value: 10 },
+    { label: "Q", value: 10 },
+    { label: "K", value: 10 }
+  ];
+
+  let playerHand = [];
+  let dealerHand = [];
+  let isGameOver = false;
+
+  let gamesCount = 0;
+  let wins = 0;
+  let draws = 0;
+  let losses = 0;
+  let totalReward = 0;
+
+  function drawCard() {
+    const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
+    const rank = RANKS[Math.floor(Math.random() * RANKS.length)];
+    return {
+      suit: suit.symbol,
+      color: suit.color,
+      label: rank.label,
+      value: rank.value
+    };
+  }
+
+  function evaluateHand(hand) {
+    let sum = 0;
+    let hasAce = false;
+    for (const c of hand) {
+      sum += c.value;
+      if (c.value === 1) hasAce = true;
+    }
+    let usableAce = false;
+    if (hasAce && sum + 10 <= 21) {
+      sum += 10;
+      usableAce = true;
+    }
+    return { sum, usableAce };
+  }
+
+  function renderCard(card, hidden) {
+    const div = document.createElement("div");
+    if (hidden) {
+      div.className = "bj-card bj-card-hidden";
+      div.textContent = "？";
+      return div;
+    }
+    div.className = `bj-card bj-card-${card.color}`;
+    const suitEl = document.createElement("div");
+    suitEl.className = "bj-card-suit";
+    suitEl.textContent = card.suit;
+
+    const rankEl = document.createElement("div");
+    rankEl.className = "bj-card-rank";
+    rankEl.textContent = card.label;
+
+    const ptEl = document.createElement("div");
+    ptEl.className = "bj-card-point";
+    ptEl.textContent = card.value === 1 ? "1/11点" : `${card.value}点`;
+
+    div.appendChild(suitEl);
+    div.appendChild(rankEl);
+    div.appendChild(ptEl);
+    return div;
+  }
+
+  function updateBoard() {
+    const dealerCardsEl = document.getElementById("bj-dealer-cards");
+    const playerCardsEl = document.getElementById("bj-player-cards");
+    const dealerScoreEl = document.getElementById("bj-dealer-score");
+    const playerScoreEl = document.getElementById("bj-player-score");
+    const usableAceEl = document.getElementById("bj-usable-ace-badge");
+
+    if (!dealerCardsEl || !playerCardsEl) return;
+
+    dealerCardsEl.innerHTML = "";
+    dealerHand.forEach((card, idx) => {
+      const hide = !isGameOver && idx === 1;
+      dealerCardsEl.appendChild(renderCard(card, hide));
+    });
+
+    playerCardsEl.innerHTML = "";
+    playerHand.forEach((card) => {
+      playerCardsEl.appendChild(renderCard(card, false));
+    });
+
+    const pEval = evaluateHand(playerHand);
+    playerScoreEl.textContent = `合計: ${pEval.sum} 点${pEval.sum > 21 ? "（バースト！）" : ""}`;
+
+    if (pEval.usableAce) {
+      usableAceEl.textContent = "使えるエース: あり（Aを11点として計算中）";
+      usableAceEl.className = "bj-ace-badge bj-ace-active";
+    } else {
+      usableAceEl.textContent = "使えるエース: なし";
+      usableAceEl.className = "bj-ace-badge";
+    }
+
+    if (!isGameOver) {
+      const upCard = dealerHand[0];
+      const upText = upCard.value === 1 ? "A（1または11点）" : `${upCard.value} 点`;
+      dealerScoreEl.textContent = `表カード: ${upText}（もう1枚は伏せ札）`;
+    } else {
+      const dEval = evaluateHand(dealerHand);
+      dealerScoreEl.textContent = `合計: ${dEval.sum} 点${dEval.sum > 21 ? "（バースト！）" : ""}`;
+    }
+
+    document.getElementById("bj-hit-btn").disabled = isGameOver;
+    document.getElementById("bj-stick-btn").disabled = isGameOver;
+    document.getElementById("bj-next-btn").disabled = !isGameOver;
+  }
+
+  function updateStatsUI() {
+    document.getElementById("bj-games-count").textContent = gamesCount;
+    document.getElementById("bj-wins").textContent = wins;
+    document.getElementById("bj-draws").textContent = draws;
+    document.getElementById("bj-losses").textContent = losses;
+
+    const winrateEl = document.getElementById("bj-winrate");
+    const avgRewardEl = document.getElementById("bj-avg-reward");
+    const totalRewardEl = document.getElementById("bj-total-reward");
+
+    if (gamesCount > 0) {
+      const rate = ((wins / gamesCount) * 100).toFixed(0);
+      winrateEl.textContent = `（勝率 ${rate}%）`;
+      const avg = (totalReward / gamesCount).toFixed(2);
+      avgRewardEl.textContent = (totalReward > 0 ? "+" : "") + avg;
+      const sign = totalReward > 0 ? "+" : "";
+      totalRewardEl.textContent = `（計 ${sign}${totalReward}）`;
+    } else {
+      winrateEl.textContent = "（勝率 -）";
+      avgRewardEl.textContent = "0.00";
+      totalRewardEl.textContent = "（計 0）";
+    }
+  }
+
+  function setMessage(text, type) {
+    const msgEl = document.getElementById("bj-message");
+    if (!msgEl) return;
+    msgEl.innerHTML = text;
+    if (type === "win") {
+      msgEl.style.background = "#dcfce7";
+      msgEl.style.borderColor = "#86efac";
+      msgEl.style.color = "#14532d";
+    } else if (type === "lose") {
+      msgEl.style.background = "#fee2e2";
+      msgEl.style.borderColor = "#fca5a5";
+      msgEl.style.color = "#7f1d1d";
+    } else if (type === "draw") {
+      msgEl.style.background = "#f1f5f9";
+      msgEl.style.borderColor = "#cbd5e1";
+      msgEl.style.color = "#334155";
+    } else {
+      msgEl.style.background = "#eff6ff";
+      msgEl.style.borderColor = "#bfdbfe";
+      msgEl.style.color = "#1e40af";
+    }
+  }
+
+  function finishGame(outcome, reasonText) {
+    isGameOver = true;
+    gamesCount++;
+    if (outcome === "win") {
+      wins++;
+      totalReward += 1;
+      setMessage(`🎉 <strong>あなたの勝ち！（報酬 +1.0）</strong> ${reasonText}`, "win");
+    } else if (outcome === "lose") {
+      losses++;
+      totalReward -= 1;
+      setMessage(`💥 <strong>あなたの負け…（報酬 -1.0）</strong> ${reasonText}`, "lose");
+    } else {
+      draws++;
+      setMessage(`🤝 <strong>引き分け（報酬 0.0）</strong> ${reasonText}`, "draw");
+    }
+    updateBoard();
+    updateStatsUI();
+  }
+
+  function onHit() {
+    if (isGameOver) return;
+    playerHand.push(drawCard());
+    const pEval = evaluateHand(playerHand);
+    if (pEval.sum > 21) {
+      finishGame(
+        "lose",
+        `あなたの合計が ${pEval.sum} 点となり、21 を超えてバーストしました。`
+      );
+    } else {
+      setMessage(
+        `カードを1枚引いて合計 <strong>${pEval.sum} 点</strong> になりました。続けて「Hit」か「Stick」を選んでください。`,
+        "info"
+      );
+      updateBoard();
+    }
+  }
+
+  function onStick() {
+    if (isGameOver) return;
+    while (evaluateHand(dealerHand).sum < 17) {
+      dealerHand.push(drawCard());
+    }
+    const pSum = evaluateHand(playerHand).sum;
+    const dSum = evaluateHand(dealerHand).sum;
+
+    if (dSum > 21) {
+      finishGame(
+        "win",
+        `ディーラーが合計 ${dSum} 点でバーストしました！（あなた: ${pSum} 点）`
+      );
+    } else if (pSum > dSum) {
+      finishGame(
+        "win",
+        `あなた ${pSum} 点 vs ディーラー ${dSum} 点で上回りました！`
+      );
+    } else if (pSum < dSum) {
+      finishGame(
+        "lose",
+        `あなた ${pSum} 点 vs ディーラー ${dSum} 点で及びませんでした。`
+      );
+    } else {
+      finishGame(
+        "draw",
+        `あなた ${pSum} 点 vs ディーラー ${dSum} 点で同点でした。`
+      );
+    }
+  }
+
+  function startNewHand() {
+    playerHand = [drawCard(), drawCard()];
+    dealerHand = [drawCard(), drawCard()];
+    isGameOver = false;
+    const pEval = evaluateHand(playerHand);
+    setMessage(
+      `新しいカードが配られました（あなたの合計: <strong>${pEval.sum} 点</strong>）。「Hit」か「Stick」を選んでください。`,
+      "info"
+    );
+    updateBoard();
+  }
+
+  function resetStats() {
+    gamesCount = 0;
+    wins = 0;
+    draws = 0;
+    losses = 0;
+    totalReward = 0;
+    updateStatsUI();
+    startNewHand();
+  }
+
+  function initBlackjack() {
+    const hitBtn = document.getElementById("bj-hit-btn");
+    const stickBtn = document.getElementById("bj-stick-btn");
+    const nextBtn = document.getElementById("bj-next-btn");
+    const resetBtn = document.getElementById("bj-reset-stats-btn");
+    if (!hitBtn) return;
+
+    hitBtn.addEventListener("click", onHit);
+    stickBtn.addEventListener("click", onStick);
+    nextBtn.addEventListener("click", startNewHand);
+    resetBtn.addEventListener("click", resetStats);
+
+    startNewHand();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initBlackjack);
+  } else {
+    initBlackjack();
+  }
+})();
+</script>
+```
+
+::: {.callout-note icon=false}
+### 練習問題 09-02：ブラックジャックの戦略を考えてみる
+上のブラックジャックを10回以上プレイしてみて、少しでも勝率（平均報酬）を高めるための**自分なりの戦略（行動ルール）**を考えてみましょう。
+
+1. 自分の手札の合計点数が**何点以上**のときに `Stick`（これ以上引かずに勝負）し、**何点以下**のときに `Hit`（もう1枚引く）するのが良さそうでしょうか？
+2. 自分の手札が `13`〜`16` 点のような「引くとバーストしそうだけれど、そのままだと負けそうな微妙な点数」のとき、**ディーラーの見えている表カードの点数**や**使えるエース（11点と数えているA）の有無**によって、`Hit` と `Stick` の判断をどう変えると良さそうでしょうか？
+:::
+
+---
+
+### ブラックジャックにおける「状態・行動・報酬」
+
+第7回で学んだ強化学習の3要素（状態・行動・報酬）が、Gymnasium の `"Blackjack-v1"` 環境ではどのように表現されているかを見てみましょう。
+
+```{=html}
+<svg viewBox="0 0 740 275" width="100%" height="275" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <!-- Left: Casino Table Illustration -->
+  <rect x="20" y="18" width="320" height="238" rx="12" fill="#065f46" stroke="#047857" stroke-width="3"/>
+  <text x="180" y="42" text-anchor="middle" font-size="12" font-weight="bold" fill="#a7f3d0">テーブル上の状況（例）</text>
+
+  <!-- Dealer Hand -->
+  <text x="45" y="72" font-size="11" font-weight="bold" fill="#ffffff">ディーラーの手札</text>
+  <!-- Visible card: 7 -->
+  <rect x="165" y="54" width="42" height="58" rx="5" fill="#ffffff" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="186" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">♠7</text>
+  <text x="186" y="102" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#0284c7">表向き</text>
+  <!-- Hidden card: ? -->
+  <rect x="217" y="54" width="42" height="58" rx="5" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="238" y="88" text-anchor="middle" font-size="16" font-weight="bold" fill="#93c5fd">？</text>
+
+  <line x1="38" y1="128" x2="322" y2="128" stroke="#047857" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+  <!-- Player Hand -->
+  <text x="45" y="160" font-size="11" font-weight="bold" fill="#ffffff">プレイヤーの手札</text>
+  <rect x="165" y="142" width="42" height="58" rx="5" fill="#ffffff" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="186" y="168" text-anchor="middle" font-size="12" font-weight="bold" fill="#dc2626">♥10</text>
+  <rect x="217" y="142" width="42" height="58" rx="5" fill="#ffffff" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="238" y="168" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">♣8</text>
+
+  <rect x="42" y="214" width="276" height="28" rx="5" fill="#064e3b"/>
+  <text x="180" y="232" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#fde047">合計 18点 ／ 表カードは 7 ／ 使えるエースなし</text>
+
+  <!-- Right: State Tuple Breakdown -->
+  <rect x="360" y="18" width="360" height="238" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="540" y="44" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">Gymnasium の状態（3要素のタプル）</text>
+
+  <!-- Big Tuple Box -->
+  <rect x="385" y="56" width="310" height="44" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="540" y="84" text-anchor="middle" font-size="18" font-weight="bold" fill="#1e3a8a">state = ( <tspan fill="#dc2626">18</tspan> , <tspan fill="#0284c7">7</tspan> , <tspan fill="#b45309">False</tspan> )</text>
+
+  <!-- Explanations of 3 elements -->
+  <rect x="380" y="114" width="320" height="38" rx="5" fill="#fef2f2" stroke="#fecaca" stroke-width="1.2"/>
+  <text x="392" y="131" font-size="10.5" font-weight="bold" fill="#dc2626">① 第1要素（18）：プレイヤーの現在の合計点数</text>
+  <text x="392" y="145" font-size="9.5" fill="#7f1d1d">実質的に判断が必要なのは 12 〜 21 の 10通り（11以下は必ずHit）</text>
+
+  <rect x="380" y="160" width="320" height="38" rx="5" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1.2"/>
+  <text x="392" y="177" font-size="10.5" font-weight="bold" fill="#0284c7">② 第2要素（7）：ディーラーの表向きカードの点数</text>
+  <text x="392" y="191" font-size="9.5" fill="#0c4a6e">1（エース）〜 10（10・J・Q・K）の 10通り</text>
+
+  <rect x="380" y="206" width="320" height="38" rx="5" fill="#fffbeb" stroke="#fde68a" stroke-width="1.2"/>
+  <text x="392" y="223" font-size="10.5" font-weight="bold" fill="#b45309">③ 第3要素（False）：使えるエース（11点）の有無</text>
+  <text x="392" y="237" font-size="9.5" fill="#78350f">True（11点と数えたAあり）または False（なし）の 2通り</text>
+</svg>
+```
+
+1. **状態（State）**：
+   `(プレイヤーの合計点数, ディーラーの表向きカード, 使えるエースの有無)` という3つの値からなるタプルで表されます。
+   - たとえば `(18, 7, False)` は、「自分の合計点数が `18` 点、ディーラーの表向きカードが `7`、11点として使えるエースは `False`（持っていない）」という状態を表します。
+   - **状態の総数は何通りか？**：
+     プレイヤーの合計点数が **11点以下** のときは、次にどんなカード（最大でも10点）を引いても絶対に 21 を超えてバーストすることがないため、考えるまでもなく 100% `Hit`（もう1枚引く）するのが正解です。したがって、エージェントが実質的に「`Hit` すべきか `Stick` すべきか」を判断しなければならないのは、次の要素の組み合わせです：
+     - プレイヤーの合計点数：**`12` 〜 `21` の 10通り**
+     - ディーラーの表向きカード：**`1`（エース）〜 `10` の 10通り**
+     - 使えるエースの有無：**`True` または `False` の 2通り**
+     を掛け合わせた **$10 \times 10 \times 2 = 200$ 通り** の状態になります（初期手札の4〜11点を含めても全体で300通り未満の小さな表に収まります）。
+
+2. **行動（Action）**：
+   整数 `0` または `1` の2択です。
+   - **`0`：`Stick`**（これ以上引かずに手札を確定して勝負する）
+   - **`1`：`Hit`**（カードをもう1枚引く）
+
+3. **報酬（Reward）と収益 $G$**：
+   - `Hit` を選んで合計が 21 以下だった場合（まだ自分のターンが続く途中ステップ）の報酬は **`0.0`** です。
+   - エピソードが終了したときにのみ、勝敗に応じて次の報酬が与えられます：
+     - **プレイヤーの勝ち：`+1.0`**
+     - **引き分け：`0.0`**
+     - **プレイヤーの負け：`-1.0`**
+   - ブラックジャックは数ステップで必ず終わる短いゲームであり、途中の報酬がすべて `0.0` で最終的な勝敗そのものを評価したいため、割引率は **$\gamma = 1.0$（割引なし）** とします。このとき、**1エピソードで得られる収益 $G$ は最終的な勝敗報酬（$+1, 0, -1$）そのもの**となり、**行動価値 $Q(s, a)$ は「状態 $s$ で行動 $a$ を選んだときの平均報酬（$-1.0 \sim +1.0$ の範囲で表される勝ちやすさ）」**という非常に直感的な意味を持ちます。
+
+::: {.callout-note icon=true}
+### コラム：Python の「タプル（`tuple` 型）」とは？
+
+`Blackjack-v1` の状態 `(18, 7, False)` や、第7回の Pygame で色や座標を指定した `(255, 255, 255)`・`(x, y)` のように、**丸括弧 `( )` の中にカンマ `,` 区切りで複数の値を並べたデータ型**を Python では **タプル（`tuple` 型）** と呼びます。
+
+第3回で学んだ**リスト（`list` 型：`[18, 7, False]`）**とよく似ていますが、次のような共通点と決定的な違いがあります：
+
+1. **リストとの共通点（番号での取り出しと分解代入）**:
+   - リストと同じく、先頭から `0, 1, 2, ...` のインデックス（添字）を使って、`state[0]`（`18`）、`state[1]`（`7`）、`state[2]`（`False`）のように個々の要素を取り出すことができます。
+   - また、`player, dealer, ace = state` のように左辺に複数の変数を並べることで、タプルの中身をそれぞれの変数へ一度に分解して取り出す（**アンパック**）ことができます。Gymnasium で `state, info = env.reset()` や `next_state, reward, terminated, truncated, info = env.step(action)` と書いて複数の返り値を一度に受け取れるのも、実は関数がタプルとして複数の値を返しているからです。
+2. **リストとの決定的な違い（後から中身を変更できない）**:
+   - 角括弧 `[ ]` で作る**リスト**は、作成したあとも要素を書き換えたり追加・削除したりできます。
+   - 一方、丸括弧 `( )` で作る**タプル**は、**一度作成すると後から要素を書き換えたり追加・削除したりすることができない（変更不能／イミュータブル）**というルールになっています。
+3. **なぜ強化学習の「状態」にタプルが使われるのか？**:
+   - 最も大きな理由は、**「タプルは辞書（`dict` 型）のキー（見出し）としてそのまま使えるから」**です。
+   - Python の辞書では、後から中身が変わってしまうリストをキーに指定するとエラーになりますが、中身が決して変わらないタプルはそのまま辞書のキーにすることができます。そのため、Q テーブルを辞書で作る際に `Q[(18, 7, False)]` のように**状態のタプルをそのままキーにして Q 値を記録・検索できる**という非常に便利なメリットがあります。
+:::
+
+::: {.callout-note icon=false}
+### 練習問題 09-03：Blackjack 環境の状態とルール
+Gymnasium の `"Blackjack-v1"` 環境について、次の問いに答えてみましょう。
+
+1. 状態が **`(15, 10, False)`** であるとき、プレイヤーの合計点数、ディーラーの見えているカード、使えるエースの有無はそれぞれどうなっていますか？また、この状態でプレイヤーが `Hit (1)` を選び、引いたカードが **`8`** だった場合、ゲームはどうなりますか（報酬はいくらになりますか）？
+2. プレイヤーの最初の手札が **`A`（エース）と `5`**、ディーラーの表カードが **`9`** だったとします。
+   - このときの初期状態はどのようなタプルで表されますか？
+   - この状態からプレイヤーが `Hit (1)` を選び、引いたカードが **`10`** だった場合、プレイヤーはバーストして負けになるでしょうか？それともゲームは続き、次の状態はどのようなタプルになるでしょうか？
+:::
+
+---
+
+## ランダム方策とディーラー方策で Blackjack をプレイする
+
+それでは、Python と Gymnasium を使って実際に `"Blackjack-v1"` 環境を動かしてみましょう。
+
+まずは学習を一切行わず、**`Stick (0)` と `Hit (1)` を毎回 50% ずつの確率でランダムに選ぶエージェント（ランダム方策）** で 5 エピソードだけプレイし、ゲームの履歴を表示するプログラムを実行してみます。その後、方策を「ディーラーと同じルール」に書き換え、さらに **vibe coding** によってそれぞれ 10,000 回プレイしたときの勝率や平均報酬を比較してみましょう。
+
+### ランダム方策で 5 エピソード実行するプログラム
+
+以下のソースコードをコピーし、`blackjack_play.py` というファイル名で保存して実行してみましょう。
 
 ```python
 import gymnasium as gym
-import numpy as np
-from collections import defaultdict
 
+# 1. Blackjack環境の作成
 env = gym.make("Blackjack-v1")
 
-# Qテーブルを辞書で初期化 (キー: stateタプル, 値: [Q(s,0), Q(s,1)])
-Q = defaultdict(lambda: np.zeros(env.action_space.n))
-counts = defaultdict(lambda: np.zeros(env.action_space.n))
+print("=== ランダム方策による 5 エピソードのプレイ履歴 ===")
 
-def policy(state, epsilon=0.1):
-    # epsilon-greedy方策
-    if np.random.rand() < epsilon:
-        return env.action_space.sample()
-    return np.argmax(Q[state])
-
-# 10万回のエピソードで学習
-num_episodes = 100000
-
-for ep in range(num_episodes):
+# 2. 5エピソード（5ゲーム）を実行する
+for episode in range(1, 6):
+    # 環境をリセットして初期状態 (プレイヤー合計, ディーラー表カード, 使えるエース) を受け取る
     state, info = env.reset()
-    episode = []
-    
-    # 1エピソードの実行
     terminated = False
-    while not terminated:
-        action = policy(state)
-        next_state, reward, terminated, truncated, info = env.step(action)
-        episode.append((state, action, reward))
-        state = next_state
-        
-    # モンテカルロ更新（初回訪問または毎回訪問）
-    G = episode[-1][2] # 最終勝敗の報酬 (+1, 0, -1)
-    for s, a, r in episode:
-        counts[s][a] += 1
-        # 平均値の逐次更新
-        Q[s][a] += (1.0 / counts[s][a]) * (G - Q[s][a])
+    truncated = False
+    step = 1
 
-print(f"{num_episodes} エピソードの学習が完了しました！")
+    print(f"\n[エピソード {episode}]")
+
+    # エピソードが終了するまで繰り返す
+    while not (terminated or truncated):
+        # ランダム方策：Stick (0) と Hit (1) を 50% ずつランダムに選ぶ
+        action = env.action_space.sample()
+        action_name = "Hit (1)" if action == 1 else "Stick (0)"
+
+        # 選んだ行動を環境に渡して1ステップ進める
+        next_state, reward, terminated, truncated, info = env.step(action)
+
+        print(f"  ステップ {step}: 状態 {state} -> 行動: {action_name} -> 次の状態 {next_state}")
+
+        state = next_state
+        step += 1
+
+    # 最終報酬から勝敗結果を表示する
+    if reward > 0:
+        result = "勝ち"
+    elif reward < 0:
+        result = "負け"
+    else:
+        result = "引き分け"
+    print(f"  結果: {result} | 報酬: {reward:+.1f}")
+
+env.close()
 ```
+
+プログラムを実行すると、ターミナルに以下のようなプレイ履歴が表示されます（乱数を使っているため、毎回手札や結果は変わります）：
+
+```text
+=== ランダム方策による 5 エピソードのプレイ履歴 ===
+
+[エピソード 1]
+  ステップ 1: 状態 (20, 8, False) -> 行動: Hit (1) -> 次の状態 (30, 8, False)
+  結果: 負け | 報酬: -1.0
+
+[エピソード 2]
+  ステップ 1: 状態 (12, 10, False) -> 行動: Stick (0) -> 次の状態 (12, 10, False)
+  結果: 負け | 報酬: -1.0
+
+[エピソード 3]
+  ステップ 1: 状態 (14, 6, False) -> 行動: Stick (0) -> 次の状態 (14, 6, False)
+  結果: 勝ち | 報酬: +1.0
+
+[エピソード 4]
+  ステップ 1: 状態 (15, 2, True) -> 行動: Hit (1) -> 次の状態 (15, 2, False)
+  ステップ 2: 状態 (15, 2, False) -> 行動: Stick (0) -> 次の状態 (15, 2, False)
+  結果: 負け | 報酬: -1.0
+
+[エピソード 5]
+  ステップ 1: 状態 (19, 10, False) -> 行動: Stick (0) -> 次の状態 (19, 10, False)
+  結果: 勝ち | 報酬: +1.0
+```
+
+- **ランダム方策による無謀な選択**:
+  たとえば上の「エピソード 1」では、最初からプレイヤーの合計点数が `20` 点という非常に強い手札だったにもかかわらず、`env.action_space.sample()` によってランダムに `Hit (1)` を選んでしまい、合計 `30` 点でバーストして自滅しています。また「エピソード 2」では、合計 `12` 点という低い点数のまま `Stick (0)` を選んで負けています。
+- **状態タプルからの情報の取り出し**:
+  現在の状態 `state` は `(プレイヤーの合計点数, ディーラーの表カード, 使えるエースの有無)` のタプルなので、**`state[0]`** で「プレイヤーの現在の合計点数」を取り出すことができます。
+
+::: {.callout-note icon=false}
+### 練習問題 09-04：方策を「ディーラーと同じルール」に変更する
+1. 上のプログラム `blackjack_play.py` をコピーして実行し、ランダム方策による 5 エピソードのプレイ履歴を確認してみましょう。高得点なのに `Hit` してバーストしたり、低い点数なのに `Stick` したりしている場面はあるでしょうか？
+2. プログラムの中で行動を選んでいる行（`action = env.action_space.sample()`）を書き換えて、**ディーラーと同じ方策（「プレイヤーの合計点数 `state[0]` が `17` 以上なら `Stick (0)` を選び、`16` 以下なら `Hit (1)` を選ぶ」）** に変更してみましょう。どのように書き換えればよいでしょうか？また、書き換えて実行すると 5 エピソードの行動はどのように変わるでしょうか？
+:::
 
 ---
 
-## 学習結果の確認
+### vibe coding①：ランダム方策とディーラー方策を1万回実行して比較する
 
-手札の合計が 20 のとき、エージェントは何を選択するようになったでしょうか？
+5 エピソードだけでは、たまたま配られたカードの運によって勝ち負けが大きく左右されてしまいます。そこで **vibe coding** を使ってプログラムを修正し、**「① ランダム方策」** と **「② ディーラーと同じ方策（17以上は `Stick`、16以下は `Hit`）」** をそれぞれ **10,000 エピソード（1万回）** ずつ実行して、勝率や平均報酬にどれだけの差が出るかを比較してみましょう。
 
-```python
-# 例: プレイヤー20, ディーラー10, Aceなし の状態
-sample_state = (20, 10, False)
-print(f"状態 {sample_state} における行動価値:")
-print(f"  Stick (0) の Q値: {Q[sample_state][0]:.3f}")
-print(f"  Hit   (1) の Q値: {Q[sample_state][1]:.3f}")
-print("推奨行動:", "Stick" if np.argmax(Q[sample_state]) == 0 else "Hit")
+#### 修正するプログラムの仕様
+
+Antigravity（coding agent）には、`blackjack_play.py` をもとに以下の要件を満たすプログラムを作成（または修正）してもらいます：
+
+1. **比較する2つの方策**:
+   - **① ランダム方策**：どの状態でも `Stick (0)` と `Hit (1)` を 50% ずつランダムに選ぶ方策。
+   - **② ディーラーと同じ方策**：プレイヤーの合計点数 `state[0]` が `17` 以上なら `Stick (0)`、`16` 以下なら `Hit (1)` を選ぶ固定ルールの方策。
+2. **10,000 エピソードの実行と成績の集計・表示**:
+   - それぞれの方策で **10,000 エピソード** を連続実行し、**「勝ち回数と勝率（%）」「引き分け回数と引き分け率（%）」「負け回数と敗北率（%）」** および **「1エピソードあたりの平均報酬」** を計算して並べて表示する。
+
+#### エージェントへの指示（プロンプト例）
+
+Antigravityのチャット欄に、次のように指示（プロンプト）を入力して送信します。
+
+::: {.callout-tip icon=true}
+### プロンプト入力例
+先ほどの `blackjack_play.py` を修正して、Gymnasium の `"Blackjack-v1"` 環境で次の2つの方策をそれぞれ 10,000 エピソード実行し、成績を比較表示するプログラムを作成してください。
+
+【比較する2つの方策】
+1. ランダム方策：どの状態でも `Stick (0)` と `Hit (1)` を 50% ずつランダムに選ぶ方策。
+2. ディーラーと同じ方策：プレイヤーの合計点数 `state[0]` が 17 以上なら `Stick (0)`、16 以下なら `Hit (1)` を選ぶ方策。
+
+【表示する内容】
+- それぞれの方策で 10,000 エピソードを実行し、「勝ち回数（勝率 %）」「引き分け回数（引き分け率 %）」「負け回数（敗北率 %）」および「1エピソードあたりの平均報酬」を集計して分かりやすく並べて表示してください。
+- 作成後、実際にプログラムを実行して結果を確認してください。
+:::
+
+#### 実行結果の確認と考察
+
+プログラムが実行されると、ターミナルに以下のような比較結果が出力されます（乱数によるシミュレーションのため、毎回少しずつ数値は変わります）：
+
+```text
+=== 10,000 エピソードの集計結果比較 ===
+【① ランダム方策（50%ずつ選択）】
+  勝ち    : 2,814 回 (28.1%)
+  引き分け:   442 回 ( 4.4%)
+  負け    : 6,744 回 (67.4%)
+  平均報酬: -0.393
+
+【② ディーラーと同じ方策（17以上はStick / 16以下はHit）】
+  勝ち    : 4,088 回 (40.9%)
+  引き分け: 1,042 回 (10.4%)
+  負け    : 4,870 回 (48.7%)
+  平均報酬: -0.078
 ```
 
-通常、手札20のときはHitするとほぼ確実にバーストするため、StickのQ値が圧倒的に高くなり、エージェントは自律的に「20なら引かない」という基本戦略を習得します。
+1万回のシミュレーション結果から、次の重要なことが分かります：
+
+- **ランダム方策は勝率約 28%、平均報酬約 $-0.39$ と惨敗**:
+  デタラメに行動を選ぶと、**約 67〜68%（3回に2回以上）が負け**となり、1ゲームあたりの平均報酬は **$-0.39 \sim -0.40$** という非常に低い成績になります。
+- **ディーラーと同じ方策にするだけで、勝率は約 41%、平均報酬は約 $-0.08$ へ大幅改善**:
+  「17点以上なら止める、16点以下なら引く」というシンプルなルールにするだけで、高得点からの自滅バーストや低得点での早すぎる勝負がなくなるため、**勝率が約 13 ポイントも上昇し、平均報酬も $-0.393$ から $-0.078$ へと劇的に改善**します。
+- **しかし、ディーラー方策はまだ「最適」ではない**:
+  ディーラーと同じ方策は、3つの状態要素のうち **`state[0]`（自分の合計点数）しか見ておらず、`state[1]`（ディーラーの表向きカード）や `state[2]`（使えるエースの有無）を完全に無視**しています。
+
+---
+
+## vibe coding②：モンテカルロ法による Blackjack の学習
+
+ランダム方策では勝率が約 28%（平均報酬 $-0.39$）、ディーラーと同じ固定ルールでは勝率が約 41%（平均報酬 $-0.08$）でした。では、エージェントに「何点のときに引くべきか・止めるべきか」というルールを人間が一切教えず、第8回で学んだ**モンテカルロ法（Monte Carlo Method）**によってゼロから自力で学習させると、ディーラー方策を超えてどこまで強くなれるでしょうか？
+
+### Blackjack におけるモンテカルロ法の仕組み
+
+第8回で学んだとおり、モンテカルロ法は**「実際にエピソードを最後までプレイし、各状態・行動のペア $(s, a)$ のあとで得られた収益 $G$ の平均値を記録して行動価値 $Q(s, a)$ を推定する」**という手法です。
+
+ブラックジャックでは、途中の報酬がすべて $0$ であり割引率も $\gamma = 1.0$ とするため、**1回のエピソードが終わったときに得られた最終報酬（勝ちなら $+1$、引き分けなら $0$、負けなら $-1$）が、そのゲーム中に選んだすべての「状態と行動のペア $(s, a)$」の収益 $G$ にそのまま一致**します。
+
+```{=html}
+<svg viewBox="0 0 740 270" width="100%" height="270" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="bmc-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="bmc-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2e7d32" />
+    </marker>
+    <marker id="bmc-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+  </defs>
+
+  <text x="20" y="25" font-size="12.5" font-weight="bold" fill="#0d47a1">【Blackjack でのモンテカルロ法】1ゲーム終了後、そのゲームで選んだすべての (状態, 行動) の平均値を最終報酬で更新する</text>
+
+  <!-- Step 1 -->
+  <rect x="20" y="42" width="190" height="68" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="115" y="64" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">ステップ 1 の状態 s₀</text>
+  <text x="115" y="82" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">(14, 10, False)</text>
+  <text x="115" y="100" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c62828">選んだ行動 a₀ : Hit (1)</text>
+
+  <line x1="210" y1="76" x2="272" y2="76" stroke="#1976d2" stroke-width="2.2" marker-end="url(#bmc-arrow-blue)"/>
+  <text x="241" y="65" text-anchor="middle" font-size="9.5" fill="#0d47a1">♣5 を引く</text>
+  <text x="241" y="92" text-anchor="middle" font-size="9.5" fill="#475569">報酬 0.0</text>
+
+  <!-- Step 2 -->
+  <rect x="280" y="42" width="190" height="68" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="375" y="64" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#0d47a1">ステップ 2 の状態 s₁</text>
+  <text x="375" y="82" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">(19, 10, False)</text>
+  <text x="375" y="100" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">選んだ行動 a₁ : Stick (0)</text>
+
+  <line x1="470" y1="76" x2="532" y2="76" stroke="#2e7d32" stroke-width="2.5" marker-end="url(#bmc-arrow-green)"/>
+  <text x="501" y="65" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1b5e20">勝負！</text>
+  <text x="501" y="92" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2e7d32">報酬 +1.0</text>
+
+  <!-- Result -->
+  <rect x="540" y="42" width="180" height="68" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+  <text x="630" y="64" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">ゲーム終了（勝利！）</text>
+  <text x="630" y="83" text-anchor="middle" font-size="10.5" fill="#14532d">ディーラー 18 vs 自分 19</text>
+  <text x="630" y="101" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#15803d">最終収益 G = +1.0</text>
+
+  <!-- Backward Update Arrows -->
+  <line x1="630" y1="110" x2="630" y2="122" stroke="#e65100" stroke-width="2.2"/>
+  <rect x="480" y="122" width="240" height="24" rx="12" fill="#fff3e0" stroke="#f57c00" stroke-width="1.2"/>
+  <text x="600" y="138" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">通過した両方の (状態, 行動) に G = +1.0 を記録</text>
+  <line x1="552" y1="146" x2="552" y2="169" stroke="#e65100" stroke-width="2.2" marker-end="url(#bmc-arrow-orange)"/>
+  <path d="M 480,134 L 187,134 L 187,169" fill="none" stroke="#e65100" stroke-width="2.2" marker-end="url(#bmc-arrow-orange)"/>
+
+  <!-- Q-table Update Boxes -->
+  <rect x="20" y="175" width="335" height="76" rx="6" fill="#ffffff" stroke="#f57c00" stroke-width="1.8"/>
+  <text x="187" y="196" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Q((14, 10, False), Hit) の更新</text>
+  <text x="187" y="216" text-anchor="middle" font-size="10" fill="#334155">これまでの報酬記録に <tspan font-weight="bold" fill="#15803d">+1.0</tspan> を追加し、</text>
+  <text x="187" y="236" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">新しい平均値を計算して Q値を更新！</text>
+
+  <rect x="385" y="175" width="335" height="76" rx="6" fill="#ffffff" stroke="#f57c00" stroke-width="1.8"/>
+  <text x="552" y="196" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Q((19, 10, False), Stick) の更新</text>
+  <text x="552" y="216" text-anchor="middle" font-size="10" fill="#334155">これまでの報酬記録に <tspan font-weight="bold" fill="#15803d">+1.0</tspan> を追加し、</text>
+  <text x="552" y="236" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">新しい平均値を計算して Q値を更新！</text>
+</svg>
+```
+
+この平均値の更新を **$\varepsilon$-greedy 法**（たとえば確率 $\varepsilon = 0.1$ でランダムに探索し、残りの $90\%$ で現在 Q 値が高い方の行動を選ぶ）と組み合わせて何十万エピソードも繰り返すと、200通りのすべての状態について「`Stick` を選んだときの平均報酬 $Q(s, \text{Stick})$」と「`Hit` を選んだときの平均報酬 $Q(s, \text{Hit})$」がほぼ正確に求まります。
+
+### 作成するプログラムの仕様
+
+Antigravity には、モンテカルロ法で学習を行い、その結果獲得された「ブラックジャックの戦略表（ヒートマップ）」と「学習曲線」を可視化するプログラム `blackjack_mc.py` を作成してもらいます：
+
+1. **モンテカルロ法による学習（500,000 エピソード）**:
+   - `"Blackjack-v1"` 環境において、$\varepsilon$-greedy 法（$\varepsilon = 0.1$）に従いながら **50万エピソード（500,000回）** プレイして行動価値 $Q(s, a)$（各状態で得られた最終報酬の平均値）を学習する。
+   - 学習の進み具合を確認できるよう、一定間隔（例：10,000エピソードごと）の平均報酬を記録しておく。
+2. **学習済みエージェントのテスト（10,000 エピソード）**:
+   - 50万エピソードの学習が完了したあと、探索をオフにして**「各状態で常に $Q(s, \text{Stick})$ と $Q(s, \text{Hit})$ のうち値が高い方の行動を選ぶ（$\varepsilon = 0$）」**テストを 10,000 エピソード実行し、勝率・引き分け率・敗北率・平均報酬を表示してランダム方策と比較できるようにする。
+3. **獲得した戦略表（ヒートマップ）と学習曲線のグラフ描画（Matplotlib）**:
+   - 縦軸を「プレイヤーの合計点数（12〜21）」、横軸を「ディーラーの表向きカード（1〜10）」としたマス目を作り、各マスで **`Stick (0)` と `Hit (1)` のどちらの Q 値が高くなったか（推奨行動）** を色分けして表示する2枚の表（**「使えるエースなし（`False`）」**と**「使えるエースあり（`True`）」**）を描画する。
+   - あわせて、学習エピソード数の経過に伴う平均報酬の推移（学習曲線）もプロットする。
+
+### エージェントへの指示（プロンプト例）
+
+Antigravityのチャット欄に、次のように指示を入力して送信します。
+
+::: {.callout-tip icon=true}
+### プロンプト入力例
+Gymnasium の `"Blackjack-v1"` 環境において、モンテカルロ法（$\varepsilon$-greedy 法）で最適方策を学習し、テスト結果と獲得した戦略表を可視化するプログラム `blackjack_mc.py` を作成してください。
+
+【学習とテストの仕様】
+1. 探索率 `epsilon = 0.1`、割引率 `gamma = 1.0` とし、500,000 エピソード（50万回）モンテカルロ法で行動価値 `Q(s, a)`（各状態・行動ペアで得られた最終報酬の標本平均）を学習させてください。
+2. 学習完了後、探索なし（`epsilon = 0`、常に Q 値が高い行動を選択）で 10,000 エピソードのテストを実行し、「勝率・引き分け率・敗北率・平均報酬」をターミナルに表示してください（ランダム方策の成績も並べて比較表示してください）。
+
+【Matplotlib によるグラフ描画の仕様】
+1. 学習の推移が分かるよう、エピソード数に対する移動平均報酬（例：10,000エピソードごとの平均報酬）の学習曲線をプロットしてください。
+2. 学習された Q テーブルから、縦軸を「プレイヤーの合計点数（12〜21）」、横軸を「ディーラーの表カード（1〜10）」とし、各状態で `Stick (0)` と `Hit (1)` のどちらが推奨行動（Q値が大きい方）になったかを色分けして文字（`S` または `H`）も書き込んだヒートマップを、「使えるエースなし（False）」と「使えるエースあり（True）」の2枚並べて表示してください。
+3. グラフの日本語タイトルやラベルが文字化けしないようにフォントを設定し、画像ファイル（`blackjack_mc_result.png`）への保存と画面表示を行ってください。
+:::
+
+### 実行結果と「AIが自力で発見した定石」の考察
+
+プログラムを実行すると、50万エピソードの学習が数秒〜十数秒で完了し、ターミナルにテスト結果が出力されるとともに、学習曲線と戦略表のグラフが表示されます。
+
+```text
+=== 10,000 エピソードのテスト結果比較 ===
+[ランダム方策]     勝率: 28.1% | 引き分け:  4.4% | 負け: 67.4% | 平均報酬: -0.393
+[ディーラー方策]   勝率: 40.9% | 引き分け: 10.4% | 負け: 48.7% | 平均報酬: -0.078
+[モンテカルロ法]   勝率: 43.1% | 引き分け:  8.6% | 負け: 48.3% | 平均報酬: -0.052
+```
+
+勝率がランダム方策の **28.1%** だけでなく、ディーラーと同じ固定ルールの **40.9% も上回って 43.1% へ上昇**し、平均報酬も **$-0.078$ から $-0.052$ へとさらに改善**していることが分かります！
+
+::: {.callout-tip icon=true}
+### コラム：なぜ最適方策でも平均報酬がマイナス（約 $-0.05$）なのか？
+「50万回も学習したのに、なぜ平均報酬がプラスにならないのだろう？」と疑問に思ったかもしれません。
+実は、カジノのブラックジャックのルールでは**「プレイヤーが先にカードを引き、もしプレイヤーとディーラーの両方が21を超えてバーストするような展開でも、先にバーストしたプレイヤーの負け（$-1$）になる」**という非対称なルールになっています。この「先攻バースト即負け」のハンディキャップがあるため、数学的に可能な最善の戦略（最適方策）でプレイしても、プレイヤーの期待勝率は約 42〜43%、引き分けが約 8〜9%、負けが約 48〜49% となり、**理論上の最高平均報酬は約 $-0.04 \sim -0.05$** であることが知られています（このわずかな差がカジノ側の利益＝ハウスエッジになります）。つまり、平均報酬が $-0.05$ 前後に達したということは、**エージェントが理論上のほぼ完璧な最適方策を獲得できた証拠**なのです！
+:::
+
+さらに、描画された2枚の戦略表（ヒートマップ）を観察すると、エージェントが**カードのルールや確率を一切教えてもらっていないにもかかわらず、試行錯誤だけで人間のプロが使う「ベーシックストラテジー（基本戦略）」とほぼ同じ定石を自力で発見している**ことが確認できます。
+
+```{=html}
+<svg viewBox="0 0 740 360" width="100%" height="360" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <text x="370" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">【モンテカルロ法が自力で獲得する最適方策（基本戦略表）のパターン】</text>
+
+  <!-- ==================== LEFT TABLE: USABLE ACE = FALSE ==================== -->
+  <rect x="20" y="40" width="340" height="252" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="190" y="62" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1e293b">① 使えるエースなし（Usable Ace = False）</text>
+  <text x="210" y="80" text-anchor="middle" font-size="9.5" fill="#475569">ディーラーの表向きカード（1=A, 2〜10）</text>
+
+  <!-- Column headers -->
+  <text x="102" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#dc2626">1(A)</text>
+  <text x="148" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0284c7">2 〜 3</text>
+  <text x="205" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0284c7">4 〜 6</text>
+  <text x="285" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#dc2626">7 〜 10</text>
+
+  <!-- Row 1: Player 17-21 -->
+  <text x="52" y="132" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#334155">合計 17〜21</text>
+  <rect x="84" y="104" width="260" height="48" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="214" y="126" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">すべて Stick (0)</text>
+  <text x="214" y="142" text-anchor="middle" font-size="9" fill="#1e40af">（これ以上引くと高確率でバーストするため止める）</text>
+
+  <!-- Row 2: Player 13-16 -->
+  <text x="52" y="186" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#334155">合計 13〜16</text>
+  <!-- vs A -->
+  <rect x="84" y="158" width="36" height="48" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="102" y="186" text-anchor="middle" font-size="10" font-weight="bold" fill="#c2410c">Hit</text>
+  <!-- vs 2-6 -->
+  <rect x="124" y="158" width="108" height="48" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="178" y="179" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1d4ed8">Stick (0)</text>
+  <text x="178" y="195" text-anchor="middle" font-size="8.5" fill="#1e40af">相手のバースト待ち</text>
+  <!-- vs 7-10 -->
+  <rect x="236" y="158" width="108" height="48" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="290" y="179" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#c2410c">Hit (1)</text>
+  <text x="290" y="195" text-anchor="middle" font-size="8.5" fill="#9a3412">相手が強く引くしかない</text>
+
+  <!-- Row 3: Player 12 -->
+  <text x="52" y="236" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#334155">合計 12</text>
+  <!-- vs A, 2-3 -->
+  <rect x="84" y="212" width="84" height="40" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="126" y="236" text-anchor="middle" font-size="10" font-weight="bold" fill="#c2410c">Hit (1)</text>
+  <!-- vs 4-6 -->
+  <rect x="172" y="212" width="60" height="40" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="202" y="236" text-anchor="middle" font-size="10" font-weight="bold" fill="#1d4ed8">Stick</text>
+  <!-- vs 7-10 -->
+  <rect x="236" y="212" width="108" height="40" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="290" y="236" text-anchor="middle" font-size="10" font-weight="bold" fill="#c2410c">Hit (1)</text>
+
+  <text x="190" y="276" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0d47a1">★ ディーラーの表カード次第で Stick / Hit を巧妙に使い分ける！</text>
+
+  <!-- ==================== RIGHT TABLE: USABLE ACE = TRUE ==================== -->
+  <rect x="380" y="40" width="340" height="252" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="550" y="62" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1e293b">② 使えるエースあり（Usable Ace = True）</text>
+  <text x="570" y="80" text-anchor="middle" font-size="9.5" fill="#475569">ディーラーの表向きカード（1=A, 2〜10）</text>
+
+  <!-- Column headers -->
+  <text x="462" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#dc2626">1(A)</text>
+  <text x="545" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#0284c7">2 〜 8</text>
+  <text x="660" y="96" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#dc2626">9 〜 10</text>
+
+  <!-- Row 1: Player 19-21 -->
+  <text x="412" y="128" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#334155">合計 19〜21</text>
+  <rect x="444" y="104" width="260" height="42" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="574" y="129" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">すべて Stick (0)（すでに十分高得点）</text>
+
+  <!-- Row 2: Player 18 -->
+  <text x="412" y="172" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#334155">合計 18</text>
+  <rect x="444" y="152" width="36" height="36" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="462" y="174" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c2410c">Hit</text>
+  <rect x="484" y="152" width="132" height="36" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="550" y="174" text-anchor="middle" font-size="10" font-weight="bold" fill="#1d4ed8">Stick (0)</text>
+  <rect x="620" y="152" width="84" height="36" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="662" y="174" text-anchor="middle" font-size="10" font-weight="bold" fill="#c2410c">Hit (1)</text>
+
+  <!-- Row 3: Player 12-17 -->
+  <text x="412" y="224" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#334155">合計 12〜17</text>
+  <rect x="444" y="194" width="260" height="58" rx="4" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="574" y="218" text-anchor="middle" font-size="11" font-weight="bold" fill="#c2410c">すべて Hit (1)</text>
+  <text x="574" y="236" text-anchor="middle" font-size="9" fill="#9a3412">（21を超えてもAを1点に直せるので絶対にバーストしない！）</text>
+
+  <text x="550" y="276" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c2410c">★ 1回ではバーストしない安全網を活かして 17 以下は積極的に Hit！</text>
+
+  <!-- Legend Footer -->
+  <rect x="160" y="306" width="420" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <rect x="195" y="317" width="16" height="16" rx="3" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="218" y="329" font-size="10.5" font-weight="bold" fill="#1d4ed8">青：Stick (0) を選択（引かずに勝負）</text>
+  <rect x="405" y="317" width="16" height="16" rx="3" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="428" y="329" font-size="10.5" font-weight="bold" fill="#c2410c">オレンジ：Hit (1) を選択（もう1枚引く）</text>
+</svg>
+```
+
+1. **使えるエースがないとき（左の表）、合計 17〜21 では常に `Stick`**：
+   17点以上のときに無理にもう1枚引くと、5点以上のカードが出ただけでバーストして即負けになるため、ディーラーのカードが何であれピタリと引くのを止めています。
+2. **使えるエースがないとき（左の表）、合計 12〜16 では「ディーラーの表カード」によって態度を変える**：
+   - ディーラーの表カードが **`7`〜`10` や `1(A)`（強いカード）のときは `Hit`** を選んでいます。なぜなら、ディーラーが高得点になる可能性が高いため、12〜16点のまま止まってもどうせ負けてしまうからです。
+   - 一方、ディーラーの表カードが **`4`〜`6`（中途半端なカード）のときは、自分の手札が 12〜16 点と低くてもあえて `Stick`（引かずに待つ）** を選んでいます！ディーラーには「17以上になるまで強制的に引き続けなければならない」というルールがあるため、ディーラーの表カードが 4, 5, 6 のときは、自分がバーストのリスクを冒してカードを引くよりも、**ディーラーが10点のカードを引いて自滅（バースト）するのを待つ方が勝率が高い**ことをエージェントが自力で突き止めているのです。
+3. **使えるエースがあるとき（右の表）、合計 17 以下ではすべて大胆に `Hit`**：
+   使えるエース（11点）を持っているときは、もし次のカードで 21 を超えてしまってもエースを 1点 に数え直せる（絶対にその1枚ではバーストしない）ため、17点のようなそこそこ高い点数であっても積極的に `Hit` を選んでさらに強い手（19〜21点）を狙いにいっています。
+
+::: {.callout-note icon=false}
+### 練習問題 09-05：モンテカルロ法プログラムの実行とエピソード数の実験
+1. 作成した `blackjack_mc.py` を実行し、テストでの勝率・平均報酬がランダム方策からどのくらい向上したか、また描画されたヒートマップが上の3つの特徴を持っているかを確認してみましょう。
+2. Antigravity に指示を出して、学習エピソード数を **5,000 回（少ない学習）** に減らしたときと **500,000 回（十分な学習）** のときで、獲得される戦略表（ヒートマップ）やテストの平均報酬がどのように変わるかを比較してみましょう。なぜ少ないエピソード数だと戦略表がまだら模様（不正確な判断）になるのでしょうか？
+:::
+
+---
+
+## Q-learning（Q学習）の考え方
+
+前節ではモンテカルロ法を使ってブラックジャックの最適戦略を学習しました。ここからは、モンテカルロ法と並んで強化学習の最も重要なアルゴリズムである **Q-learning（Q学習）** の考え方を、数式を使わずに定性的に理解しましょう。
+
+### モンテカルロ法の弱点：「ゲームが最後まで終わらないと学べない」
+
+モンテカルロ法は、「実際に1ゲームを最初から最後までプレイし、最終的な勝ち負け（報酬）が確定してから、そのゲームで通ったすべての状態と行動を振り返って評価を更新する」という方法でした。
+
+ブラックジャックのようにわずか2〜3手で勝負がつく短いゲームであれば、この方法でも問題ありません。しかし、もし次のような問題だったらどうなるでしょうか？
+
+- 迷路のゴールにたどり着くまでに **何百歩・何千歩もかかる問題**
+- 将棋や囲碁のように、1局が終わるまでに **100手以上かかる複雑なゲーム**
+- ロボットの歩行制御や自動運転のように、**明確な「ゲームの終わり（終端）」がないまま動き続ける問題**
+
+このような問題では、モンテカルロ法だと「ゴールや終局にたどり着くまで、途中の行動の評価が1ミリも更新されない」という困った事態が起きます。さらに、何百手も動いたあとにようやく結果が出ても、「途中のどの一手が良くて、どの一手が悪かったのか」が最後の結果だけでは分かりにくくなってしまいます。
+
+（日常の勉強に例えるなら、モンテカルロ法は**「1年間の勉強がすべて終わって入試の合否が出てから初めて、4月の勉強のやり方が良かったかどうかを振り返る」**ようなものです。）
+
+### Q-learning の基本アイデア：「1歩進むたびに、移動先の見込みを手掛かりにしてその場で学ぶ」
+
+この弱点を解決したのが **Q-learning（Q学習）** です。
+
+Q-learning の最大の特徴は、**エピソード（ゲーム）が終わるのを待たず、行動を1回実行して次の状態へ「1歩進んだ瞬間」に、その場でただちに行動の評価（Q値）を更新する**という点にあります。
+
+では、まだゲームが終わっておらず最終的な勝ち負けも分からない途中で、どうやって「いま選んだ行動が良かったか悪かったか」を判断するのでしょうか？
+
+その秘密は、**「1歩進んだ先の状態（次の状態）が持っている『見込みの高さ（その状態で選べる一番良い行動の評価値）』を、手掛かりとして利用する」**ことにあります。
+
+```{=html}
+<svg viewBox="0 0 740 370" width="100%" height="370" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="ql-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="ql-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#e65100" />
+    </marker>
+    <marker id="ql-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#16a34a" />
+    </marker>
+  </defs>
+
+  <!-- ==================== TOP: MONTE CARLO ==================== -->
+  <text x="20" y="24" font-size="12.5" font-weight="bold" fill="#475569">【これまでの方法：モンテカルロ法】ゲームが最後まで終わって勝敗が確定するまで更新を待つ</text>
+
+  <rect x="24" y="36" width="130" height="44" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="89" y="55" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">状態① で行動選択</text>
+  <text x="89" y="71" text-anchor="middle" font-size="9.5" fill="#64748b">（まだ更新しない）</text>
+
+  <line x1="154" y1="58" x2="212" y2="58" stroke="#64748b" stroke-width="2" marker-end="url(#ql-arrow-blue)"/>
+
+  <rect x="220" y="36" width="130" height="44" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="285" y="55" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#334155">状態② で行動選択</text>
+  <text x="285" y="71" text-anchor="middle" font-size="9.5" fill="#64748b">（まだ更新しない）</text>
+
+  <line x1="350" y1="58" x2="408" y2="58" stroke="#64748b" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ql-arrow-blue)"/>
+  <text x="379" y="48" text-anchor="middle" font-size="9.5" fill="#64748b">・・・</text>
+
+  <rect x="416" y="36" width="160" height="44" rx="6" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="496" y="55" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">エピソード終了！</text>
+  <text x="496" y="71" text-anchor="middle" font-size="9.5" fill="#bf360c">最終結果（勝敗）が確定</text>
+
+  <path d="M 496,80 Q 496,108 290,108 L 89,108 L 89,86" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#ql-arrow-orange)"/>
+  <path d="M 285,108 L 285,86" fill="none" stroke="#e65100" stroke-width="2" marker-end="url(#ql-arrow-orange)"/>
+  <text x="295" y="123" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">最後にまとめて過去の行動すべてを振り返って平均値を更新</text>
+
+  <!-- Divider -->
+  <line x1="20" y1="142" x2="720" y2="142" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- ==================== BOTTOM: Q-LEARNING ==================== -->
+  <text x="20" y="168" font-size="12.5" font-weight="bold" fill="#0d47a1">【新しい方法：Q-learning】1歩進むたびに、移動先の「最高の見込み」を手掛かりにしてその場で即座に更新する！</text>
+
+  <!-- Current State Box -->
+  <rect x="24" y="186" width="225" height="94" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2.2"/>
+  <text x="136" y="208" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">現在の状態（例：手札 12点）</text>
+  <rect x="40" y="218" width="193" height="48" rx="5" fill="#ffffff" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="136" y="237" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">行動「Hit」を選んだ！</text>
+  <text x="136" y="255" text-anchor="middle" font-size="9.5" fill="#1565c0">（この行動の評価をすぐ更新したい）</text>
+
+  <!-- 1 Step Transition Arrow -->
+  <path d="M 249,233 L 348,233" fill="none" stroke="#1976d2" stroke-width="2.8" marker-end="url(#ql-arrow-blue)"/>
+  <text x="298" y="212" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">1歩だけ進む</text>
+  <text x="298" y="226" text-anchor="middle" font-size="9.5" fill="#334155">（♣8 を引いた）</text>
+  <text x="298" y="250" text-anchor="middle" font-size="9.5" fill="#475569">直後の報酬 = 0</text>
+
+  <!-- Next State Box -->
+  <rect x="356" y="186" width="245" height="94" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.2"/>
+  <text x="478" y="208" text-anchor="middle" font-size="12" font-weight="bold" fill="#15803d">移動先の状態（例：手札 20点）</text>
+  <rect x="372" y="218" width="213" height="48" rx="5" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="478" y="237" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#15803d">ここで選べる最良行動（Stick）の</text>
+  <text x="478" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">評価（最高の見込み）が非常に高い！★</text>
+
+  <!-- Future dashed -->
+  <line x1="601" y1="233" x2="665" y2="233" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ql-arrow-blue)"/>
+  <text x="675" y="229" font-size="10" fill="#64748b">その後の</text>
+  <text x="675" y="244" font-size="10" fill="#64748b">勝負へ…</text>
+
+  <!-- Immediate Feedback Arrow (Next State -> Current State) -->
+  <path d="M 478,280 Q 478,332 308,332 Q 136,332 136,286" fill="none" stroke="#16a34a" stroke-width="2.8" marker-end="url(#ql-arrow-green)"/>
+  <rect x="172" y="302" width="410" height="48" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/>
+  <text x="377" y="322" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#14532d">ゲーム終了を待たずにその場で即更新！（バケツリレー方式）</text>
+  <text x="377" y="340" text-anchor="middle" font-size="10" fill="#15803d">「見込みが高い『手札20』に進めたのだから、『手札12でHit』の評価も少し引き上げよう！」</text>
+</svg>
+```
+
+### 具体例でイメージする Q-learning の仕組み
+
+ブラックジャックの具体例で考えてみましょう。
+
+1. エージェントがすでに何度かプレイして、**「手札が 20 点の状態は、そこで `Stick` を選べばとても勝ちやすい（見込みが非常に高い状態だ）」**ということを知っているとします。
+2. ある新しいゲームで、手札が **12 点** の状態から `Hit`（もう1枚引く）を選んだ結果、`8` のカードを引いて **20 点** の状態に進んだとします。
+3. この時点では、まだ自分のターンが続いている（ディーラーと勝負していない）ため、このゲームに最終的に勝つか負けるかは確定していません。
+4. しかし Q-learning では、**「12 点で `Hit` を選んだら、見込みが非常に高い『20 点の状態』に進むことができた！ということは、12 点での `Hit` の評価もその場で少し引き上げよう！」**と判断し、ゲームの終了を待たずに即座に評価を修正します。
+5. そして次のゲーム以降で、「手札 12 点の見込み」が高くなっていれば、今度はさらにその1歩手前（たとえば「手札 7 点で `Hit` を選んで 12 点に進んだとき」）の評価も引き上げられていきます。
+
+このように、**ゴールや勝負所に近い状態の評価から、1歩手前の行動の評価へと「バケツリレー」のように少しずつ価値が伝わっていく**のが Q-learning の仕組みです。
+
+### Q-learning の3つの重要ポイント
+
+Q-learning が1歩ごとに評価（Q値）を修正するときには、次の3つのルールに従います：
+
+1. **「いまの評価」を「直後の報酬 ＋ 移動先の最高の見込み」に近づける**:
+   行動を選ぶ前に持っていた「現在の行動の評価」と、実際に1歩動いてみて分かった「そのステップで得られた報酬」に「移動先の状態で選べる一番良い行動の評価（最高の見込み）」を合わせたものを比較します。ただし、もしその1歩でバーストしたり勝負がついたりして**ゲームが終了した場合**は、その先の状態はないため、単純に**「得られた最終報酬（勝ち $+1$、引き分け $0$、負け $-1$）」**そのものに評価を近づけます。
+2. **1回で全部書き換えず、「少しずつ（一定の学習率で）」修正する**:
+   たまたま1回だけ都合よく `8` を引いて 20 点になれたからといって、「12 点で `Hit` すれば 100% いつも 20 点になれる！」と思い込んで評価を一気に書き換えてしまうのは危険です（次のゲームでは `10` を引いて 22 点でバーストするかもしれないからです）。
+   そこで Q-learning では、**「現在の評価と、今回の結果から見えた目標とのズレのうち、たとえば 1% や 5% といった一定の割合だけ少しずつ評価を動かす」**という方法をとります。この「1回の経験でどれくらいの割合だけ評価を修正するか」を表す数値を **学習率（Learning Rate）** と呼びます。何千回・何万回もプレイしながら少しずつ評価を修正し続けることで、カード運のばらつきがならされ、自然な平均値（期待値）へと落ち着いていきます。
+3. **移動先では「最善の行動をとる」と仮定して見積もる**:
+   学習中は $\varepsilon$-greedy 法を使っているため、移動先の状態に着いたあと、実際には「探索」によってランダムな行動（たとえば 20 点なのにあえて `Hit`）を試すこともあります。しかし、1歩前の行動を評価するときには、**「移動先の状態では、そこで一番評価が高い最善の行動（20 点なら `Stick`）を選ぶはずだ」という最高の見込み**を基準にして更新します。これにより、探索でいろいろな手を試しながらも、「最善を尽くしたときの正しい行動価値」をぶれずに学習することができます。
+
+### モンテカルロ法と Q-learning の比較
+
+ここまで学んだ2つの学習手法の特徴を表に整理しましょう。
+
+| 比較項目 | モンテカルロ法（Monte Carlo Method） | Q-learning（Q学習） |
+| :--- | :--- | :--- |
+| **評価を更新するタイミング** | **1エピソード（1ゲーム）が最後まで終了したあと**で、通過したすべてのステップをまとめて更新する。 | **行動を1回選んで1歩進むたび**に、ゲーム終了を待たずその場で即座に更新する。 |
+| **何を基準（手掛かり）にして更新するか** | ゲーム終了時に確定した**「実際の最終結果（収益）」**の平均をとる。 | その1歩で得られた**「直後の報酬」と「移動先の状態での最高の見込み（最大Q値）」**を手掛かりにする（バケツリレー方式）。 |
+| **長いエピソードや終わりのない問題** | 最後まで終わらないと学べないため、ステップ数が長い問題や終わりのない問題には**不向き**。 | 1歩ごとにリアルタイムで学べるため、迷路や制御などステップ数が長い問題にも**非常に強い**。 |
+
+::: {.callout-note icon=false}
+### 練習問題 09-06：モンテカルロ法と Q-learning の違い
+数式を使わずに、次の問いに自分の言葉で答えてみましょう。
+
+1. モンテカルロ法と Q-learning では、行動の評価（Q値）を更新する「タイミング」にどのような違いがありますか？
+2. Q-learning では、まだゲームが終わっておらず最終的な勝ち負けが分からない途中のステップでも、行動の評価を更新することができます。それは何を「手掛かり」として利用しているからですか？
+3. Q-learning で1歩進んだとき、1回の結果だけで評価を100%書き換えてしまうのではなく、「学習率」を使って少しずつ（たとえば数%ずつ）修正するのはなぜですか？ブラックジャックを例にして説明してみましょう。
+:::
+
+---
+
+## vibe coding③：Q-learning による Blackjack の学習
+
+それでは、先ほど定性的に学んだ **Q-learning** を使ってブラックジャックを学習するプログラム `blackjack_qlearning.py` を **vibe coding** で作成し、1歩ごとの更新でもモンテカルロ法と同じようにブラックジャックの最適戦略（基本戦略）を獲得できるか確かめてみましょう。
+
+### 作成するプログラムの仕様
+
+Antigravity には、以下の要件を満たすプログラム `blackjack_qlearning.py` を作成してもらいます：
+
+1. **Q-learning による1ステップごとの学習（500,000 エピソード）**:
+   - `"Blackjack-v1"` 環境において、$\varepsilon$-greedy 法（探索率 $\varepsilon = 0.1$）で行動を選択しながら **50万エピソード（500,000回）** プレイする。
+   - エピソード終了を待たず、1ステップ進むごとに「直後の報酬」と「移動先の状態で選べる行動の最大評価値（ゲーム終了時は最終報酬のみ）」を手掛かりにして、一定の学習率（カード運のばらつきに振り回されないよう `0.01` 程度の小さめの学習率）で少しずつ Q テーブルを更新する。
+2. **テスト評価と3手法（ランダム・モンテカルロ・Q-learning）の比較**:
+   - 学習完了後、探索なし（$\varepsilon = 0$）で 10,000 エピソードのテストを実行し、勝率・引き分け率・敗北率・平均報酬を表示する。
+3. **戦略表（ヒートマップ）と学習曲線の可視化**:
+   - モンテカルロ法のときと同じく、学習曲線（平均報酬の推移）と、「使えるエースなし / あり」の2枚の推奨行動ヒートマップを Matplotlib で描画して保存・表示する。
+
+### エージェントへの指示（プロンプト例）
+
+vibe coding では、人間が複雑な更新式をコードとして書かなくても、「Q-learning を使って1ステップごとに更新してほしい」と自然言語で指示するだけで、コーディングエージェントが適切な処理を組み立ててくれます。
+
+::: {.callout-tip icon=true}
+### プロンプト入力例
+先ほど作成した `blackjack_mc.py` と同じ実験条件で、学習アルゴリズムを「モンテカルロ法」から「Q-learning（1ステップごとの更新）」に変更したプログラム `blackjack_qlearning.py` を作成してください。
+
+【学習とテストの仕様】
+1. Gymnasium の `"Blackjack-v1"` 環境を使用し、1ステップ進むごとに直後の報酬と次の状態の最大Q値を使って Q テーブルを更新する Q-learning を実装してください（エピソード終了時は次状態の価値を 0 として最終報酬のみで更新します）。
+2. パラメータは探索率 `epsilon = 0.1`、割引率 `gamma = 1.0`、学習率 `alpha = 0.01`（確率的なばらつきをならすため小さめの値）とし、500,000 エピソード（50万回）学習させてください。
+3. 学習完了後、探索なし（`epsilon = 0`）で 10,000 エピソードのテストを実行し、「勝率・引き分け率・敗北率・平均報酬」をターミナルに表示してください。
+
+【Matplotlib によるグラフ描画の仕様】
+1. `blackjack_mc.py` と同様に、エピソード数に対する平均報酬の学習曲線と、「使えるエースなし（False）」「使えるエースあり（True）」の2枚の推奨行動ヒートマップ（プレイヤー合計 12〜21 × ディーラー表カード 1〜10）を描画し、`blackjack_qlearning_result.png` として保存・画面表示してください。
+2. 作成後、実際にプログラムを実行して動作確認を行ってください。
+:::
+
+### 実行結果の確認と3つの手法の比較
+
+プログラムを実行すると、Q-learning による50万エピソードの学習が行われ、以下のようなテスト結果とグラフが得られます：
+
+```text
+=== Q-learning 10,000 エピソードのテスト結果 ===
+勝ち    : 4,295 回 (43.0%)
+引き分け:   871 回 ( 8.7%)
+負け    : 4,834 回 (48.3%)
+平均報酬: -0.054
+```
+
+また、出力された推奨行動のヒートマップを確認すると、**1歩ごとにバケツリレー方式で学習する Q-learning であっても、最後まで終わってから平均をとるモンテカルロ法とほぼ同じ基本戦略（17以上は `Stick`、12〜16はディーラーのカードが弱ければ `Stick`・強ければ `Hit`、使えるエースがあれば 17 以下は積極的に `Hit`）にしっかりとたどり着いている**ことが分かります。
+
+本章で扱った4つの方策・学習手法の成績を一覧表で比べてみましょう。
+
+| エージェントの方策・手法 | 勝率（目安） | 引き分け率 | 敗北率 | 平均報酬 | 行動の特徴 |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **① ランダム方策** | 約 $28\%$ | 約 $4\%$ | 約 $68\%$ | **約 $-0.39$** | 20点でも50%で引いて自滅するなど無謀な選択が多い |
+| **② ディーラーと同じ方策** | 約 $41\%$ | 約 $10\%$ | 約 $49\%$ | **約 $-0.08$** | 自分の合計点数（17以上か）だけを見て固定ルールで判断 |
+| **③ モンテカルロ法** | **約 $43\%$** | 約 $9\%$ | **約 $48\%$** | **約 $-0.05$** | ゲーム終了後の結果の平均から基本戦略を自律獲得 |
+| **④ Q-learning** | **約 $43\%$** | 約 $9\%$ | **約 $48\%$** | **約 $-0.05$** | 1歩ごとの移動先の見込みから基本戦略を自律獲得 |
+
+ブラックジャックのように数手で勝負がつく環境では、モンテカルロ法と Q-learning はどちらも同じ理論上の限界値（平均報酬約 $-0.05$）まで到達します。そして次章（第10回）で扱う「倒立振子（Cart Pole）」やミニプロジェクトで作成する自作ゲームのように、**1エピソードで何十ステップ・何百ステップも行動を続ける環境では、1歩ごとにリアルタイムで学べる Q-learning（さらにはそれを発展させた深層強化学習）がさらなる真価を発揮する**ことになります。
+
+::: {.callout-note icon=false}
+### 練習問題 09-07：Q-learning の実験と3手法の比較グラフ作成
+1. 作成した `blackjack_qlearning.py` を実行し、テストでの勝率・平均報酬と、描画された戦略表（ヒートマップ）をモンテカルロ法の結果と見比べてみましょう。
+2. Q-learning において、1回あたりの修正割合である**学習率（`alpha`）を `0.01`（少しずつ修正）から `0.5`（1回の結果で半分書き換える大きすぎる値）に変更**すると、獲得される戦略表やテストの平均報酬はどうなるでしょうか？Antigravity に指示を出して実験し、なぜそうなるのかを考察してみましょう。
+3. （発展）Antigravity に指示を出して、**「① ランダム方策」「② モンテカルロ法」「③ Q-learning」の3つの学習曲線（エピソード数に対する平均報酬の推移）を1枚のグラフに重ねて描画する比較プログラム**を作成してみましょう。
+:::
 
 ---
 
 ## まとめ
-- **行動価値関数 $Q(s, a)$** は、方策を直接導出するために最も実用的な指標。
-- **モンテカルロ法**は、エピソード全体の終了時収益から価値を標本平均するアプローチ。
-- Blackjackのような終端が必ず訪れるゲームにおいて、シンプルな更新式で見事に定石を自律獲得できる。
+
+- **強化学習ライブラリ Gymnasium**: 多彩な標準実験環境を備え、`gym.make("環境名")` による環境作成、`env.reset()` による初期化、`env.step(action)` による1ステップ実行（次の状態・報酬・終了フラグ `terminated`・打ち切りフラグ `truncated`・補足情報の返却）という**共通のインターフェース**で統一された Python の世界標準ライブラリ。
+- **Blackjack（`"Blackjack-v1"`）環境**: 手札の合計を 21 を超えない範囲で 21 に近づけるカードゲーム。状態は **`(プレイヤーの合計点数, ディーラーの表向きカード, 使えるエースの有無)`** の3要素タプル、行動は **`Stick (0)`** と **`Hit (1)`** の2択、最終報酬は **勝ち $+1.0$・引き分け $0.0$・負け $-1.0$** で定義される。
+- **ランダム方策とモンテカルロ法の比較**: 毎回ランダムに行動を選ぶ方策ではバーストによる自滅などで勝率約 28%（平均報酬約 $-0.39$）にとどまるのに対し、ゲーム終了時の報酬の平均から行動価値 $Q(s, a)$ を学ぶ**モンテカルロ法**（＋ $\varepsilon$-greedy 法）を用いると、カードのルールを教えなくても「17以上は止める」「12〜16はディーラーの表カード次第で使い分ける」「使えるエースがあれば積極的に引く」といった基本戦略を自力で獲得し、勝率約 43%（理論上限の平均報酬約 $-0.05$）に達する。
+- **Q-learning（Q学習）の定性的な仕組み**: エピソードが最後まで終わるのを待たず、**1歩進むたびに「その場で得られた報酬」と「移動先の状態が持つ最高の見込み（最良行動の評価値）」を手掛かりにして、バケツリレーのようにその場で評価を少しずつ修正する**手法。1歩ごとにリアルタイムで学習できるため、ステップ数が長い問題にも幅広く適用できる。

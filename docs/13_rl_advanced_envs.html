@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>13&nbsp; 高度な制御環境と訓練結果の分析・考察 – 情報基礎２</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./14_summary.html" rel="next">
+<link href="./12_rl_policy_gradient.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "一致なし",
+    "search-matching-documents-text": "一致した文書",
+    "search-copy-link-title": "検索へのリンクをコピー",
+    "search-hide-matches-text": "追加の検索結果を非表示",
+    "search-more-match-text": "追加の検索結果",
+    "search-more-matches-text": "追加の検索結果",
+    "search-clear-button-title": "消去",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "検索",
+    "search-label": "サーチ"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./09_rl_blackjack.html">第3部：Gymnasiumによる強化学習の実践とミニプロジェクト</a></li><li class="breadcrumb-item"><a href="./13_rl_advanced_envs.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">高度な制御環境と訓練結果の分析・考察</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">情報基礎２</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="サーチ"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">第1部：プログラミングとアルゴリズムの基礎</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_program_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">プログラムとは</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_python_basics1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">場合分けと繰り返し</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_python_basics2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">データ型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">アルゴリズムの性質</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">第2部：機械学習と強化学習の概念</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_machine_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">機械学習</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_multi_armed_bandit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">多腕バンディット問題</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_reinforcement_learning_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">強化学習の基礎</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_value_and_monte_carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">価値関数とモンテカルロ法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">第3部：Gymnasiumによる強化学習の実践とミニプロジェクト</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09_rl_blackjack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">GymnasiumとBlackjack環境</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10_rl_cart_pole.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Cart Poleと連続状態の離散化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11_rl_dqn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">深層強化学習（DQN）</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12_rl_policy_gradient.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">方策勾配法とAIプレーヤーの訓練</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13_rl_advanced_envs.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">高度な制御環境と訓練結果の分析・考察</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14_summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">ミニプロジェクト成果発表とまとめ</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#本章のねらい" id="toc-本章のねらい" class="nav-link active" data-scroll-target="#本章のねらい"><span class="header-section-number">13.1</span> 本章のねらい</a></li>
+  <li><a href="#高度な物理制御環境への挑戦lunar-lander-と-car-racing" id="toc-高度な物理制御環境への挑戦lunar-lander-と-car-racing" class="nav-link" data-scroll-target="#高度な物理制御環境への挑戦lunar-lander-と-car-racing"><span class="header-section-number">13.2</span> 高度な物理制御環境への挑戦：Lunar Lander と Car Racing</a>
+  <ul class="collapse">
+  <li><a href="#lunarlander-v3月面着陸船の制御" id="toc-lunarlander-v3月面着陸船の制御" class="nav-link" data-scroll-target="#lunarlander-v3月面着陸船の制御"><span class="header-section-number">13.2.1</span> 1. <code>LunarLander-v3</code>（月面着陸船の制御）</a></li>
+  <li><a href="#carracing-v3トップビューのカーレース" id="toc-carracing-v3トップビューのカーレース" class="nav-link" data-scroll-target="#carracing-v3トップビューのカーレース"><span class="header-section-number">13.2.2</span> 2. <code>CarRacing-v3</code>（トップビューのカーレース）</a></li>
+  </ul></li>
+  <li><a href="#vibe-codinglunar-landerまたは-car-racingの-ai-を育てる" id="toc-vibe-codinglunar-landerまたは-car-racingの-ai-を育てる" class="nav-link" data-scroll-target="#vibe-codinglunar-landerまたは-car-racingの-ai-を育てる"><span class="header-section-number">13.3</span> vibe coding：Lunar Lander（または Car Racing）の AI を育てる</a></li>
+  <li><a href="#ミニプロジェクト4自作ゲームaiの訓練結果の分析と考察" id="toc-ミニプロジェクト4自作ゲームaiの訓練結果の分析と考察" class="nav-link" data-scroll-target="#ミニプロジェクト4自作ゲームaiの訓練結果の分析と考察"><span class="header-section-number">13.4</span> ミニプロジェクト(4)：自作ゲームAIの訓練結果の分析と考察</a>
+  <ul class="collapse">
+  <li><a href="#観点①学習曲線の分析aiはどう成長したか" id="toc-観点①学習曲線の分析aiはどう成長したか" class="nav-link" data-scroll-target="#観点①学習曲線の分析aiはどう成長したか"><span class="header-section-number">13.4.1</span> 観点①：学習曲線の分析（AIはどう成長したか？）</a></li>
+  <li><a href="#観点②ベースラインとの定量的な比較どれだけ賢くなったか" id="toc-観点②ベースラインとの定量的な比較どれだけ賢くなったか" class="nav-link" data-scroll-target="#観点②ベースラインとの定量的な比較どれだけ賢くなったか"><span class="header-section-number">13.4.2</span> 観点②：ベースラインとの定量的な比較（どれだけ賢くなったか？）</a></li>
+  <li><a href="#観点③獲得された戦略と報酬設計の考察どんな知能が生まれたか" id="toc-観点③獲得された戦略と報酬設計の考察どんな知能が生まれたか" class="nav-link" data-scroll-target="#観点③獲得された戦略と報酬設計の考察どんな知能が生まれたか"><span class="header-section-number">13.4.3</span> 観点③：獲得された戦略と報酬設計の考察（どんな知能が生まれたか？）</a></li>
+  </ul></li>
+  <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">13.5</span> まとめ</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./09_rl_blackjack.html">第3部：Gymnasiumによる強化学習の実践とミニプロジェクト</a></li><li class="breadcrumb-item"><a href="./13_rl_advanced_envs.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">高度な制御環境と訓練結果の分析・考察</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">高度な制御環境と訓練結果の分析・考察</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> コード</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="本章のねらい" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="本章のねらい"><span class="header-section-number">13.1</span> 本章のねらい</h2>
+<p>前半では、Gymnasium に収録されているより本格的でゲーム性の高い物理シミュレーション環境である <strong><code>"LunarLander-v3"</code>（月面着陸ゲーム）</strong> や <strong><code>"CarRacing-v3"</code>（トップビューのカーレース）</strong> を取り上げます。これらの環境がどのように「状態・行動・報酬」を設計しているかを学び、DQN や PPO（方策勾配法）を使って高度な制御AIを育てる実験を行います。</p>
+<p>後半の<strong>ミニプロジェクト(4)</strong>では、これまでに育てた自作ゲームAIの訓練結果を客観的・科学的に評価するための<strong>「分析・考察の手法」</strong>を学び、次回（第14回）の成果発表に向けた準備を仕上げます。</p>
+<hr>
+</section>
+<section id="高度な物理制御環境への挑戦lunar-lander-と-car-racing" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="高度な物理制御環境への挑戦lunar-lander-と-car-racing"><span class="header-section-number">13.2</span> 高度な物理制御環境への挑戦：Lunar Lander と Car Racing</h2>
+<p>Gymnasium には、2次元の物理エンジン（Box2D）を使った本格的なゲーム・制御環境が用意されています（<code>pip install "gymnasium[box2d]"</code> で導入できます）。</p>
+<section id="lunarlander-v3月面着陸船の制御" class="level3" data-number="13.2.1">
+<h3 data-number="13.2.1" class="anchored" data-anchor-id="lunarlander-v3月面着陸船の制御"><span class="header-section-number">13.2.1</span> 1. <code>LunarLander-v3</code>（月面着陸船の制御）</h3>
+<p>宇宙船のメインエンジンと左右の姿勢制御エンジンを噴射し、月面の旗が立った着陸パッドの上に、船体を傾けず静かに着陸させるゲームです。</p>
+<ul>
+<li><strong>状態（8次元の連続値）</strong>:
+<ul>
+<li>着陸船の座標 <span class="math inline">\((x, y)\)</span>、速度 <span class="math inline">\((v_x, v_y)\)</span>、船体の角度 <span class="math inline">\(\theta\)</span>、角速度 <span class="math inline">\(\omega\)</span>、および左右の脚が地面に接しているか（<code>0</code> または <code>1</code>）の計8個。</li>
+</ul></li>
+<li><strong>行動（4択の離散値、または連続値）</strong>:
+<ul>
+<li><code>0</code>: 何もしない、<code>1</code>: 左エンジン噴射、<code>2</code>: メイン（下）エンジン噴射、<code>3</code>: 右エンジン噴射。</li>
+</ul></li>
+<li><strong>お手本となる巧みな報酬設計</strong>:
+<ul>
+<li>着陸パッドに近づくほどプラス、離れるとマイナス。</li>
+<li>速度が速すぎたり船体が傾いたりするとマイナス、左右の脚が接地するとそれぞれ <span class="math inline">\(+10\)</span>。</li>
+<li>燃料節約のため、メインエンジンを噴射するたびに <span class="math inline">\(-0.3\)</span>、左右エンジンで <span class="math inline">\(-0.03\)</span> の微小コスト。</li>
+<li>最終的に無事着陸して静止すれば <strong><span class="math inline">\(+100\)</span></strong>、墜落すると <strong><span class="math inline">\(-100\)</span></strong>（合計報酬が <span class="math inline">\(+200\)</span> 以上になればクリア水準）。</li>
+</ul></li>
+</ul>
+</section>
+<section id="carracing-v3トップビューのカーレース" class="level3" data-number="13.2.2">
+<h3 data-number="13.2.2" class="anchored" data-anchor-id="carracing-v3トップビューのカーレース"><span class="header-section-number">13.2.2</span> 2. <code>CarRacing-v3</code>（トップビューのカーレース）</h3>
+<p>毎回ランダムに生成されるサーキットコースを、コースアウトせずにできるだけ速く1周走り切るレーシングゲームです。</p>
+<ul>
+<li><strong>状態（画像ピクセル）</strong>:
+<ul>
+<li>上空から見たコースと車を描いた <strong><span class="math inline">\(96 \times 96\)</span> ピクセルのカラー画像（RGB）</strong> そのものが状態として与えられます。</li>
+</ul></li>
+<li><strong>行動</strong>:
+<ul>
+<li>ハンドル操作（左〜右）、アクセル、ブレーキ（連続値モードと5択の離散モードの両方に対応）。</li>
+</ul></li>
+<li><strong>報酬</strong>:
+<ul>
+<li>コース上の新しいタイルを通過するごとにプラス報酬が与えられ、時間をかけるほど1フレームごとに <span class="math inline">\(-0.1\)</span> されるため、コースからはみ出さずに最速で走る戦略が求められます。</li>
+</ul></li>
+</ul>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>練習問題 13-01：Lunar Lander の報酬設計から学ぶ工夫
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>LunarLander-v3</code> では、「無事着陸したら <span class="math inline">\(+100\)</span>、墜落したら <span class="math inline">\(-100\)</span>」という最終報酬だけでなく、途中のステップでも「パッドに近づいたらプラス・傾いたらマイナス・エンジンを吹かしたらわずかにマイナス」という細かい報酬が設定されています。</p>
+<ol type="1">
+<li>もし途中の報酬が一切なく「着陸成功の <span class="math inline">\(+100\)</span> と墜落の <span class="math inline">\(-100\)</span> だけ」だった場合、学習初期のAIにはどのような困難が起きると考えられますか？</li>
+<li>エンジンを噴射するたびにわずかなマイナス報酬（<span class="math inline">\(-0.3\)</span>）を与えているのは、AIにどのような動きを身につけさせるためでしょうか？</li>
+</ol>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="vibe-codinglunar-landerまたは-car-racingの-ai-を育てる" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="vibe-codinglunar-landerまたは-car-racingの-ai-を育てる"><span class="header-section-number">13.3</span> vibe coding：Lunar Lander（または Car Racing）の AI を育てる</h2>
+<p><strong>vibe coding</strong> によって、<code>LunarLander-v3</code>（または <code>CarRacing-v3</code>）においてランダム方策の動き（墜落やコースアウト）を確認したあと、DQN や PPO を使って着陸・走行AIを訓練し、訓練前後の動きをアニメーションで比較するプログラムを作成しましょう。</p>
+<hr>
+</section>
+<section id="ミニプロジェクト4自作ゲームaiの訓練結果の分析と考察" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="ミニプロジェクト4自作ゲームaiの訓練結果の分析と考察"><span class="header-section-number">13.4</span> ミニプロジェクト(4)：自作ゲームAIの訓練結果の分析と考察</h2>
+<p>来週（第14回）はいよいよミニプロジェクトの成果発表会です。ただ「ゲームを作ってAIが動きました」と報告するだけでなく、<strong>実験データ（グラフや数値）に基づいて「なぜそのような結果になったのか」を分析・考察する</strong>ことで、説得力のある優れた発表になります。</p>
+<p>以下の<strong>3つの観点</strong>から、自分のミニプロジェクトの結果を整理・分析しましょう。</p>
+<section id="観点①学習曲線の分析aiはどう成長したか" class="level3" data-number="13.4.1">
+<h3 data-number="13.4.1" class="anchored" data-anchor-id="観点①学習曲線の分析aiはどう成長したか"><span class="header-section-number">13.4.1</span> 観点①：学習曲線の分析（AIはどう成長したか？）</h3>
+<p>訓練中の「エピソード数（横軸）」に対する「獲得報酬や移動平均（縦軸）」のグラフ（学習曲線）を見て、成長のプロセスを読み解きます：</p>
+<ul>
+<li><strong>初期・中期・終期の変化</strong>：何エピソード目あたりから報酬が上がり始め、何エピソード目あたりで安定したか（収束したか）？</li>
+<li><strong>ばらつき（分散）と安定性</strong>：学習後半でもたまに大失敗して報酬が落ち込むことがあるか、それとも毎回安定して高得点を取れているか？</li>
+</ul>
+</section>
+<section id="観点②ベースラインとの定量的な比較どれだけ賢くなったか" class="level3" data-number="13.4.2">
+<h3 data-number="13.4.2" class="anchored" data-anchor-id="観点②ベースラインとの定量的な比較どれだけ賢くなったか"><span class="header-section-number">13.4.2</span> 観点②：ベースラインとの定量的な比較（どれだけ賢くなったか？）</h3>
+<p>学習済みAIの強さを客観的な数値で示すため、100〜1,000エピソードのテストを行い、<strong>複数のプレーヤー（方策）の成績を表や棒グラフで比較</strong>します：</p>
+<ul>
+<li><strong>比較対象の例</strong>：
+<ol type="1">
+<li><strong>ランダム方策（未学習のAI）</strong>：平均報酬・クリア率（勝率）はいくらか？</li>
+<li><strong>簡単な固定ルール方策 または 人間プレイヤー</strong>：平均報酬はいくらか？</li>
+<li><strong>強化学習で育てたAI（改善前 vs 改善後、または DQN vs PPO など）</strong>：平均報酬・クリア率はどこまで向上したか？</li>
+</ol></li>
+</ul>
+</section>
+<section id="観点③獲得された戦略と報酬設計の考察どんな知能が生まれたか" class="level3" data-number="13.4.3">
+<h3 data-number="13.4.3" class="anchored" data-anchor-id="観点③獲得された戦略と報酬設計の考察どんな知能が生まれたか"><span class="header-section-number">13.4.3</span> 観点③：獲得された戦略と報酬設計の考察（どんな知能が生まれたか？）</h3>
+<p>育てたAIの実際のプレイ画面（またはQテーブル・行動選択の傾向）を観察し、以下の点を考察します：</p>
+<ol type="1">
+<li><strong>AIが自力で獲得した賢い動き（創発した戦略）</strong>：
+<ul>
+<li>人間がルールとして教えなかったにもかかわらず、AIが試行錯誤から見つけ出した「うまい立ち回り（例：罠の手前で安全マージンをとって迂回する、敵を引きつけてからかわす、中央に陣取って次のアイテムに備えるなど）」は何か？</li>
+</ul></li>
+<li><strong>報酬設計（Reward Shaping）や状態設計の試行錯誤の振り返り</strong>：
+<ul>
+<li>開発の途中で起きた失敗（ループ、自滅、報酬ハッキングなど）を、どのような報酬や状態の変更によって克服できたか？</li>
+</ul></li>
+<li><strong>残された課題と今後の拡張アイデア</strong>：
+<ul>
+<li>現在のAIがまだ苦手な場面はどこか？ゲームをさらに難しく（動く障害物の追加など）した場合にどうすれば対応できそうか？</li>
+</ul></li>
+</ol>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>練習問題 13-02：ミニプロジェクト成果発表の構成メモ作成
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>次回の成果発表に向けて、あなたのミニプロジェクトの分析結果を次の項目に沿って整理してみましょう。</p>
+<ol type="1">
+<li><strong>定量比較の結果</strong>：ランダム方策と学習済みAIで、テスト時の「平均報酬」や「クリア率（または平均生存ステップ数）」はそれぞれいくらでしたか？</li>
+<li><strong>最も工夫したポイント</strong>：ゲームルール、状態表現、報酬設計、アルゴリズム選びの中で、AIを賢くするために一番効果があった工夫は何でしたか？</li>
+<li><strong>AIのプレイの見どころ</strong>：実演デモで見てもらいたい「AIならではの賢い動き（または面白かった失敗例）」はどのような場面ですか？</li>
+</ol>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="まとめ" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="まとめ"><span class="header-section-number">13.5</span> まとめ</h2>
+<ul>
+<li><strong>高度な制御環境（Lunar Lander / Car Racing）</strong>: 8次元の物理状態や画面ピクセルを扱う本格的な環境でも、適切な報酬設計と深層強化学習（DQN・PPO）を組み合わせることで、着陸やコース走行のスキルを自律的に獲得できる。</li>
+<li><strong>訓練結果の科学的分析</strong>: ①学習曲線による成長・収束過程の把握、②ランダム方策や人間との定量的な成績比較、③獲得された戦略と報酬設計の因果関係の考察という3つの視点でまとめることで、試行錯誤の成果を客観的に評価できる。</li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "コピーしました");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "コピーしました");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./12_rl_policy_gradient.html" class="pagination-link" aria-label="方策勾配法とAIプレーヤーの訓練">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">方策勾配法とAIプレーヤーの訓練</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./14_summary.html" class="pagination-link" aria-label="ミニプロジェクト成果発表とまとめ">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">ミニプロジェクト成果発表とまとめ</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">ソースコード</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="fu"># 高度な制御環境と訓練結果の分析・考察</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="fu">## 本章のねらい</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a>前半では、Gymnasium に収録されているより本格的でゲーム性の高い物理シミュレーション環境である **`"LunarLander-v3"`（月面着陸ゲーム）** や **`"CarRacing-v3"`（トップビューのカーレース）** を取り上げます。これらの環境がどのように「状態・行動・報酬」を設計しているかを学び、DQN や PPO（方策勾配法）を使って高度な制御AIを育てる実験を行います。</span>
+<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a>後半の**ミニプロジェクト(4)**では、これまでに育てた自作ゲームAIの訓練結果を客観的・科学的に評価するための**「分析・考察の手法」**を学び、次回（第14回）の成果発表に向けた準備を仕上げます。</span>
+<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a>---</span>
+<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a><span class="fu">## 高度な物理制御環境への挑戦：Lunar Lander と Car Racing</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a>Gymnasium には、2次元の物理エンジン（Box2D）を使った本格的なゲーム・制御環境が用意されています（<span class="in">`pip install "gymnasium[box2d]"`</span> で導入できます）。</span>
+<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a><span class="fu">### 1. `LunarLander-v3`（月面着陸船の制御）</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a>宇宙船のメインエンジンと左右の姿勢制御エンジンを噴射し、月面の旗が立った着陸パッドの上に、船体を傾けず静かに着陸させるゲームです。</span>
+<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a><span class="ss">- </span>**状態（8次元の連続値）**:</span>
+<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a><span class="ss">  - </span>着陸船の座標 $(x, y)$、速度 $(v_x, v_y)$、船体の角度 $\theta$、角速度 $\omega$、および左右の脚が地面に接しているか（<span class="in">`0`</span> または <span class="in">`1`</span>）の計8個。</span>
+<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a><span class="ss">- </span>**行動（4択の離散値、または連続値）**:</span>
+<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="ss">  - </span><span class="in">`0`</span>: 何もしない、<span class="in">`1`</span>: 左エンジン噴射、<span class="in">`2`</span>: メイン（下）エンジン噴射、<span class="in">`3`</span>: 右エンジン噴射。</span>
+<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="ss">- </span>**お手本となる巧みな報酬設計**:</span>
+<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a><span class="ss">  - </span>着陸パッドに近づくほどプラス、離れるとマイナス。</span>
+<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a><span class="ss">  - </span>速度が速すぎたり船体が傾いたりするとマイナス、左右の脚が接地するとそれぞれ $+10$。</span>
+<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a><span class="ss">  - </span>燃料節約のため、メインエンジンを噴射するたびに $-0.3$、左右エンジンで $-0.03$ の微小コスト。</span>
+<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a><span class="ss">  - </span>最終的に無事着陸して静止すれば **$+100$**、墜落すると **$-100$**（合計報酬が $+200$ 以上になればクリア水準）。</span>
+<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a><span class="fu">### 2. `CarRacing-v3`（トップビューのカーレース）</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a>毎回ランダムに生成されるサーキットコースを、コースアウトせずにできるだけ速く1周走り切るレーシングゲームです。</span>
+<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a><span class="ss">- </span>**状態（画像ピクセル）**:</span>
+<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a><span class="ss">  - </span>上空から見たコースと車を描いた **$96 \times 96$ ピクセルのカラー画像（RGB）** そのものが状態として与えられます。</span>
+<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a><span class="ss">- </span>**行動**:</span>
+<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a><span class="ss">  - </span>ハンドル操作（左〜右）、アクセル、ブレーキ（連続値モードと5択の離散モードの両方に対応）。</span>
+<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a><span class="ss">- </span>**報酬**:</span>
+<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a><span class="ss">  - </span>コース上の新しいタイルを通過するごとにプラス報酬が与えられ、時間をかけるほど1フレームごとに $-0.1$ されるため、コースからはみ出さずに最速で走る戦略が求められます。</span>
+<span id="cb1-39"><a href="#cb1-39" aria-label="39"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-label="40"></a>::: {.callout-note icon=false}</span>
+<span id="cb1-41"><a href="#cb1-41" aria-label="41"></a><span class="fu">### 練習問題 13-01：Lunar Lander の報酬設計から学ぶ工夫</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-label="42"></a><span class="in">`LunarLander-v3`</span> では、「無事着陸したら $+100$、墜落したら $-100$」という最終報酬だけでなく、途中のステップでも「パッドに近づいたらプラス・傾いたらマイナス・エンジンを吹かしたらわずかにマイナス」という細かい報酬が設定されています。</span>
+<span id="cb1-43"><a href="#cb1-43" aria-label="43"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-label="44"></a><span class="ss">1. </span>もし途中の報酬が一切なく「着陸成功の $+100$ と墜落の $-100$ だけ」だった場合、学習初期のAIにはどのような困難が起きると考えられますか？</span>
+<span id="cb1-45"><a href="#cb1-45" aria-label="45"></a><span class="ss">2. </span>エンジンを噴射するたびにわずかなマイナス報酬（$-0.3$）を与えているのは、AIにどのような動きを身につけさせるためでしょうか？</span>
+<span id="cb1-46"><a href="#cb1-46" aria-label="46"></a>:::</span>
+<span id="cb1-47"><a href="#cb1-47" aria-label="47"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-label="48"></a>---</span>
+<span id="cb1-49"><a href="#cb1-49" aria-label="49"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-label="50"></a><span class="fu">## vibe coding：Lunar Lander（または Car Racing）の AI を育てる</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-label="51"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-label="52"></a>**vibe coding** によって、<span class="in">`LunarLander-v3`</span>（または <span class="in">`CarRacing-v3`</span>）においてランダム方策の動き（墜落やコースアウト）を確認したあと、DQN や PPO を使って着陸・走行AIを訓練し、訓練前後の動きをアニメーションで比較するプログラムを作成しましょう。</span>
+<span id="cb1-53"><a href="#cb1-53" aria-label="53"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-label="54"></a>---</span>
+<span id="cb1-55"><a href="#cb1-55" aria-label="55"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-label="56"></a><span class="fu">## ミニプロジェクト(4)：自作ゲームAIの訓練結果の分析と考察</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-label="57"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-label="58"></a>来週（第14回）はいよいよミニプロジェクトの成果発表会です。ただ「ゲームを作ってAIが動きました」と報告するだけでなく、**実験データ（グラフや数値）に基づいて「なぜそのような結果になったのか」を分析・考察する**ことで、説得力のある優れた発表になります。</span>
+<span id="cb1-59"><a href="#cb1-59" aria-label="59"></a></span>
+<span id="cb1-60"><a href="#cb1-60" aria-label="60"></a>以下の**3つの観点**から、自分のミニプロジェクトの結果を整理・分析しましょう。</span>
+<span id="cb1-61"><a href="#cb1-61" aria-label="61"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-label="62"></a><span class="fu">### 観点①：学習曲線の分析（AIはどう成長したか？）</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-label="63"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-label="64"></a>訓練中の「エピソード数（横軸）」に対する「獲得報酬や移動平均（縦軸）」のグラフ（学習曲線）を見て、成長のプロセスを読み解きます：</span>
+<span id="cb1-65"><a href="#cb1-65" aria-label="65"></a></span>
+<span id="cb1-66"><a href="#cb1-66" aria-label="66"></a><span class="ss">- </span>**初期・中期・終期の変化**：何エピソード目あたりから報酬が上がり始め、何エピソード目あたりで安定したか（収束したか）？</span>
+<span id="cb1-67"><a href="#cb1-67" aria-label="67"></a><span class="ss">- </span>**ばらつき（分散）と安定性**：学習後半でもたまに大失敗して報酬が落ち込むことがあるか、それとも毎回安定して高得点を取れているか？</span>
+<span id="cb1-68"><a href="#cb1-68" aria-label="68"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-label="69"></a><span class="fu">### 観点②：ベースラインとの定量的な比較（どれだけ賢くなったか？）</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-label="70"></a></span>
+<span id="cb1-71"><a href="#cb1-71" aria-label="71"></a>学習済みAIの強さを客観的な数値で示すため、100〜1,000エピソードのテストを行い、**複数のプレーヤー（方策）の成績を表や棒グラフで比較**します：</span>
+<span id="cb1-72"><a href="#cb1-72" aria-label="72"></a></span>
+<span id="cb1-73"><a href="#cb1-73" aria-label="73"></a><span class="ss">- </span>**比較対象の例**：</span>
+<span id="cb1-74"><a href="#cb1-74" aria-label="74"></a><span class="ss">  1. </span>**ランダム方策（未学習のAI）**：平均報酬・クリア率（勝率）はいくらか？</span>
+<span id="cb1-75"><a href="#cb1-75" aria-label="75"></a><span class="ss">  2. </span>**簡単な固定ルール方策 または 人間プレイヤー**：平均報酬はいくらか？</span>
+<span id="cb1-76"><a href="#cb1-76" aria-label="76"></a><span class="ss">  3. </span>**強化学習で育てたAI（改善前 vs 改善後、または DQN vs PPO など）**：平均報酬・クリア率はどこまで向上したか？</span>
+<span id="cb1-77"><a href="#cb1-77" aria-label="77"></a></span>
+<span id="cb1-78"><a href="#cb1-78" aria-label="78"></a><span class="fu">### 観点③：獲得された戦略と報酬設計の考察（どんな知能が生まれたか？）</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-label="79"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-label="80"></a>育てたAIの実際のプレイ画面（またはQテーブル・行動選択の傾向）を観察し、以下の点を考察します：</span>
+<span id="cb1-81"><a href="#cb1-81" aria-label="81"></a></span>
+<span id="cb1-82"><a href="#cb1-82" aria-label="82"></a><span class="ss">1. </span>**AIが自力で獲得した賢い動き（創発した戦略）**：</span>
+<span id="cb1-83"><a href="#cb1-83" aria-label="83"></a><span class="ss">   - </span>人間がルールとして教えなかったにもかかわらず、AIが試行錯誤から見つけ出した「うまい立ち回り（例：罠の手前で安全マージンをとって迂回する、敵を引きつけてからかわす、中央に陣取って次のアイテムに備えるなど）」は何か？</span>
+<span id="cb1-84"><a href="#cb1-84" aria-label="84"></a><span class="ss">2. </span>**報酬設計（Reward Shaping）や状態設計の試行錯誤の振り返り**：</span>
+<span id="cb1-85"><a href="#cb1-85" aria-label="85"></a><span class="ss">   - </span>開発の途中で起きた失敗（ループ、自滅、報酬ハッキングなど）を、どのような報酬や状態の変更によって克服できたか？</span>
+<span id="cb1-86"><a href="#cb1-86" aria-label="86"></a><span class="ss">3. </span>**残された課題と今後の拡張アイデア**：</span>
+<span id="cb1-87"><a href="#cb1-87" aria-label="87"></a><span class="ss">   - </span>現在のAIがまだ苦手な場面はどこか？ゲームをさらに難しく（動く障害物の追加など）した場合にどうすれば対応できそうか？</span>
+<span id="cb1-88"><a href="#cb1-88" aria-label="88"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-label="89"></a>::: {.callout-note icon=false}</span>
+<span id="cb1-90"><a href="#cb1-90" aria-label="90"></a><span class="fu">### 練習問題 13-02：ミニプロジェクト成果発表の構成メモ作成</span></span>
+<span id="cb1-91"><a href="#cb1-91" aria-label="91"></a>次回の成果発表に向けて、あなたのミニプロジェクトの分析結果を次の項目に沿って整理してみましょう。</span>
+<span id="cb1-92"><a href="#cb1-92" aria-label="92"></a></span>
+<span id="cb1-93"><a href="#cb1-93" aria-label="93"></a><span class="ss">1. </span>**定量比較の結果**：ランダム方策と学習済みAIで、テスト時の「平均報酬」や「クリア率（または平均生存ステップ数）」はそれぞれいくらでしたか？</span>
+<span id="cb1-94"><a href="#cb1-94" aria-label="94"></a><span class="ss">2. </span>**最も工夫したポイント**：ゲームルール、状態表現、報酬設計、アルゴリズム選びの中で、AIを賢くするために一番効果があった工夫は何でしたか？</span>
+<span id="cb1-95"><a href="#cb1-95" aria-label="95"></a><span class="ss">3. </span>**AIのプレイの見どころ**：実演デモで見てもらいたい「AIならではの賢い動き（または面白かった失敗例）」はどのような場面ですか？</span>
+<span id="cb1-96"><a href="#cb1-96" aria-label="96"></a>:::</span>
+<span id="cb1-97"><a href="#cb1-97" aria-label="97"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-label="98"></a>---</span>
+<span id="cb1-99"><a href="#cb1-99" aria-label="99"></a></span>
+<span id="cb1-100"><a href="#cb1-100" aria-label="100"></a><span class="fu">## まとめ</span></span>
+<span id="cb1-101"><a href="#cb1-101" aria-label="101"></a></span>
+<span id="cb1-102"><a href="#cb1-102" aria-label="102"></a><span class="ss">- </span>**高度な制御環境（Lunar Lander / Car Racing）**: 8次元の物理状態や画面ピクセルを扱う本格的な環境でも、適切な報酬設計と深層強化学習（DQN・PPO）を組み合わせることで、着陸やコース走行のスキルを自律的に獲得できる。</span>
+<span id="cb1-103"><a href="#cb1-103" aria-label="103"></a><span class="ss">- </span>**訓練結果の科学的分析**: ①学習曲線による成長・収束過程の把握、②ランダム方策や人間との定量的な成績比較、③獲得された戦略と報酬設計の因果関係の考察という3つの視点でまとめることで、試行錯誤の成果を客観的に評価できる。</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>14&nbsp; まとめ – 情報基礎２</title>
+<title>14&nbsp; ミニプロジェクト成果発表とまとめ – 情報基礎２</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./13_train_custom_env.html" rel="prev">
+<link href="./13_rl_advanced_envs.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -152,7 +152,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./12_custom_env.html">第4部：自作ゲーム環境の作成と強化学習</a></li><li class="breadcrumb-item"><a href="./14_summary.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">まとめ</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./09_rl_blackjack.html">第3部：Gymnasiumによる強化学習の実践とミニプロジェクト</a></li><li class="breadcrumb-item"><a href="./14_summary.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">ミニプロジェクト成果発表とまとめ</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -245,12 +245,18 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">強化学習の基礎</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08_value_and_monte_carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">価値関数とモンテカルロ法</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">第3部：Gymnasiumによる強化学習の実践</span></a>
+ <span class="menu-text">第3部：Gymnasiumによる強化学習の実践とミニプロジェクト</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -258,55 +264,38 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08_rl_cliff_walking.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">強化学習の例(1)</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./09_rl_blackjack.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">強化学習の例(2)</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">GymnasiumとBlackjack環境</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10_rl_frozen_lake.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">強化学習の例(3)</span></span></a>
+  <a href="./10_rl_cart_pole.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Cart Poleと連続状態の離散化</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11_rl_cart_pole.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">強化学習の例(4)</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">第4部：自作ゲーム環境の作成と強化学習</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./12_custom_env.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">自作ゲームの作成</span></span></a>
+  <a href="./11_rl_dqn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">深層強化学習（DQN）</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13_train_custom_env.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">自作ゲームのAIプレーヤーを育てる</span></span></a>
+  <a href="./12_rl_policy_gradient.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">方策勾配法とAIプレーヤーの訓練</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13_rl_advanced_envs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">高度な制御環境と訓練結果の分析・考察</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./14_summary.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">まとめ</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">ミニプロジェクト成果発表とまとめ</span></span></a>
   </div>
 </li>
       </ul>
@@ -322,27 +311,23 @@ window.Quarto = {
    
   <ul>
   <li><a href="#本章のねらい" id="toc-本章のねらい" class="nav-link active" data-scroll-target="#本章のねらい"><span class="header-section-number">14.1</span> 本章のねらい</a></li>
-  <li><a href="#全体の振り返りとロードマップ" id="toc-全体の振り返りとロードマップ" class="nav-link" data-scroll-target="#全体の振り返りとロードマップ"><span class="header-section-number">14.2</span> 全体の振り返りとロードマップ</a></li>
-  <li><a href="#自作ゲームaiの訓練結果についての考察" id="toc-自作ゲームaiの訓練結果についての考察" class="nav-link" data-scroll-target="#自作ゲームaiの訓練結果についての考察"><span class="header-section-number">14.3</span> 自作ゲームAIの訓練結果についての考察</a>
+  <li><a href="#ミニプロジェクト成果発表" id="toc-ミニプロジェクト成果発表" class="nav-link" data-scroll-target="#ミニプロジェクト成果発表"><span class="header-section-number">14.2</span> ミニプロジェクト成果発表</a>
   <ul class="collapse">
-  <li><a href="#報酬設計の難しさreward-engineering" id="toc-報酬設計の難しさreward-engineering" class="nav-link" data-scroll-target="#報酬設計の難しさreward-engineering"><span class="header-section-number">14.3.1</span> (1) 報酬設計の難しさ（Reward Engineering）</a></li>
-  <li><a href="#ハイパーパラメータの相互作用" id="toc-ハイパーパラメータの相互作用" class="nav-link" data-scroll-target="#ハイパーパラメータの相互作用"><span class="header-section-number">14.3.2</span> (2) ハイパーパラメータの相互作用</a></li>
+  <li><a href="#発表の構成ガイド1人あたりの発表の流れ" id="toc-発表の構成ガイド1人あたりの発表の流れ" class="nav-link" data-scroll-target="#発表の構成ガイド1人あたりの発表の流れ"><span class="header-section-number">14.2.1</span> 発表の構成ガイド（1人あたりの発表の流れ）</a></li>
+  <li><a href="#他の受講生の発表を聴くときの着眼点" id="toc-他の受講生の発表を聴くときの着眼点" class="nav-link" data-scroll-target="#他の受講生の発表を聴くときの着眼点"><span class="header-section-number">14.2.2</span> 他の受講生の発表を聴くときの着眼点</a></li>
   </ul></li>
-  <li><a href="#表形式強化学習の限界と深層強化学習への架け橋" id="toc-表形式強化学習の限界と深層強化学習への架け橋" class="nav-link" data-scroll-target="#表形式強化学習の限界と深層強化学習への架け橋"><span class="header-section-number">14.4</span> 表形式強化学習の限界と「深層強化学習」への架け橋</a>
-  <ul class="collapse">
-  <li><a href="#次に学ぶべき発展テーマ" id="toc-次に学ぶべき発展テーマ" class="nav-link" data-scroll-target="#次に学ぶべき発展テーマ"><span class="header-section-number">14.4.1</span> 次に学ぶべき発展テーマ</a></li>
-  </ul></li>
-  <li><a href="#自作ゲームのプレーヤーの訓練結果についての考察" id="toc-自作ゲームのプレーヤーの訓練結果についての考察" class="nav-link" data-scroll-target="#自作ゲームのプレーヤーの訓練結果についての考察"><span class="header-section-number">14.5</span> 自作ゲームのプレーヤーの訓練結果についての考察</a></li>
-  <li><a href="#結びに" id="toc-結びに" class="nav-link" data-scroll-target="#結びに"><span class="header-section-number">14.6</span> 結びに</a></li>
+  <li><a href="#本科目の総括14回の学習ロードマップ" id="toc-本科目の総括14回の学習ロードマップ" class="nav-link" data-scroll-target="#本科目の総括14回の学習ロードマップ"><span class="header-section-number">14.3</span> 本科目の総括：14回の学習ロードマップ</a></li>
+  <li><a href="#本科目で学んだ強化学習と現代の最先端aiとのつながり" id="toc-本科目で学んだ強化学習と現代の最先端aiとのつながり" class="nav-link" data-scroll-target="#本科目で学んだ強化学習と現代の最先端aiとのつながり"><span class="header-section-number">14.4</span> 本科目で学んだ強化学習と「現代の最先端AI」とのつながり</a></li>
+  <li><a href="#結びに" id="toc-結びに" class="nav-link" data-scroll-target="#結びに"><span class="header-section-number">14.5</span> 結びに</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./12_custom_env.html">第4部：自作ゲーム環境の作成と強化学習</a></li><li class="breadcrumb-item"><a href="./14_summary.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">まとめ</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./09_rl_blackjack.html">第3部：Gymnasiumによる強化学習の実践とミニプロジェクト</a></li><li class="breadcrumb-item"><a href="./14_summary.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">ミニプロジェクト成果発表とまとめ</span></a></li></ol></nav>
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">まとめ</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> コード</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">ミニプロジェクト成果発表とまとめ</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> コード</button></div></div>
 </div>
 
 
@@ -361,81 +346,110 @@ window.Quarto = {
 
 <section id="本章のねらい" class="level2" data-number="14.1">
 <h2 data-number="14.1" class="anchored" data-anchor-id="本章のねらい"><span class="header-section-number">14.1</span> 本章のねらい</h2>
-<p>全14回の学習内容を総括し、自作ゲームのAIプレーヤーの訓練結果から得られた知見を工学的・科学的視点で考察します。さらに、表形式の古典的強化学習から現代の最前線である<strong>深層強化学習（Deep Q-Network: DQNなど）</strong>への発展の道筋を展望します。</p>
+<p>前半では、第10回から取り組んできた<strong>「ミニプロジェクト（自作ゲームの作成とAIプレーヤーの育成）」の成果発表と相互評価</strong>を行います。受講生同士でそれぞれのゲーム設計やAIの成長プロセス・実演デモを共有し、多様な問題設定と報酬設計の工夫から学び合います。</p>
+<p>後半では、全14回の授業で学んだプログラミング・アルゴリズム・強化学習の知識体系を総括し、本科目で身につけた技術が<strong>現代の最先端AI（AlphaGo、ロボット・自動運転、ChatGPTなどの大規模言語モデルにおける強化学習）</strong>へとどのようにつながっているのかを展望します。</p>
 <hr>
 </section>
-<section id="全体の振り返りとロードマップ" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="全体の振り返りとロードマップ"><span class="header-section-number">14.2</span> 全体の振り返りとロードマップ</h2>
-<p>本科目を通じて、コンピュータの基本動作から自律エージェントの育成までを一貫して学びました。</p>
-<pre><code>第1部: 基礎体力づくり
-  [コンピュータ動作・Python基礎] ──→ [リスト・辞書・関数] ──→ [計算量・アルゴリズム]
-                                                                  │
-第2部: 強化学習の基本原理                                          ▼
-  [機械学習の3分類] ──→ [多腕バンディット・探索と活用] ──→ [MDP・状態・行動・報酬・価値関数]
-                                                                  │
-第3部: 実践的アルゴリズム                                          ▼
-  [Cliff Walking: 状態価値] ──→ [Blackjack: モンテカルロ] ──→ [Frozen Lake: Q-learning]
-                                                            ──→ [Cart Pole: 連続空間の離散化]
-                                                                  │
-第4部: 独自課題への応用                                            ▼
-  [自作Gymnasium環境構築] ──→ [AIプレイヤーの訓練と分析] ──→ [総合的考察・次なるステップへ]</code></pre>
-<hr>
-</section>
-<section id="自作ゲームaiの訓練結果についての考察" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="自作ゲームaiの訓練結果についての考察"><span class="header-section-number">14.3</span> 自作ゲームAIの訓練結果についての考察</h2>
-<p>第13章での自作ゲーム（<code>GridTreasureEnv</code>）の実験結果から、強化学習システムを設計・運用する上での重要な知見がいくつか導き出されます。</p>
-<section id="報酬設計の難しさreward-engineering" class="level3" data-number="14.3.1">
-<h3 data-number="14.3.1" class="anchored" data-anchor-id="報酬設計の難しさreward-engineering"><span class="header-section-number">14.3.1</span> (1) 報酬設計の難しさ（Reward Engineering）</h3>
-<p>AIは人間の意図を「空気を読んで」理解することはできません。<strong>「与えられた報酬の数値を最大化すること」だけに徹底的に最適化</strong>します。 - ステップコスト（<span class="math inline">\(-1\)</span>）がないと、ゴールに向かわずに安全な場所で永久に行ったり来たりしてしまう。 - 罠のペナルティが軽すぎると、最短距離を突っ切ってわざと罠に突っ込む行動を学習してしまう。</p>
-</section>
-<section id="ハイパーパラメータの相互作用" class="level3" data-number="14.3.2">
-<h3 data-number="14.3.2" class="anchored" data-anchor-id="ハイパーパラメータの相互作用"><span class="header-section-number">14.3.2</span> (2) ハイパーパラメータの相互作用</h3>
+<section id="ミニプロジェクト成果発表" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="ミニプロジェクト成果発表"><span class="header-section-number">14.2</span> ミニプロジェクト成果発表</h2>
+<section id="発表の構成ガイド1人あたりの発表の流れ" class="level3" data-number="14.2.1">
+<h3 data-number="14.2.1" class="anchored" data-anchor-id="発表の構成ガイド1人あたりの発表の流れ"><span class="header-section-number">14.2.1</span> 発表の構成ガイド（1人あたりの発表の流れ）</h3>
+<p>成果発表では、前章（第13回）でまとめた分析・考察をもとに、以下の4つのステップでプレゼンテーションと実演デモを行います：</p>
+<ol type="1">
+<li><strong>ゲームの企画と「状態・行動・報酬」の設計</strong>:
 <ul>
-<li><strong>学習率 <span class="math inline">\(\alpha\)</span></strong>: 大きすぎると値が振動して安定せず、小さすぎると収束に膨大な試行回数が必要になる。</li>
-<li><strong>割引率 <span class="math inline">\(\gamma\)</span></strong>: 遠い将来の報酬をどれだけ信じるか。迷路の規模に応じた適切な設定が必要。</li>
-<li><strong>探索スケジュール</strong>: 初期の探索（ランダム行動）が不足すると、一度見つけたサブオプティマル（準最適・妥協的）な迂回ルートに固執し、より優れたルートを発見できない。</li>
+<li>どのようなゲームを作ったか（クリア条件・ゲームオーバー条件）。</li>
+<li>エージェントに何を「状態（State）」として見せ、どんな「行動（Action）」と「報酬（Reward）」を設定したか。</li>
+</ul></li>
+<li><strong>AI育成における試行錯誤のストーリー</strong>:
+<ul>
+<li>どのアルゴリズム（Q-learning / DQN / 方策勾配法・PPO など）を使ったか。</li>
+<li>最初の訓練でどんな問題（学習が進まない、ループする、自滅するなど）が起き、報酬や状態をどう工夫して解決したか。</li>
+</ul></li>
+<li><strong>実験結果（学習曲線と定量比較）</strong>:
+<ul>
+<li>学習曲線のグラフと、ランダム方策（未学習）から学習済みAIになって平均報酬やクリア率がどれだけ向上したかの数値比較。</li>
+</ul></li>
+<li><strong>AIプレーヤーの実演デモと考察</strong>:
+<ul>
+<li>育ったAIが実際にゲームをプレイしている画面のデモ（または動画・履歴）と、AIが獲得した戦略の特徴や今後の課題。</li>
+</ul></li>
+</ol>
+</section>
+<section id="他の受講生の発表を聴くときの着眼点" class="level3" data-number="14.2.2">
+<h3 data-number="14.2.2" class="anchored" data-anchor-id="他の受講生の発表を聴くときの着眼点"><span class="header-section-number">14.2.2</span> 他の受講生の発表を聴くときの着眼点</h3>
+<p>クラスメイトの発表を見るときは、ただゲームの見た目を楽しむだけでなく、強化学習の設計者としての視点で次のポイントに注目してみましょう：</p>
+<ul>
+<li><strong>状態の切り取り方の工夫</strong>：「画面上のたくさんの情報の中から、AIの判断に必要なエッセンスをどう数値化（状態化）しているか？」</li>
+<li><strong>報酬設計のアイデア</strong>：「AIに目的を達成させるために、どんなアメ（プラス報酬）とムチ（ペナルティ）のバランスをとっているか？思わぬ報酬ハッキングはどう防いだか？」</li>
+<li><strong>人間とAIのプレイスタイルの違い</strong>：「人間が遊ぶときと、強化学習で育ったAIが遊ぶときで、動き方や戦略にどんな違いがあるか？」</li>
+</ul>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>練習問題 14-01：成果発表の振り返りと相互フィードバック
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>他の受講生のミニプロジェクト発表の中で、特に「状態や報酬の設計がうまい！」「AIが面白い動きを獲得している！」と感じた作品を1つ挙げ、その理由をまとめてみましょう。</li>
+<li>他の発表から得たアイデアを取り入れるとしたら、自分のゲーム環境やAIの学習方法をさらにどのように改良できそうでしょうか？</li>
+</ol>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="本科目の総括14回の学習ロードマップ" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="本科目の総括14回の学習ロードマップ"><span class="header-section-number">14.3</span> 本科目の総括：14回の学習ロードマップ</h2>
+<p>本科目「情報基礎２：人工知能を育てよう」では、Python の基礎文法からスタートし、コーディングエージェントとの <strong>vibe coding</strong> を活用しながら、最終的に自分自身のゲームで深層強化学習AIを育てるまでを一貫して駆け抜けました。</p>
+<ul>
+<li><strong>第1部：プログラミングとアルゴリズムの基礎（第1回〜第4回）</strong>
+<ul>
+<li>コンピュータが動く仕組み、Python の変数・条件分岐・繰り返し・リストと辞書、そしてアルゴリズムの停止性・計算量と <strong>vibe coding</strong>（自然言語で仕様を伝え、AIと共にプログラムを作り検証する手法）の基礎を習得しました。</li>
+</ul></li>
+<li><strong>第2部：機械学習と強化学習の概念（第5回〜第8回）</strong>
+<ul>
+<li>機械学習の3大分類（教師あり・教師なし・強化学習）を学び、多腕バンディット問題で<strong>「探索と活用のトレードオフ（<span class="math inline">\(\varepsilon\)</span>-greedy 法）」</strong>を体験しました。</li>
+<li>さらに3マス移動問題を通して、強化学習の骨格である<strong>「状態・行動・報酬・方策・収益（割引率 <span class="math inline">\(\gamma\)</span>）・確率的遷移」</strong>と<strong>「状態価値関数 <span class="math inline">\(V(s)\)</span>・行動価値関数 <span class="math inline">\(Q(s, a)\)</span>・モンテカルロ法」</strong>の原理を学びました。</li>
+</ul></li>
+<li><strong>第3部：Gymnasiumによる実践とミニプロジェクト（第9回〜第14回）</strong>
+<ul>
+<li>世界標準ライブラリ <strong>Gymnasium</strong> を使い、離散状態の <strong>Blackjack</strong> でモンテカルロ法と <strong>Q-learning（1歩ごとのバケツリレー更新）</strong> を実践しました。</li>
+<li>続いて連続状態の <strong>Cart Pole</strong> で離散化と表形式の限界を知り、ニューラルネットワークを用いた <strong>DQN（深層Q学習）</strong> と <strong>方策勾配法・Actor-Critic（PPO）</strong>、さらには <strong>Lunar Lander / Car Racing</strong> といった高度な制御環境へとステップアップしました。</li>
+<li>そしてこれらの知識を総動員し、<strong>ミニプロジェクト</strong>としてオリジナルゲームの構築・Gymnasium環境化・AI育成・報酬設計の改善・科学的考察を成し遂げました。</li>
+</ul></li>
 </ul>
 <hr>
 </section>
-</section>
-<section id="表形式強化学習の限界と深層強化学習への架け橋" class="level2" data-number="14.4">
-<h2 data-number="14.4" class="anchored" data-anchor-id="表形式強化学習の限界と深層強化学習への架け橋"><span class="header-section-number">14.4</span> 表形式強化学習の限界と「深層強化学習」への架け橋</h2>
-<p>本科目で扱った「表形式（Q-table）」のアプローチは、状態の数が数千〜数万程度までの問題には極めて有効で安定しています。しかし、現実の複雑な問題には立ち向かえません：</p>
+<section id="本科目で学んだ強化学習と現代の最先端aiとのつながり" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="本科目で学んだ強化学習と現代の最先端aiとのつながり"><span class="header-section-number">14.4</span> 本科目で学んだ強化学習と「現代の最先端AI」とのつながり</h2>
+<p>皆さんがこの授業で体験した「状態・行動・報酬を定義し、試行錯誤を通じて価値関数や方策のネットワークを鍛える」という仕組みは、現在世界を動かしている最先端AIの心臓部そのものです。</p>
+<ol type="1">
+<li><strong>ゲーム・戦略AIの頂点（AlphaGo / AlphaZero / MuZero）</strong>:
 <ul>
-<li><strong>囲碁や将棋</strong>: 状態数が <span class="math inline">\(10^{170}\)</span> 以上あり、テーブルに記録すること自体が物理的に不可能。</li>
-<li><strong>テレビゲーム（Atariやアクションゲーム）</strong>: 画面のピクセル（例えば <span class="math inline">\(210 \times 160\)</span> のRGB画像）がそのまま状態となるため、無限に近い状態の組み合わせが存在する。</li>
-</ul>
-<pre><code>【表形式 Q-learning】
-状態 s (離散ID) ────→ [ Qテーブル (巨大な表) ] ────→ 行動価値 Q(s, a)
-                         ※ 状態数が増えると破綻！
-
-【深層強化学習 (DQN: Deep Q-Network)】
-状態 s (画像や連続値) ──→ [ ニューラルネットワーク ] ──→ 各行動の Q(s, a)
-                         ※ 似たような状態を「汎化」して推測可能！</code></pre>
-<section id="次に学ぶべき発展テーマ" class="level3" data-number="14.4.1">
-<h3 data-number="14.4.1" class="anchored" data-anchor-id="次に学ぶべき発展テーマ"><span class="header-section-number">14.4.1</span> 次に学ぶべき発展テーマ</h3>
-<ol type="1">
-<li><strong>DQN (Deep Q-Network)</strong>: Qテーブルの代わりにニューラルネットワークを使って価値関数を近似する。2015年にDeepMindがAtariのゲームを人間以上の腕前でクリアして世界に衝撃を与えた。</li>
-<li><strong>方策勾配法（Policy Gradient / PPO）</strong>: 価値関数を経由せず、方策そのものを直接ニューラルネットワークのパラメータとして最適化する。連続的なロボットの関節制御やChatGPTのRLHFなどに広く使われている。</li>
-<li><strong>モデルベース強化学習（World Models / MuZero）</strong>: 環境の物理挙動やルールそのものをAI自身が内部でシミュレーション予測しながら手を読む。</li>
+<li>囲碁や将棋の世界チャンピオンを破った DeepMind の AlphaGo や AlphaZero は、本科目で学んだ<strong>「価値ネットワーク（Critic：局面の勝率を評価する）」</strong>と<strong>「方策ネットワーク（Actor：有望な次の一手の確率を出力する）」</strong>にモンテカルロ木探索を組み合わせ、自己対局（試行錯誤）によって人間を超える大局観を獲得しました。</li>
+</ul></li>
+<li><strong>ロボット制御と自動運転</strong>:
+<ul>
+<li>2足歩行ロボットや四足歩行ロボットが不整地でバランスを保ちながら歩く制御や、ドローンの自律飛行、データセンターの冷却制御などには、第11回〜第13回で扱った <strong>DQN や PPO（方策勾配法）</strong> の発展形がそのまま使われています。</li>
+</ul></li>
+<li><strong>ChatGPT などの大規模言語モデル（LLM）を賢くする「RLHF」</strong>:
+<ul>
+<li>現在私たちが日常的に使っている ChatGPT や Gemini、Claude といった対話型AIも、実は<strong>強化学習</strong>によって仕上げられています。</li>
+<li>膨大なテキストを丸暗記（事前学習）しただけの言語モデルは、ときに不正確で不適切な文章を出力してしまいます。そこで、<strong>「質問（状態 <span class="math inline">\(S\)</span>）」に対してAIが生成した「回答（行動 <span class="math inline">\(A\)</span>）」を人間や評価AIが採点して「好ましさのスコア（報酬 <span class="math inline">\(R\)</span>）」を与え、PPO などの強化学習アルゴリズムで方策（回答の生成確率）を改善する</strong>という手法が使われています。これを <strong>RLHF（Reinforcement Learning from Human Feedback：人間のフィードバックからの強化学習）</strong> と呼びます。</li>
+<li>つまり、皆さんがミニプロジェクトで「報酬を工夫してAIの振る舞いを望ましい方向へ導いた」のと同じことを、最先端の生成AIの開発者たちも日々行っているのです。</li>
+</ul></li>
 </ol>
 <hr>
 </section>
-</section>
-<section id="自作ゲームのプレーヤーの訓練結果についての考察" class="level2" data-number="14.5">
-<h2 data-number="14.5" class="anchored" data-anchor-id="自作ゲームのプレーヤーの訓練結果についての考察"><span class="header-section-number">14.5</span> 自作ゲームのプレーヤーの訓練結果についての考察</h2>
-<p>自作ゲームのAIプレーヤーの訓練結果を分析・考察する際は、以下の観点に注目することが重要です：</p>
-<ol type="1">
-<li><strong>学習曲線の収束と安定性</strong>: エピソードごとの累積報酬や移動平均がどの段階でプラトー（安定状態）に達したか。学習率 <span class="math inline">\(\alpha\)</span> や探索率 <span class="math inline">\(\epsilon\)</span> の減衰スピードが最適であったか。</li>
-<li><strong>獲得された方策の合理性と安全性</strong>: エージェントが罠（トラップ）の周囲をどのようなマージンをとって回避しているか。最短手数とお宝獲得のインセンティブ設計がうまくバランスしているか。</li>
-<li><strong>実環境や複雑なルールへの拡張可能性</strong>: 「動く障害物」や「複数のお宝」などのより高度なルールを追加した場合に、表形式Q学習で対応可能か、あるいは深層強化学習（DQN）のような近似手法が必要になるかを評価します。</li>
-</ol>
-<hr>
-</section>
-<section id="結びに" class="level2" data-number="14.6">
-<h2 data-number="14.6" class="anchored" data-anchor-id="結びに"><span class="header-section-number">14.6</span> 結びに</h2>
-<p>強化学習は、「未知の世界に放り込まれた知的存在が、自らの経験と反省を通じて学習し成長していく」という、人間の知能の獲得プロセスに最も近い魅力的な学問です。</p>
-<p>本科目で身につけたPythonプログラミング、アルゴリズムの思考法、そして試行錯誤の最適化プロセスは、今後のAI時代においてあらゆる分野で強力な武器となるはずです。ぜひ自信を持って、次の探求へと進んでください！</p>
+<section id="結びに" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="結びに"><span class="header-section-number">14.5</span> 結びに</h2>
+<p>生成AIの登場によって、コードの1行1行を人間が手で書く時代から、<strong>「どんな問題を解きたいのか」「何が正しい振る舞い（報酬・仕様）なのか」「出力された結果が妥当かどうか」を人間が設計・検証し、AIと協働してシステムを作り上げる時代</strong>へと大きく変化しました。</p>
+<p>本科目で身につけた「アルゴリズムとプログラムの基本原理」「強化学習による試行錯誤と最適化の考え方」、そして「vibe coding でアイデアを形にする実践力」は、これから皆さんがどの分野に進むとしても、AI時代を切り拓く強力な武器になるはずです。ぜひこの経験を土台にして、さらなる探求へと進んでください！</p>
 
 
 <!-- -->
@@ -896,98 +910,92 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./13_train_custom_env.html" class="pagination-link" aria-label="自作ゲームのAIプレーヤーを育てる">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">自作ゲームのAIプレーヤーを育てる</span></span>
+      <a href="./13_rl_advanced_envs.html" class="pagination-link" aria-label="高度な制御環境と訓練結果の分析・考察">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">高度な制御環境と訓練結果の分析・考察</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">ソースコード</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-label="1"></a><span class="fu"># まとめ</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-label="2"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-label="3"></a><span class="fu">## 本章のねらい</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-label="4"></a>全14回の学習内容を総括し、自作ゲームのAIプレーヤーの訓練結果から得られた知見を工学的・科学的視点で考察します。さらに、表形式の古典的強化学習から現代の最前線である**深層強化学習（Deep Q-Network: DQNなど）**への発展の道筋を展望します。</span>
-<span id="cb3-5"><a href="#cb3-5" aria-label="5"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-label="6"></a>---</span>
-<span id="cb3-7"><a href="#cb3-7" aria-label="7"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-label="8"></a><span class="fu">## 全体の振り返りとロードマップ</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-label="9"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-label="10"></a>本科目を通じて、コンピュータの基本動作から自律エージェントの育成までを一貫して学びました。</span>
-<span id="cb3-11"><a href="#cb3-11" aria-label="11"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-label="12"></a><span class="in">```</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-label="13"></a><span class="in">第1部: 基礎体力づくり</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-label="14"></a><span class="in">  [コンピュータ動作・Python基礎] ──→ [リスト・辞書・関数] ──→ [計算量・アルゴリズム]</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-label="15"></a><span class="in">                                                                  │</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-label="16"></a><span class="in">第2部: 強化学習の基本原理                                          ▼</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-label="17"></a><span class="in">  [機械学習の3分類] ──→ [多腕バンディット・探索と活用] ──→ [MDP・状態・行動・報酬・価値関数]</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-label="18"></a><span class="in">                                                                  │</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-label="19"></a><span class="in">第3部: 実践的アルゴリズム                                          ▼</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-label="20"></a><span class="in">  [Cliff Walking: 状態価値] ──→ [Blackjack: モンテカルロ] ──→ [Frozen Lake: Q-learning]</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-label="21"></a><span class="in">                                                            ──→ [Cart Pole: 連続空間の離散化]</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-label="22"></a><span class="in">                                                                  │</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-label="23"></a><span class="in">第4部: 独自課題への応用                                            ▼</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-label="24"></a><span class="in">  [自作Gymnasium環境構築] ──→ [AIプレイヤーの訓練と分析] ──→ [総合的考察・次なるステップへ]</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-label="25"></a><span class="in">```</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-label="26"></a></span>
-<span id="cb3-27"><a href="#cb3-27" aria-label="27"></a>---</span>
-<span id="cb3-28"><a href="#cb3-28" aria-label="28"></a></span>
-<span id="cb3-29"><a href="#cb3-29" aria-label="29"></a><span class="fu">## 自作ゲームAIの訓練結果についての考察</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-label="30"></a></span>
-<span id="cb3-31"><a href="#cb3-31" aria-label="31"></a>第13章での自作ゲーム（<span class="in">`GridTreasureEnv`</span>）の実験結果から、強化学習システムを設計・運用する上での重要な知見がいくつか導き出されます。</span>
-<span id="cb3-32"><a href="#cb3-32" aria-label="32"></a></span>
-<span id="cb3-33"><a href="#cb3-33" aria-label="33"></a><span class="fu">### (1) 報酬設計の難しさ（Reward Engineering）</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-label="34"></a>AIは人間の意図を「空気を読んで」理解することはできません。**「与えられた報酬の数値を最大化すること」だけに徹底的に最適化**します。</span>
-<span id="cb3-35"><a href="#cb3-35" aria-label="35"></a><span class="ss">- </span>ステップコスト（$-1$）がないと、ゴールに向かわずに安全な場所で永久に行ったり来たりしてしまう。</span>
-<span id="cb3-36"><a href="#cb3-36" aria-label="36"></a><span class="ss">- </span>罠のペナルティが軽すぎると、最短距離を突っ切ってわざと罠に突っ込む行動を学習してしまう。</span>
-<span id="cb3-37"><a href="#cb3-37" aria-label="37"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-label="38"></a><span class="fu">### (2) ハイパーパラメータの相互作用</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-label="39"></a><span class="ss">- </span>**学習率 $\alpha$**: 大きすぎると値が振動して安定せず、小さすぎると収束に膨大な試行回数が必要になる。</span>
-<span id="cb3-40"><a href="#cb3-40" aria-label="40"></a><span class="ss">- </span>**割引率 $\gamma$**: 遠い将来の報酬をどれだけ信じるか。迷路の規模に応じた適切な設定が必要。</span>
-<span id="cb3-41"><a href="#cb3-41" aria-label="41"></a><span class="ss">- </span>**探索スケジュール**: 初期の探索（ランダム行動）が不足すると、一度見つけたサブオプティマル（準最適・妥協的）な迂回ルートに固執し、より優れたルートを発見できない。</span>
-<span id="cb3-42"><a href="#cb3-42" aria-label="42"></a></span>
-<span id="cb3-43"><a href="#cb3-43" aria-label="43"></a>---</span>
-<span id="cb3-44"><a href="#cb3-44" aria-label="44"></a></span>
-<span id="cb3-45"><a href="#cb3-45" aria-label="45"></a><span class="fu">## 表形式強化学習の限界と「深層強化学習」への架け橋</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-label="46"></a></span>
-<span id="cb3-47"><a href="#cb3-47" aria-label="47"></a>本科目で扱った「表形式（Q-table）」のアプローチは、状態の数が数千〜数万程度までの問題には極めて有効で安定しています。しかし、現実の複雑な問題には立ち向かえません：</span>
-<span id="cb3-48"><a href="#cb3-48" aria-label="48"></a></span>
-<span id="cb3-49"><a href="#cb3-49" aria-label="49"></a><span class="ss">- </span>**囲碁や将棋**: 状態数が $10^{170}$ 以上あり、テーブルに記録すること自体が物理的に不可能。</span>
-<span id="cb3-50"><a href="#cb3-50" aria-label="50"></a><span class="ss">- </span>**テレビゲーム（Atariやアクションゲーム）**: 画面のピクセル（例えば $210 \times 160$ のRGB画像）がそのまま状態となるため、無限に近い状態の組み合わせが存在する。</span>
-<span id="cb3-51"><a href="#cb3-51" aria-label="51"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-label="52"></a><span class="in">```</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-label="53"></a><span class="in">【表形式 Q-learning】</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-label="54"></a><span class="in">状態 s (離散ID) ────→ [ Qテーブル (巨大な表) ] ────→ 行動価値 Q(s, a)</span></span>
-<span id="cb3-55"><a href="#cb3-55" aria-label="55"></a><span class="in">                         ※ 状態数が増えると破綻！</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-label="56"></a></span>
-<span id="cb3-57"><a href="#cb3-57" aria-label="57"></a><span class="in">【深層強化学習 (DQN: Deep Q-Network)】</span></span>
-<span id="cb3-58"><a href="#cb3-58" aria-label="58"></a><span class="in">状態 s (画像や連続値) ──→ [ ニューラルネットワーク ] ──→ 各行動の Q(s, a)</span></span>
-<span id="cb3-59"><a href="#cb3-59" aria-label="59"></a><span class="in">                         ※ 似たような状態を「汎化」して推測可能！</span></span>
-<span id="cb3-60"><a href="#cb3-60" aria-label="60"></a><span class="in">```</span></span>
-<span id="cb3-61"><a href="#cb3-61" aria-label="61"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-label="62"></a><span class="fu">### 次に学ぶべき発展テーマ</span></span>
-<span id="cb3-63"><a href="#cb3-63" aria-label="63"></a><span class="ss">1. </span>**DQN (Deep Q-Network)**: Qテーブルの代わりにニューラルネットワークを使って価値関数を近似する。2015年にDeepMindがAtariのゲームを人間以上の腕前でクリアして世界に衝撃を与えた。</span>
-<span id="cb3-64"><a href="#cb3-64" aria-label="64"></a><span class="ss">2. </span>**方策勾配法（Policy Gradient / PPO）**: 価値関数を経由せず、方策そのものを直接ニューラルネットワークのパラメータとして最適化する。連続的なロボットの関節制御やChatGPTのRLHFなどに広く使われている。</span>
-<span id="cb3-65"><a href="#cb3-65" aria-label="65"></a><span class="ss">3. </span>**モデルベース強化学習（World Models / MuZero）**: 環境の物理挙動やルールそのものをAI自身が内部でシミュレーション予測しながら手を読む。</span>
-<span id="cb3-66"><a href="#cb3-66" aria-label="66"></a></span>
-<span id="cb3-67"><a href="#cb3-67" aria-label="67"></a>---</span>
-<span id="cb3-68"><a href="#cb3-68" aria-label="68"></a></span>
-<span id="cb3-69"><a href="#cb3-69" aria-label="69"></a><span class="fu">## 自作ゲームのプレーヤーの訓練結果についての考察</span></span>
-<span id="cb3-70"><a href="#cb3-70" aria-label="70"></a></span>
-<span id="cb3-71"><a href="#cb3-71" aria-label="71"></a>自作ゲームのAIプレーヤーの訓練結果を分析・考察する際は、以下の観点に注目することが重要です：</span>
-<span id="cb3-72"><a href="#cb3-72" aria-label="72"></a></span>
-<span id="cb3-73"><a href="#cb3-73" aria-label="73"></a><span class="ss">1. </span>**学習曲線の収束と安定性**:</span>
-<span id="cb3-74"><a href="#cb3-74" aria-label="74"></a>   エピソードごとの累積報酬や移動平均がどの段階でプラトー（安定状態）に達したか。学習率 $\alpha$ や探索率 $\epsilon$ の減衰スピードが最適であったか。</span>
-<span id="cb3-75"><a href="#cb3-75" aria-label="75"></a><span class="ss">2. </span>**獲得された方策の合理性と安全性**:</span>
-<span id="cb3-76"><a href="#cb3-76" aria-label="76"></a>   エージェントが罠（トラップ）の周囲をどのようなマージンをとって回避しているか。最短手数とお宝獲得のインセンティブ設計がうまくバランスしているか。</span>
-<span id="cb3-77"><a href="#cb3-77" aria-label="77"></a><span class="ss">3. </span>**実環境や複雑なルールへの拡張可能性**:</span>
-<span id="cb3-78"><a href="#cb3-78" aria-label="78"></a>   「動く障害物」や「複数のお宝」などのより高度なルールを追加した場合に、表形式Q学習で対応可能か、あるいは深層強化学習（DQN）のような近似手法が必要になるかを評価します。</span>
-<span id="cb3-79"><a href="#cb3-79" aria-label="79"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-label="80"></a>---</span>
-<span id="cb3-81"><a href="#cb3-81" aria-label="81"></a></span>
-<span id="cb3-82"><a href="#cb3-82" aria-label="82"></a><span class="fu">## 結びに</span></span>
-<span id="cb3-83"><a href="#cb3-83" aria-label="83"></a>強化学習は、「未知の世界に放り込まれた知的存在が、自らの経験と反省を通じて学習し成長していく」という、人間の知能の獲得プロセスに最も近い魅力的な学問です。</span>
-<span id="cb3-84"><a href="#cb3-84" aria-label="84"></a></span>
-<span id="cb3-85"><a href="#cb3-85" aria-label="85"></a>本科目で身につけたPythonプログラミング、アルゴリズムの思考法、そして試行錯誤の最適化プロセスは、今後のAI時代においてあらゆる分野で強力な武器となるはずです。ぜひ自信を持って、次の探求へと進んでください！</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-label="1"></a><span class="fu"># ミニプロジェクト成果発表とまとめ</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-label="2"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-label="3"></a><span class="fu">## 本章のねらい</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-label="4"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-label="5"></a>前半では、第10回から取り組んできた**「ミニプロジェクト（自作ゲームの作成とAIプレーヤーの育成）」の成果発表と相互評価**を行います。受講生同士でそれぞれのゲーム設計やAIの成長プロセス・実演デモを共有し、多様な問題設定と報酬設計の工夫から学び合います。</span>
+<span id="cb1-6"><a href="#cb1-6" aria-label="6"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-label="7"></a>後半では、全14回の授業で学んだプログラミング・アルゴリズム・強化学習の知識体系を総括し、本科目で身につけた技術が**現代の最先端AI（AlphaGo、ロボット・自動運転、ChatGPTなどの大規模言語モデルにおける強化学習）**へとどのようにつながっているのかを展望します。</span>
+<span id="cb1-8"><a href="#cb1-8" aria-label="8"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-label="9"></a>---</span>
+<span id="cb1-10"><a href="#cb1-10" aria-label="10"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-label="11"></a><span class="fu">## ミニプロジェクト成果発表</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-label="12"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-label="13"></a><span class="fu">### 発表の構成ガイド（1人あたりの発表の流れ）</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-label="14"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-label="15"></a>成果発表では、前章（第13回）でまとめた分析・考察をもとに、以下の4つのステップでプレゼンテーションと実演デモを行います：</span>
+<span id="cb1-16"><a href="#cb1-16" aria-label="16"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-label="17"></a><span class="ss">1. </span>**ゲームの企画と「状態・行動・報酬」の設計**:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-label="18"></a><span class="ss">   - </span>どのようなゲームを作ったか（クリア条件・ゲームオーバー条件）。</span>
+<span id="cb1-19"><a href="#cb1-19" aria-label="19"></a><span class="ss">   - </span>エージェントに何を「状態（State）」として見せ、どんな「行動（Action）」と「報酬（Reward）」を設定したか。</span>
+<span id="cb1-20"><a href="#cb1-20" aria-label="20"></a><span class="ss">2. </span>**AI育成における試行錯誤のストーリー**:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-label="21"></a><span class="ss">   - </span>どのアルゴリズム（Q-learning / DQN / 方策勾配法・PPO など）を使ったか。</span>
+<span id="cb1-22"><a href="#cb1-22" aria-label="22"></a><span class="ss">   - </span>最初の訓練でどんな問題（学習が進まない、ループする、自滅するなど）が起き、報酬や状態をどう工夫して解決したか。</span>
+<span id="cb1-23"><a href="#cb1-23" aria-label="23"></a><span class="ss">3. </span>**実験結果（学習曲線と定量比較）**:</span>
+<span id="cb1-24"><a href="#cb1-24" aria-label="24"></a><span class="ss">   - </span>学習曲線のグラフと、ランダム方策（未学習）から学習済みAIになって平均報酬やクリア率がどれだけ向上したかの数値比較。</span>
+<span id="cb1-25"><a href="#cb1-25" aria-label="25"></a><span class="ss">4. </span>**AIプレーヤーの実演デモと考察**:</span>
+<span id="cb1-26"><a href="#cb1-26" aria-label="26"></a><span class="ss">   - </span>育ったAIが実際にゲームをプレイしている画面のデモ（または動画・履歴）と、AIが獲得した戦略の特徴や今後の課題。</span>
+<span id="cb1-27"><a href="#cb1-27" aria-label="27"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-label="28"></a><span class="fu">### 他の受講生の発表を聴くときの着眼点</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-label="29"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-label="30"></a>クラスメイトの発表を見るときは、ただゲームの見た目を楽しむだけでなく、強化学習の設計者としての視点で次のポイントに注目してみましょう：</span>
+<span id="cb1-31"><a href="#cb1-31" aria-label="31"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-label="32"></a><span class="ss">- </span>**状態の切り取り方の工夫**：「画面上のたくさんの情報の中から、AIの判断に必要なエッセンスをどう数値化（状態化）しているか？」</span>
+<span id="cb1-33"><a href="#cb1-33" aria-label="33"></a><span class="ss">- </span>**報酬設計のアイデア**：「AIに目的を達成させるために、どんなアメ（プラス報酬）とムチ（ペナルティ）のバランスをとっているか？思わぬ報酬ハッキングはどう防いだか？」</span>
+<span id="cb1-34"><a href="#cb1-34" aria-label="34"></a><span class="ss">- </span>**人間とAIのプレイスタイルの違い**：「人間が遊ぶときと、強化学習で育ったAIが遊ぶときで、動き方や戦略にどんな違いがあるか？」</span>
+<span id="cb1-35"><a href="#cb1-35" aria-label="35"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-label="36"></a>::: {.callout-note icon=false}</span>
+<span id="cb1-37"><a href="#cb1-37" aria-label="37"></a><span class="fu">### 練習問題 14-01：成果発表の振り返りと相互フィードバック</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-label="38"></a><span class="ss">1. </span>他の受講生のミニプロジェクト発表の中で、特に「状態や報酬の設計がうまい！」「AIが面白い動きを獲得している！」と感じた作品を1つ挙げ、その理由をまとめてみましょう。</span>
+<span id="cb1-39"><a href="#cb1-39" aria-label="39"></a><span class="ss">2. </span>他の発表から得たアイデアを取り入れるとしたら、自分のゲーム環境やAIの学習方法をさらにどのように改良できそうでしょうか？</span>
+<span id="cb1-40"><a href="#cb1-40" aria-label="40"></a>:::</span>
+<span id="cb1-41"><a href="#cb1-41" aria-label="41"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-label="42"></a>---</span>
+<span id="cb1-43"><a href="#cb1-43" aria-label="43"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-label="44"></a><span class="fu">## 本科目の総括：14回の学習ロードマップ</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-label="45"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-label="46"></a>本科目「情報基礎２：人工知能を育てよう」では、Python の基礎文法からスタートし、コーディングエージェントとの **vibe coding** を活用しながら、最終的に自分自身のゲームで深層強化学習AIを育てるまでを一貫して駆け抜けました。</span>
+<span id="cb1-47"><a href="#cb1-47" aria-label="47"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-label="48"></a><span class="ss">- </span>**第1部：プログラミングとアルゴリズムの基礎（第1回〜第4回）**</span>
+<span id="cb1-49"><a href="#cb1-49" aria-label="49"></a><span class="ss">  - </span>コンピュータが動く仕組み、Python の変数・条件分岐・繰り返し・リストと辞書、そしてアルゴリズムの停止性・計算量と **vibe coding**（自然言語で仕様を伝え、AIと共にプログラムを作り検証する手法）の基礎を習得しました。</span>
+<span id="cb1-50"><a href="#cb1-50" aria-label="50"></a><span class="ss">- </span>**第2部：機械学習と強化学習の概念（第5回〜第8回）**</span>
+<span id="cb1-51"><a href="#cb1-51" aria-label="51"></a><span class="ss">  - </span>機械学習の3大分類（教師あり・教師なし・強化学習）を学び、多腕バンディット問題で**「探索と活用のトレードオフ（$\varepsilon$-greedy 法）」**を体験しました。</span>
+<span id="cb1-52"><a href="#cb1-52" aria-label="52"></a><span class="ss">  - </span>さらに3マス移動問題を通して、強化学習の骨格である**「状態・行動・報酬・方策・収益（割引率 $\gamma$）・確率的遷移」**と**「状態価値関数 $V(s)$・行動価値関数 $Q(s, a)$・モンテカルロ法」**の原理を学びました。</span>
+<span id="cb1-53"><a href="#cb1-53" aria-label="53"></a><span class="ss">- </span>**第3部：Gymnasiumによる実践とミニプロジェクト（第9回〜第14回）**</span>
+<span id="cb1-54"><a href="#cb1-54" aria-label="54"></a><span class="ss">  - </span>世界標準ライブラリ **Gymnasium** を使い、離散状態の **Blackjack** でモンテカルロ法と **Q-learning（1歩ごとのバケツリレー更新）** を実践しました。</span>
+<span id="cb1-55"><a href="#cb1-55" aria-label="55"></a><span class="ss">  - </span>続いて連続状態の **Cart Pole** で離散化と表形式の限界を知り、ニューラルネットワークを用いた **DQN（深層Q学習）** と **方策勾配法・Actor-Critic（PPO）**、さらには **Lunar Lander / Car Racing** といった高度な制御環境へとステップアップしました。</span>
+<span id="cb1-56"><a href="#cb1-56" aria-label="56"></a><span class="ss">  - </span>そしてこれらの知識を総動員し、**ミニプロジェクト**としてオリジナルゲームの構築・Gymnasium環境化・AI育成・報酬設計の改善・科学的考察を成し遂げました。</span>
+<span id="cb1-57"><a href="#cb1-57" aria-label="57"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-label="58"></a>---</span>
+<span id="cb1-59"><a href="#cb1-59" aria-label="59"></a></span>
+<span id="cb1-60"><a href="#cb1-60" aria-label="60"></a><span class="fu">## 本科目で学んだ強化学習と「現代の最先端AI」とのつながり</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-label="61"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-label="62"></a>皆さんがこの授業で体験した「状態・行動・報酬を定義し、試行錯誤を通じて価値関数や方策のネットワークを鍛える」という仕組みは、現在世界を動かしている最先端AIの心臓部そのものです。</span>
+<span id="cb1-63"><a href="#cb1-63" aria-label="63"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-label="64"></a><span class="ss">1. </span>**ゲーム・戦略AIの頂点（AlphaGo / AlphaZero / MuZero）**:</span>
+<span id="cb1-65"><a href="#cb1-65" aria-label="65"></a><span class="ss">   - </span>囲碁や将棋の世界チャンピオンを破った DeepMind の AlphaGo や AlphaZero は、本科目で学んだ**「価値ネットワーク（Critic：局面の勝率を評価する）」**と**「方策ネットワーク（Actor：有望な次の一手の確率を出力する）」**にモンテカルロ木探索を組み合わせ、自己対局（試行錯誤）によって人間を超える大局観を獲得しました。</span>
+<span id="cb1-66"><a href="#cb1-66" aria-label="66"></a><span class="ss">2. </span>**ロボット制御と自動運転**:</span>
+<span id="cb1-67"><a href="#cb1-67" aria-label="67"></a><span class="ss">   - </span>2足歩行ロボットや四足歩行ロボットが不整地でバランスを保ちながら歩く制御や、ドローンの自律飛行、データセンターの冷却制御などには、第11回〜第13回で扱った **DQN や PPO（方策勾配法）** の発展形がそのまま使われています。</span>
+<span id="cb1-68"><a href="#cb1-68" aria-label="68"></a><span class="ss">3. </span>**ChatGPT などの大規模言語モデル（LLM）を賢くする「RLHF」**:</span>
+<span id="cb1-69"><a href="#cb1-69" aria-label="69"></a><span class="ss">   - </span>現在私たちが日常的に使っている ChatGPT や Gemini、Claude といった対話型AIも、実は**強化学習**によって仕上げられています。</span>
+<span id="cb1-70"><a href="#cb1-70" aria-label="70"></a><span class="ss">   - </span>膨大なテキストを丸暗記（事前学習）しただけの言語モデルは、ときに不正確で不適切な文章を出力してしまいます。そこで、**「質問（状態 $S$）」に対してAIが生成した「回答（行動 $A$）」を人間や評価AIが採点して「好ましさのスコア（報酬 $R$）」を与え、PPO などの強化学習アルゴリズムで方策（回答の生成確率）を改善する**という手法が使われています。これを **RLHF（Reinforcement Learning from Human Feedback：人間のフィードバックからの強化学習）** と呼びます。</span>
+<span id="cb1-71"><a href="#cb1-71" aria-label="71"></a><span class="ss">   - </span>つまり、皆さんがミニプロジェクトで「報酬を工夫してAIの振る舞いを望ましい方向へ導いた」のと同じことを、最先端の生成AIの開発者たちも日々行っているのです。</span>
+<span id="cb1-72"><a href="#cb1-72" aria-label="72"></a></span>
+<span id="cb1-73"><a href="#cb1-73" aria-label="73"></a>---</span>
+<span id="cb1-74"><a href="#cb1-74" aria-label="74"></a></span>
+<span id="cb1-75"><a href="#cb1-75" aria-label="75"></a><span class="fu">## 結びに</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-label="76"></a></span>
+<span id="cb1-77"><a href="#cb1-77" aria-label="77"></a>生成AIの登場によって、コードの1行1行を人間が手で書く時代から、**「どんな問題を解きたいのか」「何が正しい振る舞い（報酬・仕様）なのか」「出力された結果が妥当かどうか」を人間が設計・検証し、AIと協働してシステムを作り上げる時代**へと大きく変化しました。</span>
+<span id="cb1-78"><a href="#cb1-78" aria-label="78"></a></span>
+<span id="cb1-79"><a href="#cb1-79" aria-label="79"></a>本科目で身につけた「アルゴリズムとプログラムの基本原理」「強化学習による試行錯誤と最適化の考え方」、そして「vibe coding でアイデアを形にする実践力」は、これから皆さんがどの分野に進むとしても、AI時代を切り拓く強力な武器になるはずです。ぜひこの経験を土台にして、さらなる探求へと進んでください！</span></code></pre></div><button title="コピー" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
