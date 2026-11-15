@@ -2,9 +2,9 @@
 
 ## 本章のねらい
 
-前章で扱ったブラックジャックは、状態が「プレイヤーの合計点数（12〜21）」「ディーラーの表カード（1〜10）」「使えるエースの有無（True/False）」のような**飛び飛びの整数や真偽値（離散値）**で表され、わずか数ステップで終了する環境でした。
+前章で扱ったブラックジャックは、状態が「プレイヤーの合計点数（12〜21）」「ディーラーの表カード（1〜10）」「使えるエースの有無（True/False）」のような**飛び飛びの整数や真偽値（離散値）**で表され、わずか2〜3ステップで勝負がつく短い環境でした。そのため、エピソード終了後にまとめて振り返る「モンテカルロ法」でも、1歩ごとに更新する「Q-learning」でも、同じように最適戦略を学習することができました。
 
-本章の前半では、ロボットの姿勢制御や物理シミュレーションの基本問題である **`"CartPole-v1"`（倒立振子）** を題材に、位置や速度・角度といった**連続値（小数）の状態**を区間に分ける**離散化（Binning）**の考え方と、最大500ステップ続く制御問題への Q-learning の適用、そして**「表形式（Qテーブル）の限界」**を学びます。
+本章の前半では、ロボットの姿勢制御や物理シミュレーションの基本問題である **`"CartPole-v1"`（倒立振子）** を題材に、位置や速度・角度といった**連続値（小数）の状態**を区間に分ける**離散化（Binning）**の考え方を学びます。そして、あらかじめ用意された実験プログラムを実行して、最大500ステップ続く制御問題における**「モンテカルロ法」と「Q-learning」の学習効率の違い**を比較するとともに、**「表形式（Qテーブル）の限界」**を確認します。
 
 後半からは、第14回の成果発表に向けた**「ミニプロジェクト（自作ゲームの作成とAI育成）」**をスタートします。第1回となる今回は、作りたいゲームの企画と「状態・行動・報酬・終了条件」の設計を行い、まずは人間が操作して遊べるプロトタイプを **vibe coding** で作成します。
 
@@ -12,7 +12,83 @@
 
 ## Cart Pole（倒立振子）環境
 
-`"CartPole-v1"` は、左右に動く台車（カート）の上にピンで留められた棒（ポール）が倒れないように、台車を左右に押してバランスを取り続ける課題です（手のひらの上にほうきを立ててバランスをとる遊びと同じ仕組みです）。
+`"CartPole-v1"` は、左右に動く台車（カート）の上にピンで留められた棒（ポール）が倒れないように、台車を左右に押してバランスを取り続ける課題です（手のひらの上にほうきや傘を立ててバランスをとる遊びと同じ仕組みです）。
+
+```{=html}
+<svg viewBox="0 0 740 310" width="100%" height="310" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="cp-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+    <marker id="cp-arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#d32f2f" />
+    </marker>
+    <marker id="cp-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2e7d32" />
+    </marker>
+  </defs>
+
+  <text x="370" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">【CartPole-v1（倒立振子）環境】4つの連続状態を観測し、左右どちらにカートを押すかを選び続ける</text>
+
+  <!-- Track & Boundary Lines -->
+  <line x1="60" y1="225" x2="680" y2="225" stroke="#475569" stroke-width="3"/>
+  <line x1="90" y1="185" x2="90" y2="245" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="90" y="262" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#dc2626">左端 x = -2.4</text>
+  <text x="90" y="276" text-anchor="middle" font-size="9.5" fill="#b91c1c">（超えると終了）</text>
+
+  <line x1="650" y1="185" x2="650" y2="245" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="650" y="262" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#dc2626">右端 x = +2.4</text>
+  <text x="650" y="276" text-anchor="middle" font-size="9.5" fill="#b91c1c">（超えると終了）</text>
+
+  <line x1="370" y1="218" x2="370" y2="232" stroke="#64748b" stroke-width="2"/>
+  <text x="370" y="248" text-anchor="middle" font-size="10" fill="#475569">中央 (x = 0)</text>
+
+  <!-- Vertical Reference Line from Cart Pivot -->
+  <line x1="390" y1="60" x2="390" y2="188" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="390" y="52" text-anchor="middle" font-size="10" fill="#64748b">垂直 (0°)</text>
+
+  <!-- Angle Limit Lines (±12°) -->
+  <line x1="390" y1="188" x2="335" y2="66" stroke="#fca5a5" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <text x="315" y="64" text-anchor="middle" font-size="9.5" fill="#dc2626">-12° 限界</text>
+  <line x1="390" y1="188" x2="445" y2="66" stroke="#fca5a5" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <text x="468" y="64" text-anchor="middle" font-size="9.5" fill="#dc2626">+12° 限界</text>
+
+  <!-- Pole (Tilted Right) -->
+  <line x1="390" y1="188" x2="424" y2="74" stroke="#d97706" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Angle Arc & Omega Arrow -->
+  <path d="M 390,128 A 60,60 0 0,1 408,131" fill="none" stroke="#b45309" stroke-width="2"/>
+  <text x="415" y="122" font-size="11" font-weight="bold" fill="#b45309">③ 角度 θ</text>
+
+  <path d="M 432,85 Q 458,95 466,116" fill="none" stroke="#d32f2f" stroke-width="2.2" marker-end="url(#cp-arrow-red)"/>
+  <text x="520" y="102" font-size="11" font-weight="bold" fill="#c62828">④ 角速度 ω</text>
+  <text x="520" y="117" font-size="9.5" fill="#b71c1c">（倒れようとする速さ）</text>
+
+  <!-- Cart -->
+  <rect x="340" y="185" width="100" height="32" rx="6" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+  <circle cx="360" cy="220" r="7" fill="#475569"/>
+  <circle cx="420" cy="220" r="7" fill="#475569"/>
+  <circle cx="390" cy="188" r="5" fill="#fbbf24" stroke="#78350f" stroke-width="1.5"/>
+
+  <!-- State 1 & 2 Labels (Cart x and v) -->
+  <rect x="125" y="92" width="175" height="54" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="212" y="113" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">① カートの位置 x</text>
+  <text x="212" y="133" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">② カートの速度 v</text>
+
+  <!-- Action Arrows (0: Left, 1: Right) -->
+  <path d="M 332,201 L 265,201" fill="none" stroke="#1976d2" stroke-width="3" marker-end="url(#cp-arrow-blue)"/>
+  <rect x="155" y="184" width="105" height="32" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+  <text x="207" y="199" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0d47a1">行動 0：左へ押す</text>
+  <text x="207" y="211" text-anchor="middle" font-size="9" fill="#1565c0">左向きの力を加える</text>
+
+  <path d="M 448,201 L 515,201" fill="none" stroke="#2e7d32" stroke-width="3" marker-end="url(#cp-arrow-green)"/>
+  <rect x="520" y="184" width="105" height="32" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="572" y="199" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1b5e20">行動 1：右へ押す</text>
+  <text x="572" y="211" text-anchor="middle" font-size="9" fill="#2e7d32">右向きの力を加える</text>
+
+  <text x="370" y="298" text-anchor="middle" font-size="10.5" fill="#334155">※ 倒れずに1ステップ維持するごとに報酬 +1.0（最大 500 ステップ維持できれば満点クリア！）</text>
+</svg>
+```
 
 - **状態（4つの連続値）**:
   1. **カートの位置 $x$**（$-4.8 \sim +4.8$、画面端の $\pm 2.4$ を超えると終了）
@@ -25,12 +101,13 @@
 - **報酬と終了条件**:
   - 棒が倒れずに1ステップ維持できるごとに **$+1.0$** の報酬が与えられます。
   - 棒が $\pm 12^\circ$ 以上傾くか、カートが $\pm 2.4$ の画面外に出るとエピソード終了（`terminated = True`）となります。
-  - **500ステップ**倒さずに維持できればクリア（`truncated = True`、満点の収益 $+500$）となります。
+  - **500ステップ**倒さずに維持できればクリア（`truncated = True`）となります。
 
 ::: {.callout-note icon=false}
 ### 練習問題 10-01：Cart Pole 環境のルールと状態
 1. `"CartPole-v1"` において、エージェントが観測する「状態」はどのような4つの数値で表されますか？また、選べる「行動」は何通りありますか？
 2. 棒が右（プラスの角度）に傾きつつあるとき、棒を倒さないためにはカートを「右」と「左」のどちらに押す必要があるでしょうか？手のひらの上の棒をイメージして答えてみましょう。
+3. 割引率を $\gamma = 1$ としたとき、この環境で得られる収益の最大値はいくらになりますか？
 :::
 
 ---
@@ -41,7 +118,9 @@
 
 ブラックジャックでは、状態の組み合わせが約200通りしかなかったため、すべての状態を並べた表（Qテーブル）を作ることができました。
 
-しかし Cart Pole の状態は、カートの位置 `0.04128...` やポールの角度 `-0.08391...` のような**連続的な実数（小数）**です。小数の値は無数に存在するため、そのままでは表の行数が無限大になってしまい、「以前とまったく同じ小数第10位まで一致する状態」に再び出会うこともほぼ不可能です。
+しかし Cart Pole の状態は、カートの位置 `0.04128...` やポールの角度 `-0.08391...` のような**連続的な実数（小数）**です。数学的な実数は無数（無限個）に存在します。もっとも、コンピュータの内部では小数を**浮動小数点数（`float` 型）**という限られた桁数（ビット数）で表現するため、**厳密にはコンピュータで表現できる浮動小数点数の個数は有限**です。
+
+それでも、`"CartPole-v1"` で使われる32ビット浮動小数点数（`float32`）では1つの変数だけで約40億通り（Python 標準の64ビット浮動小数点数 `float` なら約 $1.8 \times 10^{19}$ 通り）もの値が存在し、4つの状態変数を組み合わせると $(40\text{億})^4 \approx 2.5 \times 10^{38}$ 通りという天文学的な数になってしまいます。そのため、すべての状態をそのまま並べた表（Qテーブル）をメモリ上に作ることは事実上不可能であり、また「以前と小数点以下の最後の桁までまったく同じ状態」に再び出会うこともほぼ起きません。
 
 ### 連続値を「箱（区間）」に分ける離散化（Binning）
 
@@ -56,42 +135,226 @@
 - 区間 `4`：$+1^\circ \sim +6^\circ$（少し右に傾いている）
 - 区間 `5`：$+6^\circ \sim +12^\circ$（大きく右に傾いている）
 
-このように4つの状態変数（位置・速度・角度・角速度）をそれぞれ6つの区間に分類すれば、どんな連続値の状態であっても `(2, 3, 4, 3)` のような4つの整数（`0`〜`5`）の組み合わせに変換できます。すると、状態の総数は $6 \times 6 \times 6 \times 6 = 1,296$ 通りという有限の個数に収まり、これまでと同じ **Qテーブルを使った Q-learning** がそのまま適用できるようになります。
+```{=html}
+<svg viewBox="0 0 740 245" width="100%" height="245" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <defs>
+    <marker id="bin-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#1976d2" />
+    </marker>
+  </defs>
+
+  <text x="370" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">【離散化（Binning）の仕組み】小数の状態を「6つの箱（0〜5）」に分類して Q テーブルの行番号にする</text>
+
+  <!-- Continuous Number Line & 6 Bins -->
+  <text x="55" y="54" font-size="11" font-weight="bold" fill="#334155">例：ポールの角度 θ の6区間分割（バランスに重要な中央 0° 付近を細かく区切る）</text>
+
+  <rect x="55" y="66" width="105" height="44" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="107" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#b91c1c">区間 0</text>
+  <text x="107" y="101" text-anchor="middle" font-size="9.5" fill="#7f1d1d">-12° 〜 -6°</text>
+
+  <rect x="160" y="66" width="105" height="44" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="212" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#c2410c">区間 1</text>
+  <text x="212" y="101" text-anchor="middle" font-size="9.5" fill="#9a3412">-6° 〜 -1°</text>
+
+  <rect x="265" y="66" width="105" height="44" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="317" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">区間 2</text>
+  <text x="317" y="101" text-anchor="middle" font-size="9.5" fill="#14532d">-1° 〜 0°</text>
+
+  <rect x="370" y="66" width="105" height="44" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="422" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">区間 3</text>
+  <text x="422" y="101" text-anchor="middle" font-size="9.5" fill="#14532d">0° 〜 +1°</text>
+
+  <rect x="475" y="66" width="105" height="44" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="527" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#c2410c">区間 4</text>
+  <text x="527" y="101" text-anchor="middle" font-size="9.5" fill="#9a3412">+1° 〜 +6°</text>
+
+  <rect x="580" y="66" width="105" height="44" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="632" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="#b91c1c">区間 5</text>
+  <text x="632" y="101" text-anchor="middle" font-size="9.5" fill="#7f1d1d">+6° 〜 +12°</text>
+
+  <!-- Conversion Flow at Bottom -->
+  <rect x="40" y="140" width="225" height="78" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.8"/>
+  <text x="152" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">観測された連続状態（float32）</text>
+  <text x="152" y="180" text-anchor="middle" font-size="10.5" fill="#0f172a">[x=-0.12, v=0.08, θ=+2.4°, ω=0.15]</text>
+  <text x="152" y="200" text-anchor="middle" font-size="9.5" fill="#64748b">（そのままでは表の行にできない）</text>
+
+  <path d="M 265,179 L 330,179" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#bin-arrow)"/>
+  <text x="297" y="170" text-anchor="middle" font-size="10" font-weight="bold" fill="#1976d2">離散化</text>
+
+  <rect x="338" y="140" width="165" height="78" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="420" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#0d47a1">離散状態（整数タプル）</text>
+  <text x="420" y="183" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">(2, 3, 4, 3)</text>
+  <text x="420" y="202" text-anchor="middle" font-size="9.5" fill="#1565c0">全 6×6×6×6 = 1,296 通り</text>
+
+  <path d="M 503,179 L 550,179" fill="none" stroke="#1976d2" stroke-width="2.5" marker-end="url(#bin-arrow)"/>
+
+  <rect x="558" y="140" width="150" height="78" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="633" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">Q テーブルを参照</text>
+  <text x="633" y="180" text-anchor="middle" font-size="10" fill="#14532d">左(0)のQ値: +18.4</text>
+  <text x="633" y="198" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#15803d">右(1)のQ値: +45.2 ★</text>
+</svg>
+```
+
+このように4つの状態変数（位置・速度・角度・角速度）をそれぞれ6つの区間に分類すれば、どんな連続値の状態であっても `(2, 3, 4, 3)` のような4つの整数（`0`〜`5`）の組み合わせ（タプル）に変換できます。すると、状態の総数は $6 \times 6 \times 6 \times 6 = 1,296$ 通りという有限の小さな個数に収まり、これまでと同じ **Qテーブルを使った強化学習** がそのまま適用できるようになります。
 
 ::: {.callout-note icon=false}
 ### 練習問題 10-02：離散化と状態数の計算
-1. 連続値をそのまま辞書のキーや表の行にして Q テーブルを作ろうとすると、どのような問題が起きますか？
+1. コンピュータで表現できる浮動小数点数（`float`）をそのまま辞書のキーや表の行にして Q テーブルを作ろうとすると、どのような問題が起きますか？
 2. もし4つの状態変数をそれぞれ **10区間** に細かく分けた場合、離散化された状態の総数は何通りになりますか？また、状態変数が **8個** あるゲームでそれぞれ10区間に分けた場合は何通りになるでしょうか？
 :::
 
 ---
 
-## vibe coding：離散化 Q-learning による Cart Pole の制御
+## 離散化による Cart Pole の制御：モンテカルロ法と Q-learning の比較
 
-それでは **vibe coding** によって、`"CartPole-v1"` をランダム方策で動かしたときと、状態を離散化して Q-learning で学習させたときの比較プログラム `cartpole_qlearning.py` を作成しましょう。
+前章（第9回）のブラックジャックでは、エピソード終了後にまとめて平均を更新する**「モンテカルロ法」**と、1ステップごとに移動先の見込みからその場で更新する**「Q-learning」**は、どちらもほぼ同じ速さで最適戦略に到達しました。
 
-### 作成するプログラムの仕様
+では、最大500ステップ続く `"CartPole-v1"` の制御問題では、モンテカルロ法と Q-learning の学習効率にどのような違いが現れるでしょうか？
 
-1. **ランダム方策でのプレイ確認**:
-   - 学習を行わずに左右をランダムに選んだ場合、平均して何ステップほどで棒が倒れてしまうか（100エピソードの平均ステップ数）を計測し、実際の描画画面でも動きを確認する。
-2. **離散化（Binning）と Q-learning による学習**:
-   - 4つの状態変数（カートの位置・速度、ポールの角度・角速度）をそれぞれ適切な区間（例：6〜8分割）に離散化する仕組みを作る。
-   - 1ステップ進むごとに Q テーブルを更新する Q-learning（エピソードが進むにつれて探索率 $\varepsilon$ を少しずつ減らす工夫つき）で数千エピソード学習させる。
-   - 棒を倒してしまったステップ（`terminated = True`）では、大きなマイナスのペナルティ報酬を与えて「倒れる直前の行動」の評価を素早く下げる工夫を入れる。
-3. **学習曲線のグラフ化と学習済みAIの実演**:
-   - エピソード数に伴う維持ステップ数（獲得報酬）の推移を Matplotlib でグラフ化する。
-   - 学習後の Q テーブルを使って Pygame ウィンドウ（`render_mode="human"`）で実際にカートを制御させ、棒が倒れないように細かく左右に動いてバランスを取り続ける様子を観察する。
+::: {.callout-important icon=true}
+### 実験プログラムをダウンロードして実行しよう（Quota の温存）
+今週の後半からは「ミニプロジェクト（自作ゲームの作成）」が始まり、そこで Antigravity をたくさん活用します。Antigravity の利用枠（Quota）をミニプロジェクトのために温存できるよう、前半の Cart Pole 実験では自分で vibe coding を行うのではなく、**あらかじめ用意された比較プログラムをダウンロードして手元のパソコンで実行**します。
+:::
+
+### 実験プログラム `cartpole_cmp.py` のダウンロードと実行手順
+
+1. **プログラムのダウンロード**:
+   以下のリンクをクリック（または右クリックして「リンク先を別名で保存」）し、作業フォルダに `cartpole_cmp.py` を保存してください。
+   - 📥 **[`cartpole_cmp.py` をダウンロードする](cartpole_cmp.py){download="cartpole_cmp.py"}**
+
+2. **プログラムが行う処理**:
+   `cartpole_cmp.py` は、4つの連続状態をそれぞれ6区間（合計 $6^4 = 1,296$ 状態）に離散化し、**割引率を $\gamma = 1.0$（割引なし）**としたうえで、次の**3つの手法**をそれぞれ **1,500 エピソード** 実行して学習効率を比較します：
+   - **① ランダム方策（学習なし）**：毎回ランダムに左右を選んでカートを押す。
+   - **② 離散化モンテカルロ法**：1エピソード（棒が倒れるか500ステップ完走するまで）が終わったあと、そのエピソードで得られた総報酬（維持ステップ数）を使って、通過したすべての `(状態, 行動)` の平均評価値をまとめて更新する。
+   - **③ 離散化 Q-learning**：1ステップ進むごとに、直後の報酬（$+1.0$）と移動先の状態での最大Q値を使ってその場で即座に評価を更新する（棒が倒れてエピソードが終了したステップでは、その先の状態がないため移動先の見込みを $0$ として更新する）。
+   - **グラフ描画と Pygame 実演**：学習完了後、3手法のテスト成績（100エピソードの平均維持ステップ数と500ステップ完走率）を表示し、学習曲線の比較グラフ `cartpole_cmp_result.png` を保存・表示したあと、学習済みの Q-learning エージェントが Pygame ウィンドウで実際に棒のバランスを取り続ける様子を2エピソード実演します。
+
+3. **ターミナルからの実行方法**:
+   ファイルが保存されているフォルダでターミナル（コマンドプロンプト / PowerShell）を開き、以下のコマンドを実行します：
+   - **Windows の場合**:
+     ```bash
+     python cartpole_cmp.py
+     ```
+   - **macOS の場合**:
+     ```bash
+     python3 cartpole_cmp.py
+     ```
+
+### 実行結果と学習効率の比較・考察
+
+`cartpole_cmp.py` を実行すると、数秒で 1,500 エピソードのシミュレーションが完了し、ターミナルに以下のようなテスト結果が表示されます：
+
+```text
+====================================================================
+  学習完了後のテスト評価 (100 エピソード, 探索なし ε = 0)
+====================================================================
+手法                              平均維持ステップ数       500ステップ完走率
+--------------------------------------------------------------
+① ランダム方策                         21.1 歩             0.0%
+② 離散化モンテカルロ法                 149.3 歩             0.0%
+③ 離散化 Q-learning               472.6 歩            89.0%
+--------------------------------------------------------------
+```
+
+また、エピソード数に伴う平均維持ステップ数の推移（学習曲線）は以下のようになります：
+
+```{=html}
+<svg viewBox="0 0 740 390" width="100%" height="390" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; margin: 1.5em 0;">
+  <text x="370" y="26" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1e293b">CartPole-v1 における学習効率の比較：モンテカルロ法 vs Q-learning（割引率 γ = 1.0）</text>
+
+  <!-- Plot Area Background -->
+  <rect x="70" y="42" width="640" height="280" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Horizontal Grid Lines (y=0: 322, y=100: 270, y=200: 218, y=300: 166, y=400: 114, y=500: 62) -->
+  <line x1="70" y1="270" x2="710" y2="270" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="70" y1="218" x2="710" y2="218" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="70" y1="166" x2="710" y2="166" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="70" y1="114" x2="710" y2="114" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="70" y1="62" x2="710" y2="62" stroke="#047857" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- Vertical Grid Lines (x=0: 70, 300: 198, 600: 326, 900: 454, 1200: 582, 1500: 710) -->
+  <line x1="198" y1="42" x2="198" y2="322" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="326" y1="42" x2="326" y2="322" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="454" y1="42" x2="454" y2="322" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="582" y1="42" x2="582" y2="322" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Y Axis Labels -->
+  <text x="62" y="326" text-anchor="end" font-size="10.5" fill="#475569">0</text>
+  <text x="62" y="274" text-anchor="end" font-size="10.5" fill="#475569">100</text>
+  <text x="62" y="222" text-anchor="end" font-size="10.5" fill="#475569">200</text>
+  <text x="62" y="170" text-anchor="end" font-size="10.5" fill="#475569">300</text>
+  <text x="62" y="118" text-anchor="end" font-size="10.5" fill="#475569">400</text>
+  <text x="62" y="66" text-anchor="end" font-size="10.5" font-weight="bold" fill="#047857">500</text>
+  <text x="22" y="182" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#334155" transform="rotate(-90 22,182)">平均維持ステップ数（上限 500）</text>
+
+  <!-- X Axis Labels -->
+  <text x="70" y="340" text-anchor="middle" font-size="10.5" fill="#475569">0</text>
+  <text x="198" y="340" text-anchor="middle" font-size="10.5" fill="#475569">300</text>
+  <text x="326" y="340" text-anchor="middle" font-size="10.5" fill="#475569">600</text>
+  <text x="454" y="340" text-anchor="middle" font-size="10.5" fill="#475569">900</text>
+  <text x="582" y="340" text-anchor="middle" font-size="10.5" fill="#475569">1,200</text>
+  <text x="710" y="340" text-anchor="middle" font-size="10.5" fill="#475569">1,500</text>
+  <text x="390" y="362" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#334155">学習エピソード数</text>
+
+  <!-- Curve 1: Random Policy (~21 steps -> y=311) -->
+  <polyline fill="none" stroke="#dc2626" stroke-width="2.2"
+    points="91,311 134,309 177,310 220,311 262,310 305,311 347,310 390,311 433,310 475,311 518,310 561,311 603,310 646,311 689,310 710,311"/>
+
+  <!-- Curve 2: Monte Carlo (~42 -> 140 -> 149 steps -> y=245..250) -->
+  <polyline fill="none" stroke="#2563eb" stroke-width="2.5"
+    points="91,300 112,280 155,254 198,250 241,247 283,245 326,243 369,246 411,245 454,245 497,246 539,245 582,247 625,246 667,245 710,246"/>
+
+  <!-- Curve 3: Q-learning (rises rapidly to ~485 steps -> y=70) -->
+  <polyline fill="none" stroke="#16a34a" stroke-width="2.8"
+    points="91,302 112,288 134,262 155,235 177,212 198,207 220,165 241,122 262,92 283,78 305,72 326,70 369,72 411,68 454,72 497,69 539,74 582,68 625,71 667,69 710,73"/>
+
+  <!-- Legend Box -->
+  <rect x="335" y="106" width="358" height="84" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" opacity="0.96"/>
+  <line x1="347" y1="122" x2="375" y2="122" stroke="#16a34a" stroke-width="3"/>
+  <text x="383" y="126" font-size="10.5" font-weight="bold" fill="#15803d">③ 離散化 Q-learning（テスト平均 472.6 歩・完走率 89%）</text>
+  <line x1="347" y1="143" x2="375" y2="143" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="383" y="147" font-size="10.5" font-weight="bold" fill="#1d4ed8">② 離散化モンテカルロ法（テスト平均 149.3 歩で頭打ち）</text>
+  <line x1="347" y1="164" x2="375" y2="164" stroke="#dc2626" stroke-width="2.2"/>
+  <text x="383" y="168" font-size="10.5" fill="#b91c1c">① ランダム方策（学習なし：テスト平均 21.1 歩で即転倒）</text>
+  <line x1="347" y1="181" x2="375" y2="181" stroke="#047857" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="383" y="184" font-size="9.5" fill="#047857">クリア上限（500 ステップ満点）</text>
+
+  <!-- Explanation Box -->
+  <rect x="315" y="198" width="378" height="50" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1.2"/>
+  <text x="325" y="216" font-size="9.5" font-weight="bold" fill="#14532d">★ Q-learning は1歩ごとに移動先の見込みを手掛かりにして即座に更新するため、</text>
+  <text x="325" y="234" font-size="9.5" fill="#15803d">　 約 500〜600 エピソード付近で急成長し、ほぼ 500 ステップ満点に到達する！</text>
+</svg>
+```
+
+なぜブラックジャックでは互角だった「モンテカルロ法」と「Q-learning」に、Cart Pole ではこれほど劇的な差が生まれたのでしょうか？第9回で学んだ両者の仕組みの違いから整理してみましょう。
+
+1. **モンテカルロ法が 150 ステップ前後で伸び悩む理由（「どの1手が悪かったか」がぼやける）**:
+   - モンテカルロ法は、棒が倒れて1エピソードが終了したあとに、「そのエピソード全体で何ステップ維持できたか（合計報酬 $G$）」を、通過したすべてのステップの行動にまとめて割り当てて平均をとります。
+   - たとえば、100ステップ目までは完璧なバランス制御をしていたのに、101ステップ目で誤った方向に押して棒が倒れてしまったとします。このときモンテカルロ法では、**「前半の99回の素晴らしい行動」にも「最後の1回の致命的な悪手」にも、まったく同じ『101点』という結果を割り当てて平均化**してしまいます。そのため、ステップ数が長くなるほど「途中のどの行動が良くて、最後のどの行動が悪かったのか」の区別がつきにくくなり、学習が頭打ちになってしまいます。
+2. **Q-learning が急速に 500 ステップ近くに到達する理由（1歩ごとの即座のバケツリレー更新）**:
+   - 一方 Q-learning は、エピソード終了を待たず、**1ステップ進むごとに「直後の報酬（$+1.0$）」と「移動先の状態が持つ最高の見込み（最大Q値）」だけを手掛かりにしてその場で評価を更新**します。
+   - 割引率 $\gamma = 1.0$ のとき、Q値は「その行動を選んだあと、棒が倒れるまでにこれから先あと何ステップ維持できるか（将来の獲得報酬の合計の見込み）」を表しています。棒が倒れずに次の状態へ進めたときは「直後の報酬 ($+1.0$) ＋ 移動先の最大Q値（たとえば $+100$ や $+200$ といった大きな見込み）」により評価が保たれますが、棒が倒れてエピソードが終了した瞬間（`terminated = True`）には、**その先の状態が存在しないため「移動先の見込み $= 0$」となり、評価値が一気に直後の報酬（$+1.0$）だけに落ち込みます**。
+   - これにより、マイナスの報酬がなくても、「この行動を選べばこの先も長く生き残れるはずだ」と思っていた評価が、**「倒れる直前に選んだその1手」だけピンポイントで引き下げられ**、失敗行動を素早く避けられるようになります。このバケツリレー方式のおかげで、わずか 500〜600 エピソードの学習でほぼ 500 ステップ満点の制御を獲得できるのです。
+
+::: {.callout-note icon=false}
+### 練習問題 10-03：`cartpole_cmp.py` の実行と区間数の変更実験
+1. [`cartpole_cmp.py`](cartpole_cmp.py){download="cartpole_cmp.py"} をダウンロードして実行し、ランダム方策・離散化モンテカルロ法・離散化 Q-learning の「テストでの平均維持ステップ数」と、最後に表示される Pygame ウィンドウでのカートの動きを確認してみましょう。
+2. 最大500ステップ続く Cart Pole において、エピソード終了後にまとめて平均をとる「モンテカルロ法」よりも、1ステップごとに更新する「Q-learning」の方が圧倒的に効率よく学習できるのはなぜですか？自分の言葉で説明してみましょう。
+3. ダウンロードした `cartpole_cmp.py` をエディタで開き、48行目付近にあるリスト `BINS` のうち、**ポールの角度 $\theta$**（3行目）と **ポールの角速度 $\omega$**（4行目）の境界値を2つだけ（例：角度を `[-DEG_6, DEG_6]`、角速度を `[-2.0, 2.0]`）に変更して、それぞれ **3区間** にして学習させてみましょう。
+   - カートの位置・速度が6区間、ポールの角度・角速度が3区間のとき、状態の総数は何通りになりますか？
+   - プログラムを再実行すると、Q-learning の平均維持ステップ数や500ステップ完走率は6区間のときと比べてどのように変化しますか？また、なぜそのような結果になるのかを考えてみましょう。
+:::
 
 ---
 
-## 表形式（Qテーブル）の限界と「次元の呪い」
+## 表形式（Qテーブル）の限界
 
-離散化を使えば Cart Pole を Q-learning で制御できますが、ここには大きな壁があります。
+離散化（Binning）と Q-learning を組み合わせることで Cart Pole を制御できましたが、この「連続値を区間に分けて Qテーブルを作る方法」には大きな壁があります。
 
-- **粗く区切りすぎると**：異なる状況が同じ「箱」にまとめられてしまい、繊細な制御ができなくなります。
-- **細かく区切りすぎると（または状態変数の数が増えると）**：状態の組み合わせ数が爆発的に増加します。たとえば状態変数が10個あり、それぞれを20区間に分けると、状態の総数は $20^{10} \approx 10兆$ 通りとなり、メモリに表を作ることも、すべてのマスを訪問して学習することも不可能になります。これを**次元の呪い（Curse of Dimensionality）**と呼びます。
+- **粗く区切りすぎると**：本当は異なる状況（たとえば微妙な角度や角速度の違い）がすべて同じ「箱」にまとめられてしまい、繊細な制御ができなくなります。実際に練習問題 10-03 でポールの角度と角速度を **6区間から3区間** に減らすと、たとえば角度 $-6^\circ \sim +6^\circ$ がすべて同じ1つの区間（真ん中の箱）にまとめられてしまうため、「いま棒がわずかに左に傾いているのか、右に傾いているのか」を区別して逆向きに押すといった細かいバランス調整ができなくなり、Q-learning の平均維持ステップ数は約473歩（完走率89%）から約107歩（完走率0%）へと大きく低下してしまいます。
+- **細かく区切りすぎると（または状態変数の数が増えると）**：掛け算によって**状態の組み合わせ数が爆発的に増加**します。たとえば状態変数が10個ある少し複雑なゲームで、それぞれの変数を20区間に細かく分けたとすると、状態の総数は $20^{10} \approx 10\text{兆}$ 通りとなり、メモリ上に表（Qテーブル）を作ることも、すべてのマスを訪問して学習することも不可能になります。
 
-この「表形式の限界」を根本から打ち破るために登場したのが、次章（第11回）で学ぶ**深層強化学習（DQN：Deep Q-Network）**です。
+この「表形式（Qテーブル）の限界」を根本から打ち破るために登場したのが、次章（第11回）で学ぶ**深層強化学習（DQN：Deep Q-Network）**です。
 
 ---
 
@@ -107,6 +370,17 @@
 - **第13回**：訓練結果のグラフ分析・考察と、第14回の成果発表の準備
 - **第14回**：ミニプロジェクト成果発表
 
+### ミニプロジェクトの評価基準
+
+できあがったゲームや強化学習のプログラムは評価対象ではありません（コーディングエージェントが作ってくれるので）。評価するのは途中経過と最後の考察です。
+
+- 毎週、やったことをまとめて提出してください。
+  - コーディングエージェント（Antigravityなど）を使った作業だけでなく、chat型AIや通常の検索などの作業も含めてください。
+  - 自分が何を指示して、その結果どうなったかということを書いてください。
+  - 試行錯誤を評価します。一発でできてしまった場合は、機能を追加したり、複数の案を比較検討したりしてください。
+  - 分量は、A4に印刷した時に1〜2ページ程度です。
+- 最後に分析・考察を行い、レポートにまとめます。詳しくは第13回で説明します。
+
 ### ステップ1：どんなゲームを作るか考え、「状態・行動・報酬」を設計する
 
 まずは、自分が作りたいシンプルなゲームを1つ企画します。次章以降で **DQN** や **方策勾配法** も学ぶため、マス目のゲームだけでなく、**座標や速度が連続的に変化するアクションゲーム**も選ぶことができます。
@@ -115,6 +389,17 @@
   - **グリッド探索型**（宝探し、氷の迷路、動くモンスターから逃げてゴールへ行くゲーム）
   - **キャッチ＆回避型**（上から降ってくるリンゴをカゴで拾い、爆弾を避けるゲーム）
   - **ジャンプ＆バランス型**（障害物をタイミングよくジャンプで飛び越えるゲーム、1人用ピンポン・ブロック崩し）
+
+::: {.callout-tip icon=true}
+### アイデアの参考に：Gymnasium 公式の実験環境ギャラリーを覗いてみよう
+世界中の強化学習研究で使われている Gymnasium の公式ウェブサイトには、多様な制御課題やゲーム環境が**アニメーション（GIF動画）付き**で紹介されています。自分がどんなゲームを作りたいか、またそのゲームで「何が状態（Observation）で、何が行動（Action）・報酬（Reward）になっているか」を考えるヒントとして、ぜひ以下のページを眺めてみてください。
+
+- **[Gymnasium 公式ウェブサイト（トップページ）](https://gymnasium.farama.org/)**
+- **[Classic Control（古典制御）](https://gymnasium.farama.org/environments/classic_control/)**：Cart Pole（倒立振子）や Mountain Car（坂道登り）など、シンプルで物理法則に基づいた制御環境
+- **[Box2D（2D物理アクション）](https://gymnasium.farama.org/environments/box2d/)**：Lunar Lander（月面着陸船の制御）や Car Racing（見下ろし型カーレース）などの2Dアクション環境
+- **[Toy Text（グリッド・カードゲーム）](https://gymnasium.farama.org/environments/toy_text/)**：Blackjack、Frozen Lake（氷の湖の迷路）、Cliff Walking（崖っぷち歩き）、Taxi（タクシーの乗客送迎）などのマス目環境
+- **[Atari（レトロビデオゲーム）](https://ale.farama.org/environments/)**：Breakout（ブロック崩し）、Pong（ピンポン）、Space Invaders（インベーダー）などのアーケードゲーム環境
+:::
 
 企画が決まったら、AIに学習させるための**4つの要素**を書き出します：
 
@@ -125,22 +410,13 @@
 
 ### ステップ2：vibe coding で「人間が遊べるプロトタイプ」を作る
 
-最初から強化学習のコードを書くのではなく、まずは **Pygame 等を使って人間がキーボード操作で実際に遊べるゲームのプロトタイプ** を Antigravity と対話しながら作成します。自分で遊んでみることで、「敵のスピードが速すぎて人間でも無理」「画面端に隠れていればずっと生き残れてしまう（ゲームの抜け穴）」といった問題点を早期に発見して調整することができます。
-
-::: {.callout-note icon=false}
-### 練習問題 10-03：ミニプロジェクトのゲーム設計シートの作成
-あなたがミニプロジェクトで作成したいゲームについて、次の4項目をまとめてみましょう。
-
-1. **ゲームのタイトルと基本ルール**（どんな画面で、何をすればクリアまたは高得点になるゲームか）
-2. **エージェントに観測させる「状態（State）」**（どのような数値の組として表すか）
-3. **エージェントが選べる「行動（Action）」**（何通りの選択肢があるか）
-4. **「報酬（Reward）」と「終了条件」**（クリア・失敗・途中のステップでそれぞれ何点を与えるか）
-:::
+最初から強化学習のコードを書くのではなく、まずは **Pygame を使って人間がキーボード操作で実際に遊べるゲームのプロトタイプ** を Antigravity と対話しながら作成します。自分で遊んでみることで、「敵のスピードが速すぎて人間でも無理」「画面端に隠れていればずっと生き残れてしまう（ゲームの抜け穴）」といった問題点を早期に発見して調整することができます。
 
 ---
 
 ## まとめ
 
-- **連続状態の離散化（Binning）**: カートの位置や棒の角度のような連続値（小数）を有限個の「区間（箱）」に分類することで、連続状態の環境でも Qテーブルを用いた Q-learning を適用できる。
-- **表形式（Qテーブル）の限界**: 状態変数の数（次元）や分割数が増えると、状態の組み合わせが爆発的に増大する「次元の呪い」が生じ、表形式で記録・学習することが困難になる。
+- **連続状態の離散化（Binning）**: コンピュータ上の浮動小数点数は有限個であるものの、そのままでは組み合わせが天文学的な数になるため Qテーブルを作れない。カートの位置や棒の角度のような連続値を少数の「区間（箱）」に分類してグループ化することで、連続状態の環境でも Qテーブルを用いた強化学習を適用できる。
+- **長いステップ続く問題におけるモンテカルロ法と Q-learning の違い**: 最大500ステップ続く Cart Pole では、エピソード終了後にまとめて平均をとるモンテカルロ法だと「途中の良い制御」と「最後に倒した悪手」が混ざってしまい学習が伸び悩むのに対し、1ステップごとに移動先の見込みから即座に更新する Q-learning は直前の悪手を素早く修正して高い性能に到達する。
+- **表形式（Qテーブル）の限界**: 区間を粗く分けすぎると繊細な制御ができず、逆に細かく分けすぎたり状態変数の数が増えたりすると、状態の組み合わせ数が爆発的に増大して表形式で記録・学習することが困難になる。
 - **ミニプロジェクトの開始**: オリジナルゲームのAI育成に向けて、まずは「状態・行動・報酬・終了条件」を明確に定義し、人間が遊んでルールや難易度を確認できるプロトタイプを作成する。
